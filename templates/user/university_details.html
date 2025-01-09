@@ -1,0 +1,295 @@
+{% extends 'includes/main.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="profile-top">
+                    <div class="profile-top-content">
+                        <div class="media">
+                            <img src="{% if object.photo %}{{ object.photo.url }}{% endif %}"
+                                 class="align-self-center mr-3"
+                                 style="width:100px">
+                            <div class="media-body">
+                                <h2>{{ object.name }}</h2>
+                                <p>{{ object.university_profile.about }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-10">
+            <div class="col">
+                <div class="card card-custom gutter-b">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h3 class="card-label">Instructor List:</h3>
+                        </div>
+                        <div class="card-toolbar">
+                            <button type="button" class="btn btn-primary" data-toggle="modal"
+                                    data-target="#exampleModalCustomScrollable">
+                                Add Instructor
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% if instructor_list %}
+                            <!--begin: Table-->
+                            <div class="table-responsive">
+                                <table class="table" id="kt_datatable">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Email</th>
+                                        <th>Name</th>
+                                        <th>Status</th>
+                                        <th style="width: 180px">Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for object in instructor_list %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td class="email">{{ object.instructor.email }}</td>
+                                            <td class="name">
+                                                {{ object.instructor.name }}
+                                            </td>
+                                            <td>{{ object.get_status_display }}</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-light edit-ins-btn"
+                                                        data-ins-id="{{ object.pk }}">Edit
+                                                </button>
+
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!--end: Datatable-->
+                        {% else %}
+                            {% include 'includes/no_data_found.html' %}
+                        {% endif %}
+                    </div>
+                    <div class="card-footer">
+                        {% include 'includes/pagination.html' %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal-->
+    <div class="modal fade" id="exampleModalCustomScrollable" tabindex="-1" role="dialog"
+         aria-labelledby="staticBackdrop" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add Instructor:</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i aria-hidden="true" class="ki ki-close"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card card-custom">
+                        <!-- Your form fields here -->
+                        <div class="form-group">
+                            <label>Status:</label>
+                            <select class="form-control form-control-solid" name="status" id="status">
+                                <!-- Add name attribute -->
+                                <option value="1">Approve</option>
+                                <option value="2">In Process</option>
+                                <option value="3">Apply</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Instructor:</label>
+                            <select class="form-control form-control-solid" name="instructor" id="instructor">
+                                <!-- Add name attribute -->
+                                <option value="">Select Instructor</option>
+                                {% for ins in ins_list %}
+                                    <option value="{{ ins.pk }}">{{ ins.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="card-footer">
+                            <button type="button" id="create_ins" class="btn btn-primary mr-2">Submit</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add Instructor:</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i aria-hidden="true" class="ki ki-close"></i>
+                    </button>
+                </div>
+                <div class="modal-body" id="edit-modal-body">
+                    <div class="card card-custom">
+                        <input type="hidden" id="edit-ins-id">
+                        <div class="form-group">
+                            <label for="edit-name">Name:</label>
+                            <input type="text" class="form-control" id="edit-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-email">Email:</label>
+                            <input type="email" class="form-control" id="edit-email">
+                        </div>
+                        <div class="form-group">
+                            <label>Status:</label>
+                            <select class="form-control form-control-solid" name="status" id="edit-status">
+                                <option value="">Select Status</option>
+                                <option value="1">Approve</option>
+                                <option value="2">In Process</option>
+                                <option value="3">Apply</option>
+                            </select>
+                        </div>
+                        <div class="card-footer">
+                            <button type="button" class="btn btn-primary mr-2" id="update-ins-btn">Update</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}
+{% block js %}
+    <script>
+        $('#create_ins').on('click', function () {
+            var data = {
+                'organization': {{ object.pk }},
+                'instructor': $('#instructor option:selected').val(),
+                'status': $('#status option:selected').val(),
+            }
+            var confirmed = confirm("Are you confirm to add?");
+            if (confirmed) {
+                $.ajax({
+                    type: "POST",
+                    url: "/api/v1/uni_add_instructor/",
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                    data: JSON.stringify(data),
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    success: function () {
+                        Swal.fire(
+                            'Submission successfully done!',
+                            'You clicked the button!',
+                            'success'
+                        )
+                        location.reload();
+                    },
+                    error:
+                        function (XMLHttpRequest, textStatus, errorThrown) {
+                            alert("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
+                        }
+                });
+            }
+
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#instructor').select2();
+            // Edit button click event listener
+            $('.edit-ins-btn').on('click', function () {
+                var insId = $(this).data('ins-id');
+                var insName = $(this).closest('tr').find('.name').text().trim();
+                console.log(insName)
+                var insEmail = $(this).closest('tr').find('.email').text().trim();
+                console.log(insEmail)
+
+                // Populate the modal fields with instructor data
+                $('#edit-ins-id').val(insId);
+                $('#edit-name').val(insName);
+                $('#edit-email').val(insEmail);
+
+                $('#editModal').modal('show');
+            });
+
+            // Update button click event listener for the edit form
+            $('#update-ins-btn').on('click', function () {
+                var up_Id = $('#edit-ins-id').val();
+                var updatedStatus = $('#edit-status').val();
+                $.ajax({
+                    type: "PUT",
+                    url: "/api/v1/uni_add_instructor/" + up_Id + "/",  // Replace with your API endpoint
+                    data: JSON.stringify({status: updatedStatus}),
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'  // Make sure to include the CSRF token
+                    },
+                    success: function () {
+                        Swal.fire(
+                            'Instructor updated successfully!',
+                            'You clicked the button!',
+                            'success'
+                        );
+                        location.reload();
+                    },
+                    error: function (error) {
+                        console.error('Error updating instructor data:', error);
+                    }
+                });
+            });
+        });
+
+    </script>
+
+{% endblock %}
+{% block css %}
+    <style>
+        .profile-top {
+        {% if object.cover_photo %}
+            background-image: url({{ object.cover_photo.url }});
+            background-position: center center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            border-radius: 5px;
+            }
+        {% endif %}
+
+        .profile-top-content {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 100px 50px;
+            border-radius: 5px;
+        }
+
+        .media h2 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .media p, h2 {
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .media-body {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+    </style>
+{% endblock %}

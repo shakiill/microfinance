@@ -1,0 +1,20 @@
+{% extends 'includes/single_main.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <!--begin::Login Sign in form-->
+    <div class="login-signin">
+        <div class="mb-5">
+            <h3>Sign In</h3>
+
+            <p>If you have not created an account yet, then please
+                <a href="{{ signup_url }}">sign up</a> first.</p>
+            {#                <a href="{% url 'custom_signup' %}">sign up</a> first.</p>#}
+        </div>
+        <form action="" method="post">
+            {% include 'includes/form.html' %}
+        </form>
+    </div>
+    <!--end::Login Sign in form-->
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'includes/main.html' %}
+{% load static %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="card card-custom gutter-b">
+                    <div class="card-header">
+                        <h3 class="card-title">{% if object %}Update{% else %}Add{% endif %} {{ page_title }} </h3>
+                        <div class="card-toolbar">
+                            {% if list_link %}
+                                <a href="{{ list_link }}" class="btn btn-info">{{ page_title }} List</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% include 'includes/form.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        "use strict";
+
+        // Class definition
+        var KTProfile = function () {
+            // Elements
+            var avatar;
+            var offcanvas;
+
+            // Private functions
+            var _initAside = function () {
+                // Mobile offcanvas for mobile mode
+                offcanvas = new KTOffcanvas('kt_profile_aside', {
+                    overlay: true,
+                    baseClass: 'offcanvas-mobile',
+                    //closeBy: 'kt_user_profile_aside_close',
+                    toggleBy: 'kt_subheader_mobile_toggle'
+                });
+            }
+
+            var _initForm = function () {
+                avatar = new KTImageInput('kt_profile_avatar');
+            }
+
+            return {
+                // public functions
+                init: function () {
+                    _initAside();
+                    _initForm();
+                }
+            };
+        }();
+
+        jQuery(document).ready(function () {
+            KTProfile.init();
+        });
+    </script>
+    <script>
+        // Class definition
+
+        var KTSummernoteDemo = function () {
+            // Private functions
+            var demos = function () {
+                $('#id_description').summernote({
+                    height: 350
+                });
+                $('#id_about').summernote({
+                    height: 350
+                });
+                $('#id_answer').summernote({
+                    height: 350
+                });
+                $('#id_what_you_learn').summernote({
+                    height: 350
+                });
+                $('#id_body').summernote({
+                    height: 350
+                });
+            }
+
+            return {
+                // public functions
+                init: function () {
+                    demos();
+                }
+            };
+        }();
+
+        // Initialization
+        jQuery(document).ready(function () {
+            KTSummernoteDemo.init();
+        });
+
+    </script>
+
+
+{% endblock %}
