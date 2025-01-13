@@ -286,7 +286,7 @@ from .models import CustomUser
 
 
 class CustomSignupForm(UserCreationForm):
-    name = forms.CharField(max_length=100, label='Full Name', required=True)
+    name = forms.CharField(max_length=100, label='নাম', required=True)
     father = forms.CharField(max_length=100, label="Father's Name", required=False)
     mother = forms.CharField(max_length=100, label="Mother's Name", required=False)
     spouse = forms.CharField(max_length=100, label='Spouse Name', required=False)

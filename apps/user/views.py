@@ -82,7 +82,7 @@ class UserListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, Filter
         return context
 
 
-class UserCreateView(LoginRequiredMixin, FormView):
+class UserCreateView(LoginRequiredMixin, PageHeaderMixin, FormView):
     permission_required = 'user.add_customer'
     model = Customer
     form_class = CustomSignupForm
