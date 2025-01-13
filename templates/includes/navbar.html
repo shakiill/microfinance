@@ -24,7 +24,7 @@
                             <span class="menu-text"> - Dashboard</span>
                         </a>
                     </li>
-                    
+
                     {#                    <li class="menu-item menu-item-submenu" aria-haspopup="true" data-menu-toggle="hover">#}
                     {#                        <a href="javascript:;" class="menu-link menu-toggle">#}
                     {#                            <span class="menu-text"> - Users</span>#}
@@ -52,13 +52,14 @@
                     {#                        </div>#}
                     {#                    </li>#}
 
+                    {#                    <li class="menu-item" aria-haspopup="true">#}
+                    {#                        <a href="" class="menu-link">#}
+                    {#                            <span class="menu-text"> - Staff </span>#}
+                    {#                        </a>#}
+                    {#                    </li>#}
+
                     <li class="menu-item" aria-haspopup="true">
-                        <a href="" class="menu-link">
-                            <span class="menu-text"> - Staff </span>
-                        </a>
-                    </li>
-                    <li class="menu-item" aria-haspopup="true">
-                        <a href="" class="menu-link">
+                        <a href="{% url 'user_list' %}" class="menu-link">
                             <span class="menu-text"> - Customers </span>
                         </a>
                     </li>
