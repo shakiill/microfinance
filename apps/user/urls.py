@@ -26,10 +26,9 @@ urlpatterns = [
     path('details/', views.ProfileDetailView.as_view(), name='profile_detail'),
     # path('registration/', views.RegistrationWizardView.as_view(), name='account_signup')
     # dashboard user
+
     path('user/', views.UserListView.as_view(), name='user_list'),
     path('user/add/', views.UserCreateView.as_view(), name='user_add'),
-    # path('user/<int:pk>/update/', views.UserUpdateView.as_view(), name='user_change'),
     path('user/<int:pk>/delete/', views.UserDeleteView.as_view(), name='user_delete'),
     # custom url
 ]
-

@@ -5,12 +5,16 @@ from django.core.files.storage import DefaultStorage
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView, DetailView, FormView, ListView, DeleteView
+from django_filters.views import FilterView
+from django_tables2 import SingleTableMixin
 from formtools.wizard.views import SessionWizardView
 
 from .forms import (ProfileUpdateForm,
                     CustomProfileCreateForm, CustomSignupForm, NewSignUpForm
                     )
-from .models import CustomUser
+from .models import CustomUser, Customer
+from ..helpers.customer import CustomerTable, CustomerFilterSet
+from ..helpers.views import PageHeaderMixin
 
 # Create your views here.
 
@@ -59,12 +63,23 @@ class RegistrationWizardView(SessionWizardView):
         return redirect(reverse_lazy('account_login'))
 
 
-class UserListView(LoginRequiredMixin, ListView):
-    # permission_required = 'configuration.view_unit'
-    model = CustomUser
+class UserListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
+    permission_required = 'configuration.view_unit'
+    model = Customer
     template_name = 'list.html'
     paginate_by = 10
     ordering = '-id'
+    table_class = CustomerTable
+    filterset_class = CustomerFilterSet
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Customers',
+            'add_link': reverse_lazy('user_add'),
+            'filter': self.filterset
+        })
+        return context
 
 
 class UserCreateView(LoginRequiredMixin, FormView):

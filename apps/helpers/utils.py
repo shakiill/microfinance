@@ -1,6 +1,5 @@
 from django.urls import reverse
 import calendar
-import typesense
 from django.utils import timezone
 from django.utils.http import urlencode
 import re
