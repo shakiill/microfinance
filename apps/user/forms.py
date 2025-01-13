@@ -287,7 +287,7 @@ class NewSignUpForm(UserCreationForm):
 
     class Meta:
         model = Customer
-        fields = ('username', 'name', 'address', 'email', 'password1', 'password2')
+        fields = ('username', 'name', 'email', 'password1', 'password2')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
