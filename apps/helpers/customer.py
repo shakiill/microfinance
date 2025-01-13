@@ -9,7 +9,11 @@ from apps.user.models import Customer
 
 
 class CustomerTable(tables.Table):
-    name = tables.Column(linkify=True)
+    name = tables.Column(
+        linkify=True,
+        verbose_name='Customer',
+        attrs={'th': {'class': 'text-left'}}
+    )
     actions = tables.TemplateColumn(
         template_code='''
             <a href="{% url 'user_delete' record.id %}" class="btn btn-sm btn-light-primary"><i class="fa fa-eye"></i></a>
@@ -22,7 +26,7 @@ class CustomerTable(tables.Table):
 
     class Meta:
         model = Customer
-        fields = ('id', 'name', 'email', 'mobile', 'created_at')
+        fields = ('name', 'email', 'mobile', 'created_at')
         attrs = {
             'class': 'table table-hover table-separate table-head-custom table-checkable',
             'id': 'kt_datatable'
