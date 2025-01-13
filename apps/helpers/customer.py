@@ -10,7 +10,7 @@ from apps.user.models import Customer
 
 class CustomerTable(tables.Table):
     name = tables.Column(
-        linkify=True,
+        # linkify=True,
         verbose_name='Customer',
         attrs={'th': {'class': 'text-left'}}
     )

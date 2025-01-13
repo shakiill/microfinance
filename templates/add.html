@@ -98,6 +98,19 @@
         });
 
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const isAddressCheckbox = document.getElementById('id_is_address');
+            const permanentAddressFields = document.querySelectorAll('.permanent-address');
 
+            const togglePermanentAddressFields = () => {
+                permanentAddressFields.forEach(field => {
+                    field.style.display = isAddressCheckbox.checked ? 'none' : '';
+                });
+            };
 
+            isAddressCheckbox.addEventListener('change', togglePermanentAddressFields);
+            togglePermanentAddressFields(); // Initialize on page load
+        });
+    </script>
 {% endblock %}

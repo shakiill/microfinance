@@ -61,10 +61,10 @@ class CustomUser(AbstractUser):
     created_by = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
     updated_by = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
 
-    # def save(self, *args, **kwargs):
-    #     if not self.username:
-    #         self.username = self.email
-    #     super(CustomUser, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        if not self.username:
+            self.username = self.mobile
+        super(CustomUser, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.email

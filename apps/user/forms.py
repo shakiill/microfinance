@@ -42,45 +42,6 @@ User = get_user_model()
 #         )
 
 
-class CustomSignupForm(SignupForm):
-    name = forms.CharField(max_length=100, label='Name')
-
-    # role = forms.ModelChoiceField(queryset=Group.objects.all())
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        for fieldname in self.fields:
-            self.fields[fieldname].help_text = None
-            self.fields[fieldname].widget.attrs['placeholder'] = self.fields[fieldname].label
-        self.helper = FormHelper()
-        self.helper.form_show_labels = False
-        self.helper.layout = Layout(
-            Row(
-                Column('name', css_class='form-group col-md-6 mb-0'),
-                # Column('role', css_class='form-group col-md-6 mb-0'),
-            ),
-            Row(
-                Column('username', css_class='form-group col-md-6 mb-0'),
-                Column('email', css_class='form-group col-md-6 mb-0'),
-            ),
-            Row(
-                Column('password1', css_class='form-group col-md-6 mb-0'),
-                Column('password2', css_class='form-group col-md-6 mb-0'),
-            ),
-            Row(
-                Column(
-                    Submit('submit', 'Save'), css_class='kt-login__actions'
-                )
-            )
-        )
-
-    def custom_signup(self, request, user):
-        user.name = self.cleaned_data['name']
-        # user.groups.add(self.cleaned_data['role'])
-        user.save()
-
-
 class CustomLoginForm(LoginForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -315,3 +276,152 @@ class NewSignUpForm(UserCreationForm):
                 )
             )
         )
+
+
+from django import forms
+from allauth.account.forms import SignupForm
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Row, Column, Submit, HTML
+from .models import CustomUser
+
+
+class CustomSignupForm(UserCreationForm):
+    name = forms.CharField(max_length=100, label='Full Name', required=True)
+    father = forms.CharField(max_length=100, label="Father's Name", required=False)
+    mother = forms.CharField(max_length=100, label="Mother's Name", required=False)
+    spouse = forms.CharField(max_length=100, label='Spouse Name', required=False)
+    education = forms.CharField(max_length=100, label='Education', required=False)
+    dob = forms.DateField(label='Date of Birth', widget=forms.DateInput(attrs={'type': 'date'}), required=False)
+    gender = forms.ChoiceField(choices=CustomUser.GenderChoices.choices, label='Gender', required=True)
+    mobile = forms.CharField(max_length=15, label='Mobile Number', required=True)
+    alt_mobile = forms.CharField(max_length=15, label='Alternate Mobile', required=False)
+
+    # Present address
+    village = forms.CharField(max_length=50, label='Village', required=False)
+    word_no = forms.CharField(max_length=50, label='Word No.', required=False)
+    post_office = forms.CharField(max_length=50, label='Post Office', required=False)
+    union = forms.CharField(max_length=50, label='Union', required=False)
+    upazila = forms.CharField(max_length=50, label='Upazila', required=False)
+    district = forms.CharField(max_length=50, label='District', required=False)
+
+    # Permanent address
+    is_address = forms.BooleanField(label='Permanent same as present address?', required=False)
+    p_village = forms.CharField(max_length=50, label='Permanent Village', required=False)
+    p_word_no = forms.CharField(max_length=50, label='Permanent Word No.', required=False)
+    p_post_office = forms.CharField(max_length=50, label='Permanent Post Office', required=False)
+    p_union = forms.CharField(max_length=50, label='Permanent Union', required=False)
+    p_upazila = forms.CharField(max_length=50, label='Permanent Upazila', required=False)
+    p_district = forms.CharField(max_length=50, label='Permanent District', required=False)
+
+    class Meta(UserCreationForm):
+        model = Customer
+        fields = (
+            'name', 'email', 'username', 'password1', 'password2', 'dob', 'gender', 'mobile', 'alt_mobile', 'village',
+            'word_no', 'post_office', 'union', 'upazila', 'district', 'is_address', 'p_village', 'p_word_no',
+            'p_post_office', 'p_union', 'p_upazila', 'p_district', 'father', 'mother', 'spouse', 'education')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for fieldname in self.fields:
+            self.fields[fieldname].help_text = None
+            self.fields[fieldname].widget.attrs['placeholder'] = self.fields[fieldname].label
+
+        self.helper = FormHelper()
+        self.helper.form_show_labels = True
+        self.helper.layout = Layout(
+            # Personal Information
+            HTML("<h2>Personal Information</h2>"),
+            Row(
+                Column('name', css_class='form-group col-md-6'),
+                Column('mobile', css_class='form-group col-md-6'),
+            ),
+            Row(
+                Column('email', css_class='form-group col-md-6'),
+                Column('dob', css_class='form-group col-md-6'),
+            ),
+            Row(
+                Column('father', css_class='form-group col-md-6'),
+                Column('mother', css_class='form-group col-md-6'),
+            ),
+            Row(
+                Column('spouse', css_class='form-group col-md-6'),
+                Column('gender', css_class='form-group col-md-6'),
+            ),
+            # Present Address
+            HTML("<h2>Present Address</h2>"),
+            Row(
+                Column('village', css_class='form-group col-md-6'),
+                Column('word_no', css_class='form-group col-md-6'),
+            ),
+            Row(
+                Column('post_office', css_class='form-group col-md-6'),
+                Column('union', css_class='form-group col-md-6'),
+            ),
+            Row(
+                Column('upazila', css_class='form-group col-md-6'),
+                Column('district', css_class='form-group col-md-6'),
+            ),
+            # Permanent Address
+            HTML("<h2>Permanent Address</h2>"),
+            Row(
+                Column('is_address', css_class='form-group col-md-12'),
+            ),
+            Row(
+                Column('p_village', css_class='form-group col-md-6 permanent-address'),
+                Column('p_word_no', css_class='form-group col-md-6 permanent-address'),
+            ),
+            Row(
+                Column('p_post_office', css_class='form-group col-md-6 permanent-address'),
+                Column('p_union', css_class='form-group col-md-6 permanent-address'),
+            ),
+            Row(
+                Column('p_upazila', css_class='form-group col-md-6 permanent-address'),
+                Column('p_district', css_class='form-group col-md-6 permanent-address'),
+            ),
+            # Password Fields
+            Row(
+                Column('password1', css_class='form-group col-md-6'),
+                Column('password2', css_class='form-group col-md-6'),
+            ),
+            # Submit Button
+            Row(
+                Submit('submit', 'Register', css_class='btn btn-primary btn-block'),
+            )
+        )
+
+#
+# class CustomSignupForm(UserCreationForm):
+#
+#     class Meta(UserCreationForm):
+#         model = Customer
+#         fields = ('name', 'email', 'username', 'password1', 'password2')
+#
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.fields['username'].label = 'Phone Number'
+#
+#         for fieldname in self.fields:
+#             self.fields[fieldname].help_text = None
+#
+#         self.helper = FormHelper()
+#         # self.helper.form_show_labels = False
+#         self.helper.layout = Layout(
+#             Row(
+#                 Column('name', css_class='form-group col-md-10 mb-0'),
+#             ),
+#             Row(
+#                 Column('username', css_class='form-group col-md-6 mb-0'),
+#                 Column('email', css_class='form-group col-md-6 mb-0'),
+#             ),
+#
+#             Row(
+#                 Column('password1', css_class='form-group col-md-6 mb-0'),
+#                 Column('password2', css_class='form-group col-md-6 mb-0'),
+#             ),
+#             Row(
+#                 Column(
+#                     Submit('submit', 'Save')
+#                 )
+#             )
+#         )
