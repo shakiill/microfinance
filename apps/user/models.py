@@ -25,7 +25,7 @@ class CustomUser(AbstractUser):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     last_name = None
     first_name = None
-    email = models.EmailField(verbose_name='Email Address', unique=True)
+    email = models.EmailField(verbose_name='Email Address', unique=True, null=True, blank=True)
     name = models.CharField(verbose_name='Full Name', max_length=100)
     father = models.CharField(verbose_name='Fathers Name', blank=True, null=True, max_length=100)
     mother = models.CharField(verbose_name='Mothers Name', blank=True, null=True, max_length=100)

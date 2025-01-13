@@ -316,9 +316,10 @@ class CustomSignupForm(UserCreationForm):
     class Meta(UserCreationForm):
         model = Customer
         fields = (
-            'name', 'email', 'username', 'password1', 'password2', 'dob', 'gender', 'mobile', 'alt_mobile', 'village',
-            'word_no', 'post_office', 'union', 'upazila', 'district', 'is_address', 'p_village', 'p_word_no',
-            'p_post_office', 'p_union', 'p_upazila', 'p_district', 'father', 'mother', 'spouse', 'education')
+            'name', 'mobile', 'email', 'dob', 'father', 'mother', 'spouse', 'gender', 'alt_mobile', 'education',
+            'village', 'word_no', 'post_office', 'union', 'upazila', 'district',
+            'is_address', 'p_village', 'p_word_no', 'p_post_office', 'p_union', 'p_upazila', 'p_district',
+            'password1', 'password2',)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -333,34 +334,26 @@ class CustomSignupForm(UserCreationForm):
             # Personal Information
             HTML("<h2>Personal Information</h2>"),
             Row(
-                Column('name', css_class='form-group col-md-6'),
-                Column('mobile', css_class='form-group col-md-6'),
-            ),
-            Row(
-                Column('email', css_class='form-group col-md-6'),
-                Column('dob', css_class='form-group col-md-6'),
-            ),
-            Row(
-                Column('father', css_class='form-group col-md-6'),
-                Column('mother', css_class='form-group col-md-6'),
-            ),
-            Row(
-                Column('spouse', css_class='form-group col-md-6'),
-                Column('gender', css_class='form-group col-md-6'),
+                Column('name', css_class='form-group col-md-4'),
+                Column('email', css_class='form-group col-md-4'),
+                Column('gender', css_class='form-group col-md-4'),
+                Column('father', css_class='form-group col-md-4'),
+                Column('mother', css_class='form-group col-md-4'),
+                Column('spouse', css_class='form-group col-md-4'),
+                Column('mobile', css_class='form-group col-md-4'),
+                Column('alt_mobile', css_class='form-group col-md-4'),
+                Column('dob', css_class='form-group col-md-4'),
+                Column('education', css_class='form-group col-md-6'),
             ),
             # Present Address
             HTML("<h2>Present Address</h2>"),
             Row(
-                Column('village', css_class='form-group col-md-6'),
-                Column('word_no', css_class='form-group col-md-6'),
-            ),
-            Row(
-                Column('post_office', css_class='form-group col-md-6'),
-                Column('union', css_class='form-group col-md-6'),
-            ),
-            Row(
-                Column('upazila', css_class='form-group col-md-6'),
-                Column('district', css_class='form-group col-md-6'),
+                Column('village', css_class='form-group col-md-4'),
+                Column('word_no', css_class='form-group col-md-4'),
+                Column('post_office', css_class='form-group col-md-4'),
+                Column('union', css_class='form-group col-md-4'),
+                Column('upazila', css_class='form-group col-md-4'),
+                Column('district', css_class='form-group col-md-4'),
             ),
             # Permanent Address
             HTML("<h2>Permanent Address</h2>"),
@@ -368,16 +361,12 @@ class CustomSignupForm(UserCreationForm):
                 Column('is_address', css_class='form-group col-md-12'),
             ),
             Row(
-                Column('p_village', css_class='form-group col-md-6 permanent-address'),
-                Column('p_word_no', css_class='form-group col-md-6 permanent-address'),
-            ),
-            Row(
-                Column('p_post_office', css_class='form-group col-md-6 permanent-address'),
-                Column('p_union', css_class='form-group col-md-6 permanent-address'),
-            ),
-            Row(
-                Column('p_upazila', css_class='form-group col-md-6 permanent-address'),
-                Column('p_district', css_class='form-group col-md-6 permanent-address'),
+                Column('p_village', css_class='form-group col-md-4 permanent-address'),
+                Column('p_word_no', css_class='form-group col-md-4 permanent-address'),
+                Column('p_post_office', css_class='form-group col-md-4 permanent-address'),
+                Column('p_union', css_class='form-group col-md-4 permanent-address'),
+                Column('p_upazila', css_class='form-group col-md-4 permanent-address'),
+                Column('p_district', css_class='form-group col-md-4 permanent-address'),
             ),
             # Password Fields
             Row(
