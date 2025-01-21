@@ -16,8 +16,8 @@ class CustomerTable(tables.Table):
     )
     actions = tables.TemplateColumn(
         template_code='''
-            <a href="{% url 'user_delete' record.id %}" class="btn btn-sm btn-light-primary"><i class="fa fa-eye"></i></a>
-            <a href="{% url 'user_delete' record.id %}" class="btn btn-sm btn-light-warning"><i class="fa fa-edit"></i></a>
+            <a href="{% url 'user_edit' record.id %}" class="btn btn-sm btn-light-primary"><i class="fa fa-eye"></i></a>
+            <a href="{% url 'user_edit' record.id %}" class="btn btn-sm btn-light-warning"><i class="fa fa-edit"></i></a>
             <a href="{% url 'user_delete' record.id %}" class="btn btn-sm btn-light-danger"><i class="fa fa-trash"></i></a>
         ''',
         orderable=False,

@@ -64,6 +64,13 @@ class CustomUser(AbstractUser):
     def save(self, *args, **kwargs):
         if not self.username:
             self.username = self.mobile
+        if self.is_address:
+            self.p_village = self.village
+            self.p_word_no = self.word_no
+            self.p_post_office = self.post_office
+            self.p_union = self.union
+            self.p_upazila = self.upazila
+            self.p_district = self.district
         super(CustomUser, self).save(*args, **kwargs)
 
     def __str__(self):

@@ -4,6 +4,7 @@ from allauth import app_settings
 from allauth.socialaccount import providers
 from importlib import import_module
 from . import views
+from .views import UserEditView
 
 urlpatterns = [
     path("signup/", views.signup, name="account_signup"),
@@ -29,6 +30,7 @@ urlpatterns = [
 
     path('user/', views.UserListView.as_view(), name='user_list'),
     path('user/add/', views.UserCreateView.as_view(), name='user_add'),
+    path('user/edit/<int:pk>/', UserEditView.as_view(), name='user_edit'),
     path('user/<int:pk>/delete/', views.UserDeleteView.as_view(), name='user_delete'),
     # custom url
 ]

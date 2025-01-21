@@ -10,7 +10,7 @@ from django_tables2 import SingleTableMixin
 from formtools.wizard.views import SessionWizardView
 
 from .forms import (ProfileUpdateForm,
-                    CustomProfileCreateForm, CustomSignupForm, NewSignUpForm
+                    CustomProfileCreateForm, CustomSignupForm, NewSignUpForm, CustomUserEditForm
                     )
 from .models import CustomUser, Customer
 from ..helpers.customer import CustomerTable, CustomerFilterSet
@@ -92,16 +92,24 @@ class UserCreateView(LoginRequiredMixin, PageHeaderMixin, FormView):
     def form_valid(self, form):
         user = form.save(self.request)  # Ensures `custom_signup` is called
 
-        if form.cleaned_data['is_address']:
-            user.p_village = form.cleaned_data['village']
-            user.p_word_no = form.cleaned_data['word_no']
-            user.p_post_office = form.cleaned_data['post_office']
-            user.p_union = form.cleaned_data['union']
-            user.p_upazila = form.cleaned_data['upazila']
-            user.p_district = form.cleaned_data['district']
+        # if form.cleaned_data['is_address']:
+        #     user.p_village = form.cleaned_data['village']
+        #     user.p_word_no = form.cleaned_data['word_no']
+        #     user.p_post_office = form.cleaned_data['post_office']
+        #     user.p_union = form.cleaned_data['union']
+        #     user.p_upazila = form.cleaned_data['upazila']
+        #     user.p_district = form.cleaned_data['district']
 
         user.save()
         return super().form_valid(form)
+
+
+class UserEditView(LoginRequiredMixin, PageHeaderMixin, UpdateView):
+    permission_required = 'user.change_customer'
+    model = Customer
+    form_class = CustomUserEditForm
+    template_name = 'add.html'
+    success_url = reverse_lazy('user_list')
 
 
 class UserDeleteView(LoginRequiredMixin, DeleteView):
