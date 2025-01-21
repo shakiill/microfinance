@@ -9,7 +9,6 @@ from django.db import models
 from django.template.loader import render_to_string
 from django.utils.crypto import get_random_string
 
-from apps.helpers.models import TimeStamp
 from apps.user.managers import StaffManager, CustomerManager
 
 
@@ -107,8 +106,11 @@ class Customer(CustomUser):
         self.groups.set([group])
 
 
+from apps.helpers.models import TimeStamp
+
+
 class ProfessionInfo(TimeStamp):
-    customer = models.OneToOneField(Customer, on_delete=models.CASCADE)
+    customer = models.OneToOneField(Customer, on_delete=models.CASCADE, related_name='profession')
     agriculture_land_area = models.CharField(max_length=30, blank=True, null=True)
     home_land_area = models.CharField(max_length=30, blank=True, null=True)
     vehicle = models.CharField(max_length=30, blank=True, null=True)
@@ -134,7 +136,7 @@ class ProfessionInfo(TimeStamp):
 
 
 class Guarantor(TimeStamp):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='guarantor')
     name = models.CharField(max_length=100)
     father = models.CharField(max_length=100)
     mother = models.CharField(max_length=100)
@@ -156,7 +158,14 @@ class Guarantor(TimeStamp):
 
 
 class CheckInfo(TimeStamp):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='check_list')
+    # account_type = models.CharField(
+    #     max_length=10,
+    #     choices=(
+    #         ('Savings', 'Savings'),
+    #         ('Current', 'Current'),
+    #     )
+    # )
     account_name = models.CharField(max_length=100)
     account_no = models.CharField(max_length=100)
     check_no = models.CharField(max_length=100)
