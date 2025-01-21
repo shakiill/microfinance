@@ -9,6 +9,7 @@ from django.db import models
 from django.template.loader import render_to_string
 from django.utils.crypto import get_random_string
 
+from apps.helpers.models import TimeStamp
 from apps.user.managers import StaffManager, CustomerManager
 
 
@@ -104,6 +105,65 @@ class Customer(CustomUser):
         self.username = self.email
         self.is_active = False
         self.groups.set([group])
+
+
+class ProfessionInfo(TimeStamp):
+    customer = models.OneToOneField(Customer, on_delete=models.CASCADE)
+    agriculture_land_area = models.CharField(max_length=30, blank=True, null=True)
+    home_land_area = models.CharField(max_length=30, blank=True, null=True)
+    vehicle = models.CharField(max_length=30, blank=True, null=True)
+    trade_license = models.CharField(max_length=30, blank=True, null=True)
+    tin = models.CharField(max_length=30, blank=True, null=True)
+    nid = models.CharField(max_length=30, blank=True, null=True)
+    business_address = models.CharField(max_length=200, blank=True, null=True)
+    business_type = models.CharField(max_length=100, blank=True, null=True)
+    business_start = models.IntegerField(max_length=5, blank=True, null=True)
+    business_capital = models.FloatField(max_length=10, blank=True, null=True)
+    sales_amount = models.FloatField(max_length=10, blank=True, null=True)
+    dps = models.CharField(max_length=100, blank=True, null=True)
+    fdr = models.CharField(max_length=100, blank=True, null=True)
+
+    job_title = models.CharField(max_length=100, blank=True, null=True)
+    industry = models.CharField(max_length=100, blank=True, null=True)
+    job_start = models.DateField(blank=True, null=True)
+    salary = models.IntegerField(max_length=5, blank=True, null=True)
+    job_location = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.customer
+
+
+class Guarantor(TimeStamp):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    father = models.CharField(max_length=100)
+    mother = models.CharField(max_length=100)
+    spouse = models.CharField(max_length=100, null=True, blank=True)
+    dob = models.DateField(null=True, blank=True)
+    education = models.CharField(max_length=100, null=True, blank=True)
+    relationship = models.CharField(max_length=100)
+    mobile = models.CharField(max_length=100)
+
+    address = models.TextField()
+    village = models.CharField(max_length=100, null=True, blank=True)
+    post = models.CharField(max_length=100, null=True, blank=True)
+    union = models.CharField(max_length=100, null=True, blank=True)
+    thana = models.CharField(max_length=100, null=True, blank=True)
+    district = models.CharField(max_length=100, null=True, blank=True)
+    deposit_no = models.CharField(max_length=100, null=True, blank=True)
+    deposit_date = models.DateField(null=True, blank=True)
+    deposit_amount = models.FloatField(null=True, blank=True)
+
+
+class CheckInfo(TimeStamp):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    account_name = models.CharField(max_length=100)
+    account_no = models.CharField(max_length=100)
+    check_no = models.CharField(max_length=100)
+    bank_name = models.CharField(max_length=100)
+    branch_name = models.CharField(max_length=100)
+    remarks = models.TextField(null=True, blank=True)
+    image = models.ImageField(upload_to='check_image', null=True, blank=True)
 
 
 class OtpToken(models.Model):
