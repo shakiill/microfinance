@@ -1,5 +1,9 @@
 from django.db import models
 
+from apps.helpers.models import TimeStamp
+from apps.user.models import Customer
+
+
 # Create your models here.
 class LoanApplication(TimeStamp):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='loans')
@@ -47,4 +51,3 @@ class CheckInfo(TimeStamp):
     branch_name = models.CharField(max_length=100)
     remarks = models.TextField(null=True, blank=True)
     image = models.ImageField(upload_to='check_image', null=True, blank=True)
-
