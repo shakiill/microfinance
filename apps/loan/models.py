@@ -44,6 +44,23 @@ class LoanApplication(TimeStamp):
         super().save(*args, **kwargs)
 
 
+class ApplicationProduct(TimeStamp):
+    loan_application = models.ForeignKey(LoanApplication, on_delete=models.CASCADE, related_name='application_products')
+    # product = models.ForeignKey(LoanProduct, on_delete=models.CASCADE)
+    product_name = models.CharField(max_length=200, help_text="Name of the product")
+    unit_type = models.CharField(max_length=10, help_text="Unite type of the product (e.g., kg, beg,ton, etc.)")
+    unit = models.PositiveIntegerField(default=1, help_text="Number of units of the product")
+    unit_price = models.DecimalField(max_digits=15, decimal_places=2, help_text="Price per unit of the product")
+    total_price = models.DecimalField(max_digits=15, decimal_places=2, help_text="Total price for the product")
+
+    def save(self, *args, **kwargs):
+        # Automatically calculate the total price as unit * unit_price
+        self.total_price = self.unit * self.unit_price
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.product_name} - {self.unit} units"
+
 class Guarantor(TimeStamp):
     application = models.ForeignKey(LoanApplication, on_delete=models.CASCADE, related_name='guarantors')
     # customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='guarantor')
@@ -107,6 +124,8 @@ class Loan(TimeStamp):
                                   ('CLOSED', 'Closed'),
                                   ('DEFAULTED', 'Defaulted'),
                               ], default='ACTIVE', help_text="Current loan status")
+    disbursed_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0.00,
+                                           help_text="disbursed paid so far")
 
     def calculate_monthly_installment(self):
         """Calculate the fixed monthly installment (EMI)."""
@@ -132,6 +151,42 @@ class Loan(TimeStamp):
 
     def __str__(self):
         return f"Loan #{self.id} - {self.application.customer.name}"
+
+
+class LoanDisbursementTransaction(TimeStamp):
+    class TransactionTypeChoices(models.TextChoices):
+        DISBURSEMENT = 'Disbursement', 'Loan Disbursement'
+
+    loan = models.ForeignKey(
+        Loan, on_delete=models.CASCADE, related_name='disbursements',
+        help_text="The loan this disbursement belongs to")
+    amount = models.DecimalField(max_digits=15, decimal_places=2, help_text="Amount disbursed")
+    transaction_date = models.DateField(default=now, help_text="Date of the disbursement transaction")
+    transaction_type = models.CharField(max_length=20, choices=TransactionTypeChoices.choices,
+                                        default=TransactionTypeChoices.DISBURSEMENT,
+                                        help_text="Type of transaction (Disbursement)")
+    remarks = models.TextField(null=True, blank=True, help_text="Additional remarks about the disbursement")
+    disbursed_to = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='loan_disbursements',
+                                     help_text="Customer receiving the loan disbursement")
+
+    def save(self, *args, **kwargs):
+        # Update loan's disbursed amount (if needed, for auditing purposes)
+        if self.pk is None:  # New transaction
+            self.loan.disbursed_amount += self.amount
+        else:  # Updated transaction
+            original = LoanDisbursementTransaction.objects.get(pk=self.pk)
+            self.loan.disbursed_amount += self.amount - original.amount
+
+        self.loan.save()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = 'Loan Disbursement Transaction'
+        verbose_name_plural = 'Loan Disbursement Transactions'
+        ordering = ['-transaction_date']
+
+    def __str__(self):
+        return f"Disbursement of {self.amount} for Loan #{self.loan.id} to {self.disbursed_to.name}"
 
 
 class Installment(TimeStamp):
