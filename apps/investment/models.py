@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from apps.helpers.models import TimeStamp
-from apps.user.models import Customer
+from apps.user.models import Customer, Staff
 
 
 class Investment(TimeStamp):
@@ -54,3 +54,44 @@ class Investment(TimeStamp):
         # Trigger validation when saving
         self.full_clean()
         super().save(*args, **kwargs)
+
+
+class DailySaving(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="savings")
+    amount = models.DecimalField(max_digits=12, decimal_places=2, help_text="Amount saved by the customer")
+    date = models.DateField(auto_now_add=True, help_text="Date the saving was made")
+    collected_by = models.ForeignKey(Staff, on_delete=models.SET_NULL, null=True, blank=True,
+                                     help_text="Staff member who collected the saving")
+    created_at = models.DateTimeField(auto_now_add=True, help_text="Timestamp of saving creation")
+    saving_type = models.CharField(
+        max_length=50,
+        default='Shonchoy',
+        help_text="Type of saving (e.g., Shonchoy for emergency savings)"
+    )
+    remarks = models.TextField(null=True, blank=True, help_text="Additional remarks for the saving")
+
+    def clean(self):
+        if self.amount <= 0:
+            raise ValidationError("Saving amount must be greater than zero.")
+
+    def __str__(self):
+        return f"Saving {self.amount} for {self.customer.name} on {self.date}"
+
+
+class Withdrawal(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="withdrawals")
+    amount = models.DecimalField(max_digits=12, decimal_places=2, help_text="Amount withdrawn from the savings")
+    date = models.DateField(auto_now_add=True, help_text="Date of withdrawal")
+    collected_by = models.ForeignKey(Staff, on_delete=models.SET_NULL, null=True, blank=True,
+                                     help_text="Staff who processed the withdrawal")
+    created_at = models.DateTimeField(auto_now_add=True)
+    remarks = models.TextField(null=True, blank=True, help_text="Remarks about the withdrawal")
+
+    def clean(self):
+        # Ensure withdrawal amount does not exceed current savings
+        total_savings = self.customer.savings.aggregate(total_savings=models.Sum('amount'))['total_savings'] or 0
+        if self.amount > total_savings:
+            raise ValidationError("Withdrawal amount exceeds available savings balance.")
+
+    def __str__(self):
+        return f"Withdrawal of {self.amount} for {self.customer.name} on {self.date}"
