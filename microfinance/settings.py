@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     # my apps
     'apps.user',
     'apps.loan',
+    'apps.investment'
 
 ]
 
