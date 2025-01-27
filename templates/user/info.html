@@ -1,171 +1,183 @@
 {% extends 'includes/main.html' %}
+{% load static %}
 
 {% block content %}
-    <div class="container">
+    <div class="container-fluid py-4">
         <div class="row">
             <div class="col">
-                <div class="profile-top">
-                    <div class="profile-top-content">
-                        <div class="media">
-                            <img src="{% if object.photo %}{{ object.photo.url }}{% endif %}"
-                                 class="align-self-center mr-3"
-                                 style="width:100px">
-                            <div class="media-body">
-                                <h2>{{ object.name }}</h2>
-                                <p>{{ object.university_profile.about }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row mt-10">
-            <div class="col">
-                <div class="card card-custom gutter-b">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <h3 class="card-label">Instructor List:</h3>
+                <div class="card card-custom shadow-sm">
+                    <div class="card-header bg-white py-4 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="card-title mb-0 text-primary">Customer Information</h3>
+                            <p class="text-muted small mb-0">Manage and view customer details</p>
                         </div>
                         <div class="card-toolbar">
-                            <button type="button" class="btn btn-primary" data-toggle="modal"
-                                    data-target="#exampleModalCustomScrollable">
-                                Add Instructor
-                            </button>
+                            <a href="{% url 'user_list' %}" class="btn btn-primary">
+                                <i class="fas fa-list me-2"></i>Customer List
+                            </a>
                         </div>
                     </div>
-                    <div class="card-body">
-                        {% if instructor_list %}
-                            <!--begin: Table-->
-                            <div class="table-responsive">
-                                <table class="table" id="kt_datatable">
-                                    <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Email</th>
-                                        <th>Name</th>
-                                        <th>Status</th>
-                                        <th style="width: 180px">Action</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for object in instructor_list %}
-                                        <tr>
-                                            <td>{{ forloop.counter }}</td>
-                                            <td class="email">{{ object.instructor.email }}</td>
-                                            <td class="name">
-                                                {{ object.instructor.name }}
-                                            </td>
-                                            <td>{{ object.get_status_display }}</td>
-                                            <td>
-                                                <button class="btn btn-sm btn-light edit-ins-btn"
-                                                        data-ins-id="{{ object.pk }}">Edit
-                                                </button>
 
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
+                    <div class="card-body p-4">
+                        <!-- Customer Profile Section -->
+                        <div class="row mb-4">
+                            <div class="col-md-3 text-center">
+                                <div class="position-relative mb-3">
+                                    <img src="
+                                            {% if object.photo %}{{ object.photo.url }} {% else %} {% static 'images/dummy.jpg' %} {% endif %}"
+                                         class="rounded-circle shadow-sm"
+                                         style="width: 150px; height: 150px; object-fit: cover;"
+                                         alt="Customer Photo">
+                                    <span class="position-absolute bottom-0 end-0 p-2 bg-success rounded-circle">
+                                    <i class="fas fa-check text-white"></i>
+                                    </span>
+                                </div>
+                                <h5 class="mb-1">{{ object.name }}</h5>
+                                <p class="text-muted mb-2">ID: {{ object.uuid }}</p>
+                                <div class="badge bg-success mb-3">Active Customer</div>
                             </div>
-                            <!--end: Datatable-->
-                        {% else %}
-                            {% include 'includes/no_data_found.html' %}
-                        {% endif %}
-                    </div>
-                    <div class="card-footer">
-                        {% include 'includes/pagination.html' %}
+
+                            <div class="col-md-9">
+                                <div class="row g-4">
+                                    <!-- Personal Information -->
+                                    <div class="col-md-6">
+                                        <div class="card h-100 border-0 bg-light">
+                                            <div class="card-body">
+                                                <h5 class="card-title mb-3">
+                                                    <i class="fas fa-user me-2 text-primary"></i>Personal Information
+                                                </h5>
+                                                <div class="mb-2">
+                                                    <label class="text-muted small">Full Name</label>
+                                                    <p class="mb-1">{{ object.name }}</p>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label class="text-muted small">Email</label>
+                                                    <p class="mb-1">{{ object.email }}</p>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label class="text-muted small">Mobile</label>
+                                                    <p class="mb-1">{{ object.mobile }}</p>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label class="text-muted small">Gender</label>
+                                                    <p class="mb-1">{{ object.get_gender_display }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Contact & Address -->
+                                    <div class="col-md-6">
+                                        <div class="card h-100 border-0 bg-light">
+                                            <div class="card-body">
+                                                <h5 class="card-title mb-3">
+                                                    <i class="fas fa-map-marker-alt me-2 text-primary"></i>Address
+                                                    Information
+                                                </h5>
+                                                <div class="mb-2">
+                                                    <label class="text-muted small">Village</label>
+                                                    <p class="mb-1">{{ object.village }}</p>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label class="text-muted small">Post Office</label>
+                                                    <p class="mb-1">{{ object.post_office }}</p>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label class="text-muted small">District</label>
+                                                    <p class="mb-1">{{ object.district }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Financial Summary -->
+                                </div>
+                                <!-- End of Row -->
+                                <div class="row mt-10">
+                                    <div class="col-md-12">
+                                        <div class="card border-0 bg-light">
+                                            <div class="card-body">
+                                                <h5 class="card-title mb-3">
+                                                    <i class="fas fa-chart-line me-2 text-primary"></i>Financial Summary
+                                                </h5>
+                                                <div class="row g-4">
+                                                    <div class="col-md-3">
+                                                        <div class="card bg-primary text-white">
+                                                            <div class="card-body">
+                                                                <h6 class="card-title">Active Loans</h6>
+                                                                <h3 class="mb-0">{{ active_loans_count|default:0 }}</h3>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="card bg-success text-white">
+                                                            <div class="card-body">
+                                                                <h6 class="card-title">Total Savings</h6>
+                                                                <h3 class="mb-0">
+                                                                    ৳{{ total_savings|default:"0.00" }}</h3>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="card bg-info text-white">
+                                                            <div class="card-body">
+                                                                <h6 class="card-title">Investments</h6>
+                                                                <h3 class="mb-0">
+                                                                    ৳{{ total_investments|default:"0.00" }}</h3>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="card bg-warning text-white">
+                                                            <div class="card-body">
+                                                                <h6 class="card-title">Credit Score</h6>
+                                                                <h3 class="mb-0">{{ credit_score|default:0 }}</h3>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex gap-2">
+                                    <a href="#" class="btn btn-primary mr-2">
+                                        <i class="fas fa-edit me-2"></i>Edit Information
+                                    </a>
+                                    <a href="#" class="btn btn-success mr-2">
+                                        <i class="fas fa-plus me-2"></i>New Loan Application
+                                    </a>
+                                    <a href="#" class="btn btn-info mr-2">
+                                        <i class="fas fa-history me-2"></i>Transaction History
+                                    </a>
+                                    <a href="#" class="btn btn-warning">
+                                        <i class="fas fa-file-alt me-2"></i>Documents
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <!-- Modal-->
-    <div class="modal fade" id="exampleModalCustomScrollable" tabindex="-1" role="dialog"
-         aria-labelledby="staticBackdrop" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Add Instructor:</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <i aria-hidden="true" class="ki ki-close"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="card card-custom">
-                        <!-- Your form fields here -->
-                        <div class="form-group">
-                            <label>Status:</label>
-                            <select class="form-control form-control-solid" name="status" id="status">
-                                <!-- Add name attribute -->
-                                <option value="1">Approve</option>
-                                <option value="2">In Process</option>
-                                <option value="3">Apply</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Instructor:</label>
-                            <select class="form-control form-control-solid" name="instructor" id="instructor">
-                                <!-- Add name attribute -->
-                                <option value="">Select Instructor</option>
-                                {% for ins in ins_list %}
-                                    <option value="{{ ins.pk }}">{{ ins.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-
-                        <div class="card-footer">
-                            <button type="button" id="create_ins" class="btn btn-primary mr-2">Submit</button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-{% endblock %}
-{% block js %}
-
-{% endblock %}
-{% block css %}
     <style>
-        .profile-top {
-        {% if object.cover_photo %}
-            background-image: url({{ object.cover_photo.url }});
-            background-position: center center;
-            background-size: cover;
-            background-repeat: no-repeat;
-            border-radius: 5px;
-            }
-        {% endif %}
-
-        .profile-top-content {
-            background: rgba(0, 0, 0, 0.6);
-            padding: 100px 50px;
-            border-radius: 5px;
+        .card-custom {
+            border: none;
+            transition: all 0.3s ease;
         }
 
-        .media h2 {
-            font-size: 22px;
-            font-weight: 800;
-            color: #fff;
+        .card-custom:hover {
+            transform: translateY(-5px);
         }
 
-        .media p, h2 {
-            color: #fff;
-            font-size: 16px;
-        }
-
-        .media-body {
-            padding-left: 20px;
-            padding-right: 20px;
+        .badge {
+            padding: 0.5em 1em;
         }
     </style>
 {% endblock %}
