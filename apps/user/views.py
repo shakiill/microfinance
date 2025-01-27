@@ -4,7 +4,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import DefaultStorage
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import UpdateView, DetailView, FormView, ListView, DeleteView
+from django.views.generic import UpdateView, DetailView, FormView, DeleteView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 from formtools.wizard.views import SessionWizardView
@@ -12,7 +12,7 @@ from formtools.wizard.views import SessionWizardView
 from .forms import (ProfileUpdateForm,
                     CustomProfileCreateForm, CustomSignupForm, NewSignUpForm, CustomUserEditForm
                     )
-from .models import CustomUser, Customer
+from .models import Customer
 from ..helpers.customer import CustomerTable, CustomerFilterSet
 from ..helpers.views import PageHeaderMixin
 
@@ -110,6 +110,12 @@ class UserEditView(LoginRequiredMixin, PageHeaderMixin, UpdateView):
     form_class = CustomUserEditForm
     template_name = 'add.html'
     success_url = reverse_lazy('user_list')
+
+
+class UserInfoView(LoginRequiredMixin, PageHeaderMixin, DetailView):
+    permission_required = 'user.view_customer'
+    model = Customer
+    template_name = 'user/info.html'
 
 
 class UserDeleteView(LoginRequiredMixin, DeleteView):

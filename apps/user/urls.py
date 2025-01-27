@@ -1,10 +1,8 @@
-from django.urls import path, re_path, include
 from allauth.account import views as auth_views
-from allauth import app_settings
-from allauth.socialaccount import providers
-from importlib import import_module
+from django.urls import path, re_path
+
 from . import views
-from .views import UserEditView
+from .views import UserEditView, UserInfoView
 
 urlpatterns = [
     path("signup/", views.signup, name="account_signup"),
@@ -31,6 +29,7 @@ urlpatterns = [
     path('user/', views.UserListView.as_view(), name='user_list'),
     path('user/add/', views.UserCreateView.as_view(), name='user_add'),
     path('user/edit/<int:pk>/', UserEditView.as_view(), name='user_edit'),
+    path('user/informations/<int:pk>/', UserInfoView.as_view(), name='user_info'),
     path('user/<int:pk>/delete/', views.UserDeleteView.as_view(), name='user_delete'),
     # custom url
 ]
