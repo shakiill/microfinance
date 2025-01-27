@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.timezone import now
@@ -85,6 +87,62 @@ class Guarantor(TimeStamp):
     deposit_amount = models.FloatField(null=True, blank=True)
 
 
+class LandInformation(TimeStamp):
+    class LandTypeChoices(models.TextChoices):
+        AGRICULTURAL = 'agricultural', 'Agricultural Land'
+        RESIDENTIAL = 'residential', 'Residential Land'
+        COMMERCIAL = 'commercial', 'Commercial Land'
+        INDUSTRIAL = 'industrial', 'Industrial Land'
+
+    application = models.ForeignKey(LoanApplication, on_delete=models.CASCADE, related_name='lands')
+    land_type = models.CharField(max_length=20, choices=LandTypeChoices.choices)
+    owner_name = models.CharField(max_length=255)
+    mouza_no = models.CharField(max_length=50)
+    dag_no = models.CharField(max_length=50)
+    khatian_no = models.CharField(max_length=50)
+    holding_no = models.CharField(max_length=50)
+    land_area = models.DecimalField(max_digits=10, decimal_places=2)  # in decimals
+    estimated_value = models.DecimalField(max_digits=15, decimal_places=2)
+    description = models.TextField(null=True, blank=True)
+    year_of_mortgage = models.IntegerField(null=True, blank=True)
+
+
+class FinancialRecord(TimeStamp):
+    RECORD_TYPE_CHOICES = [
+        ('investment', 'Investment'),
+        ('obligation', 'Existing Financial Obligation'),
+    ]
+
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="financial_records")
+    loan_application = models.ForeignKey(LoanApplication, on_delete=models.SET_NULL, null=True, blank=True,
+                                         related_name="financial_records")
+    record_type = models.CharField(max_length=20, choices=RECORD_TYPE_CHOICES, help_text="Type of financial record")
+
+    institution_name = models.CharField(max_length=255, help_text="Name of the financial institution")
+    description = models.CharField(max_length=255, null=True, blank=True,
+                                   help_text="Description or type of investment/loan (e.g., Fixed Deposit, Mutual Fund, Personal Loan)")
+    amount = models.DecimalField(max_digits=15, decimal_places=2, help_text="Total amount for the record")
+    interest_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.0,
+                                        help_text="Interest rate of the investment/loan")
+
+    # For investment-specific fields
+    maturity_date = models.DateField(null=True, blank=True, help_text="Maturity date for investment (if applicable)")
+
+    # For obligation-specific fields
+    outstanding_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True,
+                                             help_text="Outstanding amount for obligations (if applicable)")
+    monthly_installment = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True,
+                                              help_text="Monthly installment amount (if applicable)")
+    end_date = models.DateField(null=True, blank=True, help_text="Expected end date for the obligation (if applicable)")
+
+    def __str__(self):
+        return f"{self.customer.name} - {self.institution_name} ({self.record_type})"
+
+    class Meta:
+        verbose_name = "Financial Record"
+        verbose_name_plural = "Financial Records"
+
+
 class CheckInfo(TimeStamp):
     application = models.ForeignKey(
         LoanApplication,
@@ -105,9 +163,6 @@ class CheckInfo(TimeStamp):
 
     def __str__(self):
         return f"Check {self.check_no} for Loan #{self.application.id}"
-
-
-from datetime import timedelta
 
 
 class Loan(TimeStamp):
