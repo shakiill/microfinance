@@ -111,15 +111,19 @@ from apps.helpers.models import TimeStamp
 
 class ProfessionInfo(TimeStamp):
     customer = models.OneToOneField(Customer, on_delete=models.CASCADE, related_name='profession')
+    business_owner = models.BooleanField(default=False)
+    job_holder = models.BooleanField(default=False)
+
     agriculture_land_area = models.CharField(max_length=30, blank=True, null=True)
     home_land_area = models.CharField(max_length=30, blank=True, null=True)
     vehicle = models.CharField(max_length=30, blank=True, null=True)
-    trade_license = models.CharField(max_length=30, blank=True, null=True)
     tin = models.CharField(max_length=30, blank=True, null=True)
     nid = models.CharField(max_length=30, blank=True, null=True)
+
+    trade_license = models.CharField(max_length=30, blank=True, null=True)
     business_address = models.CharField(max_length=200, blank=True, null=True)
     business_type = models.CharField(max_length=100, blank=True, null=True)
-    business_start = models.IntegerField(max_length=5, blank=True, null=True)
+    business_start = models.DateField(blank=True, null=True)
     business_capital = models.FloatField(max_length=10, blank=True, null=True)
     sales_amount = models.FloatField(max_length=10, blank=True, null=True)
     dps = models.CharField(max_length=100, blank=True, null=True)
@@ -128,11 +132,22 @@ class ProfessionInfo(TimeStamp):
     job_title = models.CharField(max_length=100, blank=True, null=True)
     industry = models.CharField(max_length=100, blank=True, null=True)
     job_start = models.DateField(blank=True, null=True)
-    salary = models.IntegerField(max_length=5, blank=True, null=True)
+    salary = models.IntegerField(default=0)
     job_location = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.customer
+
+
+class AdditionalBusiness(TimeStamp):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='business')
+    name = models.CharField(max_length=200, blank=True, null=True)
+    address = models.CharField(max_length=200, blank=True, null=True)
+    type = models.CharField(max_length=100, blank=True, null=True)
+    trade_license = models.CharField(max_length=30, blank=True, null=True)
+    start = models.DateField(blank=True, null=True)
+    capital = models.FloatField(max_length=10, blank=True, null=True)
+
 
 
 class OtpToken(models.Model):

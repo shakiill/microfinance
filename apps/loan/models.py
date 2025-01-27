@@ -27,6 +27,10 @@ class LoanApplication(TimeStamp):
     approved_date = models.DateField(null=True, blank=True)
     disbursed_date = models.DateField(null=True, blank=True)
 
+    risk_score = models.DecimalField(max_digits=5, decimal_places=2, null=True)
+    credit_committee_approval = models.BooleanField(default=False)
+    rejection_reason = models.TextField(null=True, blank=True)
+
     class Meta:
         ordering = ['-applied_date']
         verbose_name = 'Loan Application'
@@ -63,6 +67,7 @@ class ApplicationProduct(TimeStamp):
     def __str__(self):
         return f"{self.product_name} - {self.unit} units"
 
+
 class Guarantor(TimeStamp):
     application = models.ForeignKey(LoanApplication, on_delete=models.CASCADE, related_name='guarantors')
     # customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='guarantor')
@@ -87,7 +92,7 @@ class Guarantor(TimeStamp):
     deposit_amount = models.FloatField(null=True, blank=True)
 
 
-class LandInformation(TimeStamp):
+class Asset(TimeStamp):
     class LandTypeChoices(models.TextChoices):
         AGRICULTURAL = 'agricultural', 'Agricultural Land'
         RESIDENTIAL = 'residential', 'Residential Land'
@@ -110,12 +115,11 @@ class LandInformation(TimeStamp):
 class FinancialRecord(TimeStamp):
     RECORD_TYPE_CHOICES = [
         ('investment', 'Investment'),
-        ('obligation', 'Existing Financial Obligation'),
+        ('loan', 'Existing loan'),
     ]
 
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="financial_records")
-    loan_application = models.ForeignKey(LoanApplication, on_delete=models.SET_NULL, null=True, blank=True,
-                                         related_name="financial_records")
+    # customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="financial_records")
+    loan_application = models.ForeignKey(LoanApplication, on_delete=models.CASCADE, related_name="financial_records")
     record_type = models.CharField(max_length=20, choices=RECORD_TYPE_CHOICES, help_text="Type of financial record")
 
     institution_name = models.CharField(max_length=255, help_text="Name of the financial institution")
@@ -124,19 +128,17 @@ class FinancialRecord(TimeStamp):
     amount = models.DecimalField(max_digits=15, decimal_places=2, help_text="Total amount for the record")
     interest_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.0,
                                         help_text="Interest rate of the investment/loan")
-
     # For investment-specific fields
     maturity_date = models.DateField(null=True, blank=True, help_text="Maturity date for investment (if applicable)")
-
     # For obligation-specific fields
     outstanding_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True,
-                                             help_text="Outstanding amount for obligations (if applicable)")
+                                             help_text="Outstanding amount for existing loan (if applicable)")
     monthly_installment = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True,
                                               help_text="Monthly installment amount (if applicable)")
     end_date = models.DateField(null=True, blank=True, help_text="Expected end date for the obligation (if applicable)")
 
     def __str__(self):
-        return f"{self.customer.name} - {self.institution_name} ({self.record_type})"
+        return f"{self.institution_name} ({self.record_type})"
 
     class Meta:
         verbose_name = "Financial Record"
