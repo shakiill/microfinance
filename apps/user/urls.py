@@ -2,6 +2,7 @@ from allauth.account import views as auth_views
 from django.urls import path, re_path
 
 from . import views
+from .customer import customer_edit
 from .views import UserEditView, UserInfoView
 
 urlpatterns = [
@@ -32,4 +33,5 @@ urlpatterns = [
     path('user/informations/<int:pk>/', UserInfoView.as_view(), name='user_info'),
     path('user/<int:pk>/delete/', views.UserDeleteView.as_view(), name='user_delete'),
     # custom url
+    path('customer/<int:pk>/edit/', customer_edit, name='customer_edit'),
 ]

@@ -1,0 +1,208 @@
+{% extends 'includes/main.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="card card-custom gutter-b">
+                <div class="card-header">
+                    <h3 class="card-title">Edit Customer Information</h3>
+                    <div class="card-toolbar">
+                        <ul class="nav nav-tabs nav-bold nav-tabs-line">
+                            <li class="nav-item">
+                                <a class="nav-link {% if active_step == 'basic' %}active{% endif %}"
+                                   href="?step=basic">Basic Information</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if active_step == 'address' %}active{% endif %}"
+                                   href="?step=address">Address</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if active_step == 'profession' %}active{% endif %}"
+                                   href="?step=profession">Profession</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if active_step == 'business' %}active{% endif %}"
+                                   href="?step=business">Additional Business</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% if active_step == 'basic' %}
+                        {% crispy basic_form %}
+                    {% elif active_step == 'address' %}
+                        {% crispy address_form %}
+                    {% elif active_step == 'profession' %}
+                        {% crispy profession_form %}
+                    {% elif active_step == 'business' %}
+                        <form method="post" id="business-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="step" value="business">
+                            {{ business_formset.management_form }}
+                            <div id="business-forms">
+                                {% for form in business_formset %}
+                                    <div class="business-form mb-4 border p-3 rounded">
+                                        <h4 class="mb-3">Business #{{ forloop.counter }}</h4>
+                                        {{ form.id }}
+                                        <div class="delete-form" style="display: none;">
+                                            {{ form.DELETE }}
+                                        </div>
+                                        {% crispy form %}
+                                        <button type="button" class="btn btn-danger mt-2 remove-form">Remove Business</button>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="mt-3">
+                                <button type="button" class="btn btn-success mr-2" id="add-form">Add Business</button>
+                                <button type="submit" class="btn btn-primary float-right">Save Business Information</button>
+                            </div>
+                        </form>
+                        {% if not business_formset|length %}
+                            <div class="text-center py-4">
+                                <p class="text-muted">No additional businesses added yet.</p>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+$(document).ready(function() {
+    // Handle same address checkbox
+    $('#id_is_address').change(function() {
+        if(this.checked) {
+            $('#id_p_village').val($('#id_village').val());
+            $('#id_p_word_no').val($('#id_word_no').val());
+            $('#id_p_post_office').val($('#id_post_office').val());
+            $('#id_p_union').val($('#id_union').val());
+            $('#id_p_upazila').val($('#id_upazila').val());
+            $('#id_p_district').val($('#id_district').val());
+        }
+    });
+
+    // Handle business owner and job holder checkboxes
+    function toggleFields() {
+        const isBusinessOwner = $('#id_business_owner').is(':checked');
+        const isJobHolder = $('#id_job_holder').is(':checked');
+        
+        // Toggle business-related fields
+        const businessFields = [
+            'trade_license', 'business_address', 'business_type',
+            'business_start', 'business_capital', 'sales_amount',
+            'dps', 'fdr'
+        ];
+        
+        businessFields.forEach(field => {
+            $(`#id_${field}`).closest('.form-group').toggle(isBusinessOwner);
+        });
+        
+        // Toggle job-related fields
+        const jobFields = [
+            'job_title', 'industry', 'job_start',
+            'salary', 'job_location'
+        ];
+        
+        jobFields.forEach(field => {
+            $(`#id_${field}`).closest('.form-group').toggle(isJobHolder);
+        });
+    }
+
+    $('#id_business_owner, #id_job_holder').change(toggleFields);
+    toggleFields(); // Initial state
+
+    // Handle dynamic formset for additional businesses
+    let formCount = parseInt($('#id_business-TOTAL_FORMS').val());
+    const maxForms = parseInt($('#id_business-MAX_NUM_FORMS').val()) || 10;
+
+    function updateFormIndexes() {
+        $('.business-form:visible').each(function(index) {
+            $(this).find('h4').text('Business #' + (index + 1));
+        });
+    }
+
+    $('#add-form').click(function() {
+        if (formCount < maxForms) {
+            let template = `
+                <div class="business-form mb-4 border p-3 rounded">
+                    <h4 class="mb-3">Business #${formCount + 1}</h4>
+                    <div class="delete-form" style="display: none;">
+                        <input type="checkbox" name="business-${formCount}-DELETE" id="id_business-${formCount}-DELETE">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_business-${formCount}-name">Name</label>
+                                <input type="text" name="business-${formCount}-name" class="form-control" id="id_business-${formCount}-name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_business-${formCount}-type">Type</label>
+                                <input type="text" name="business-${formCount}-type" class="form-control" id="id_business-${formCount}-type">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_business-${formCount}-address">Address</label>
+                        <input type="text" name="business-${formCount}-address" class="form-control" id="id_business-${formCount}-address">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_business-${formCount}-trade_license">Trade License</label>
+                                <input type="text" name="business-${formCount}-trade_license" class="form-control" id="id_business-${formCount}-trade_license">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_business-${formCount}-start">Start Date</label>
+                                <input type="date" name="business-${formCount}-start" class="form-control" id="id_business-${formCount}-start">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_business-${formCount}-capital">Capital</label>
+                        <input type="number" name="business-${formCount}-capital" class="form-control" id="id_business-${formCount}-capital">
+                    </div>
+                    <button type="button" class="btn btn-danger mt-2 remove-form">Remove Business</button>
+                </div>
+            `;
+
+            $('#business-forms').append(template);
+            formCount++;
+            $('#id_business-TOTAL_FORMS').val(formCount);
+            updateFormIndexes();
+        } else {
+            alert('Maximum number of businesses reached');
+        }
+    });
+
+    // Handle form removal
+    $(document).on('click', '.remove-form', function() {
+        const form = $(this).closest('.business-form');
+        form.find('input[name$="-DELETE"]').prop('checked', true);
+        form.remove();  // Actually remove the form instead of hiding
+        formCount--;
+        updateFormIndexes();
+    });
+});
+</script>
+{% endblock %}
