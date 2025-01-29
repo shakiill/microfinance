@@ -131,9 +131,11 @@ class ProfessionInfo(TimeStamp):
 
     job_title = models.CharField(max_length=100, blank=True, null=True)
     industry = models.CharField(max_length=100, blank=True, null=True)
+    personal_asset = models.CharField(max_length=100, blank=True, null=True, help_text='Amount in BDT')
+    job_description = models.TextField(blank=True, null=True)
     job_start = models.DateField(blank=True, null=True)
     salary = models.IntegerField(default=0)
-    job_location = models.TextField(blank=True, null=True)
+    job_location = models.CharField(max_length=200, blank=True, null=True)
 
     def __str__(self):
         return self.customer

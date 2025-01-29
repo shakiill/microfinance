@@ -141,43 +141,37 @@ class ProfessionInfoForm(forms.ModelForm):
         self.helper.form_id = 'profession-form'
         self.helper.layout = Layout(
             Row(
-                Column('business_owner', css_class='form-group col-md-6'),
-                Column('job_holder', css_class='form-group col-md-6'),
+                Column('agriculture_land_area', css_class='form-group col-md-2 mb-0'),
+                Column('home_land_area', css_class='form-group col-md-2 mb-0'),
+                Column('vehicle', css_class='form-group col-md-2 mb-0'),
+                Column('nid', css_class='form-group col-md-2 mb-0'),
+                Column('tin', css_class='form-group col-md-2 mb-0'),
             ),
+
+
             Row(
-                Column('agriculture_land_area', css_class='form-group col-md-6'),
-                Column('home_land_area', css_class='form-group col-md-6'),
+                Column('business_owner', css_class='form-group col-md-12 mb-0'),
+                Column('trade_license', css_class='form-group col-md-2 mb-0'),
+                Column('business_type', css_class='form-group col-md-1 mb-0'),
+                Column('business_start', css_class='form-group col-md-1'),
+                Column('business_capital', css_class='form-group col-md-1'),
+                Column('sales_amount', css_class='form-group col-md-1'),
+                Column('dps', css_class='form-group col-md-1'),
+                Column('fdr', css_class='form-group col-md-1'),
+                Column('business_address', css_class='form-group col-md-3'),
             ),
-            Row(
-                Column('vehicle', css_class='form-group col-md-6'),
-                Column('tin', css_class='form-group col-md-6'),
-            ),
-            'nid',
-            # Business Info
-            Row(
-                Column('trade_license', css_class='form-group col-md-6'),
-                Column('business_type', css_class='form-group col-md-6'),
-            ),
-            'business_address',
-            Row(
-                Column('business_start', css_class='form-group col-md-6'),
-                Column('business_capital', css_class='form-group col-md-6'),
-            ),
-            Row(
-                Column('sales_amount', css_class='form-group col-md-4'),
-                Column('dps', css_class='form-group col-md-4'),
-                Column('fdr', css_class='form-group col-md-4'),
-            ),
+
+
             # Job Info
             Row(
-                Column('job_title', css_class='form-group col-md-6'),
-                Column('industry', css_class='form-group col-md-6'),
+                Column('job_holder', css_class='form-group col-md-12 mb-0'),
+                Column('job_title', css_class='form-group col-md-2'),
+                Column('industry', css_class='form-group col-md-2'),
+                Column('personal_asset', css_class='form-group col-md-2'),
+                Column('job_start', css_class='form-group col-md-1'),
+                Column('salary', css_class='form-group col-md-2'),
+                Column('job_location', css_class='form-group col-md-3'),
             ),
-            Row(
-                Column('job_start', css_class='form-group col-md-6'),
-                Column('salary', css_class='form-group col-md-6'),
-            ),
-            'job_location',
             Div(
                 Submit('submit', 'Save Profession Information', css_class='btn btn-primary'),
                 css_class='text-right'
@@ -199,16 +193,12 @@ class AdditionalBusinessForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Row(
-                Column('name', css_class='form-group col-md-6'),
-                Column('type', css_class='form-group col-md-6'),
-            ),
-            'address',
-            Row(
-                Column('trade_license', css_class='form-group col-md-6'),
-                Column('start', css_class='form-group col-md-6'),
-            ),
-            Row(
-                Column('capital', css_class='form-group col-md-12'),
+                Column('name', css_class='form-group col-md-3 mb-0'),
+                Column('type', css_class='form-group col-md-2 mb-0'),
+                Column('start', css_class='form-group col-md-2 mb-0'),
+                Column('capital', css_class='form-group col-md-2 mb-0'),
+                Column('trade_license', css_class='form-group col-md-3 mb-0'),
+                Column('address', css_class='form-group col-md-12 mb-0'),
             ),
         )
 
