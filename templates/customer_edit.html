@@ -91,17 +91,6 @@
 {% block js %}
 <script>
 $(document).ready(function() {
-    // Handle same address checkbox
-    $('#id_is_address').change(function() {
-        if(this.checked) {
-            $('#id_p_village').val($('#id_village').val());
-            $('#id_p_word_no').val($('#id_word_no').val());
-            $('#id_p_post_office').val($('#id_post_office').val());
-            $('#id_p_union').val($('#id_union').val());
-            $('#id_p_upazila').val($('#id_upazila').val());
-            $('#id_p_district').val($('#id_district').val());
-        }
-    });
 
     // Handle business owner and job holder checkboxes
     function toggleFields() {
@@ -245,6 +234,21 @@ $(document).ready(function() {
 
         jQuery(document).ready(function () {
             KTProfile.init();
+        });
+    </script>
+     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const isAddressCheckbox = document.getElementById('id_is_address');
+            const permanentAddressFields = document.querySelectorAll('.permanent-address');
+
+            const togglePermanentAddressFields = () => {
+                permanentAddressFields.forEach(field => {
+                    field.style.display = isAddressCheckbox.checked ? 'none' : '';
+                });
+            };
+
+            isAddressCheckbox.addEventListener('change', togglePermanentAddressFields);
+            togglePermanentAddressFields(); // Initialize on page load
         });
     </script>
 {% endblock %}

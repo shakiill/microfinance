@@ -62,6 +62,23 @@ class CustomerBasicForm(forms.ModelForm):
 
 
 class AddressForm(forms.ModelForm):
+    # Present address
+    village = forms.CharField(max_length=50, label='Village', required=False)
+    word_no = forms.CharField(max_length=50, label='Word No.', required=False)
+    post_office = forms.CharField(max_length=50, label='Post Office', required=False)
+    union = forms.CharField(max_length=50, label='Union', required=False)
+    upazila = forms.CharField(max_length=50, label='Upazila', required=False)
+    district = forms.CharField(max_length=50, label='District', required=False)
+
+    # Permanent address
+    is_address = forms.BooleanField(label='Permanent same as present address?', required=False)
+    p_village = forms.CharField(max_length=50, label='Permanent Village', required=False)
+    p_word_no = forms.CharField(max_length=50, label='Permanent Word No.', required=False)
+    p_post_office = forms.CharField(max_length=50, label='Permanent Post Office', required=False)
+    p_union = forms.CharField(max_length=50, label='Permanent Union', required=False)
+    p_upazila = forms.CharField(max_length=50, label='Permanent Upazila', required=False)
+    p_district = forms.CharField(max_length=50, label='Permanent District', required=False)
+
     class Meta:
         model = Customer
         fields = ['village', 'word_no', 'post_office', 'union', 'upazila', 'district',
@@ -74,30 +91,26 @@ class AddressForm(forms.ModelForm):
         self.helper.form_method = 'post'
         self.helper.form_id = 'address-form'
         self.helper.layout = Layout(
-            'is_address',
+            HTML("<h2>Present Address</h2>"),
             Row(
-                Column('village', css_class='form-group col-md-6'),
-                Column('p_village', css_class='form-group col-md-6'),
+                Column('village', css_class='form-group col-md-4'),
+                Column('word_no', css_class='form-group col-md-4'),
+                Column('post_office', css_class='form-group col-md-4'),
+                Column('union', css_class='form-group col-md-4'),
+                Column('upazila', css_class='form-group col-md-4'),
+                Column('district', css_class='form-group col-md-4'),
+            ),
+            HTML("<h2>Permanent Address</h2>"),
+            Row(
+                Column('is_address', css_class='form-group col-md-12'),
             ),
             Row(
-                Column('word_no', css_class='form-group col-md-6'),
-                Column('p_word_no', css_class='form-group col-md-6'),
-            ),
-            Row(
-                Column('post_office', css_class='form-group col-md-6'),
-                Column('p_post_office', css_class='form-group col-md-6'),
-            ),
-            Row(
-                Column('union', css_class='form-group col-md-6'),
-                Column('p_union', css_class='form-group col-md-6'),
-            ),
-            Row(
-                Column('upazila', css_class='form-group col-md-6'),
-                Column('p_upazila', css_class='form-group col-md-6'),
-            ),
-            Row(
-                Column('district', css_class='form-group col-md-6'),
-                Column('p_district', css_class='form-group col-md-6'),
+                Column('p_village', css_class='form-group col-md-4 permanent-address'),
+                Column('p_word_no', css_class='form-group col-md-4 permanent-address'),
+                Column('p_post_office', css_class='form-group col-md-4 permanent-address'),
+                Column('p_union', css_class='form-group col-md-4 permanent-address'),
+                Column('p_upazila', css_class='form-group col-md-4 permanent-address'),
+                Column('p_district', css_class='form-group col-md-4 permanent-address'),
             ),
             Div(
                 Submit('submit', 'Save Address Information', css_class='btn btn-primary'),
