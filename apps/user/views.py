@@ -64,7 +64,7 @@ class RegistrationWizardView(SessionWizardView):
 
 
 class UserListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
-    permission_required = 'configuration.view_unit'
+    permission_required = 'configuration.view_customuser'
     model = Customer
     template_name = 'list.html'
     paginate_by = 10
