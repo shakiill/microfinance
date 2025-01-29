@@ -1,6 +1,6 @@
 # forms.py
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Row, Column, Submit, Div, HTML
+from crispy_forms.layout import Layout, Row, Column, Submit, Div, HTML, Field
 from django import forms
 
 from .models import Customer, ProfessionInfo, AdditionalBusiness
@@ -19,30 +19,45 @@ class CustomerBasicForm(forms.ModelForm):
         self.helper.form_id = 'basic-form'
         self.helper.layout = Layout(
             Row(
-                Column('name', css_class='form-group col-md-6'),
-                Column('father', css_class='form-group col-md-6'),
+                Column(
+                    Row(
+                        Column('name', css_class='form-group col-md-12 mb-0'),
+                        Column('father', css_class='form-group col-md-12 mb-0'),
+                        Column('mother', css_class='form-group col-md-12 mb-0'),
+                        Column('spouse', css_class='form-group col-md-12 mb-0'),
+                        Column('education', css_class='form-group col-md-12 mb-0'),
+
+                    )
+                    , css_class='form-group col-md-4 mb-0'),
+                Column(
+                    Row(
+                        Column('dob', css_class='form-group col-md-12 mb-0'),
+                        Column('gender', css_class='form-group col-md-12 mb-0'),
+                        Column('mobile', css_class='form-group col-md-12 mb-0'),
+                        Column('alt_mobile', css_class='form-group col-md-12 mb-0'),
+                    )
+                    , css_class='form-group col-md-4 mb-0'),
+
+                Column(
+                    Row(
+                        Column(HTML('<h4>Photo</h4>'), css_class='form-group col-md-12 mb-0'),
+                        Column(
+                            Field('photo', template='layout/fields/image_thumbnail.html')
+                            , css_class='form-group col-md-12'
+                        ),
+                    )
+                    , css_class='form-group col-md-4 mb-0'),
+
             ),
-            Row(
-                Column('mother', css_class='form-group col-md-6'),
-                Column('spouse', css_class='form-group col-md-6'),
-            ),
-            Row(
-                Column('education', css_class='form-group col-md-6'),
-                Column('dob', css_class='form-group col-md-6'),
-            ),
-            Row(
-                Column('gender', css_class='form-group col-md-4'),
-                Column('mobile', css_class='form-group col-md-4'),
-                Column('alt_mobile', css_class='form-group col-md-4'),
-            ),
-            'photo',
             Div(
-                Submit('submit', 'Save Basic Information', css_class='btn btn-primary'),
-                css_class='text-right'
+                HTML('<input type="hidden" name="step" value="basic">')
             ),
-            Div(
-                HTML('<input type="hidden" name="step" value="basic">'),
-            )
+            Row(
+                Column(
+                    Submit('submit', 'Save Basic Information', css_class='btn btn-primary'),
+                    css_class='text-center'
+                ), css_class='form-group col-md-12 mb-0'),
+
         )
 
 

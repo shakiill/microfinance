@@ -3,12 +3,17 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col">
             <div class="card card-custom gutter-b">
                 <div class="card-header">
-                    <h3 class="card-title">Edit Customer Information</h3>
+                  <h3 class="card-title">
+                        Edit Customer Information
+                        <a href="{% url 'user_info' customer.pk %}" class="btn btn-info ml-2">
+                            <i class="fas fa-arrow-left mr-1"></i> Back to Profile
+                        </a>
+                    </h3>
                     <div class="card-toolbar">
                         <ul class="nav nav-tabs nav-bold nav-tabs-line">
                             <li class="nav-item">
@@ -205,4 +210,53 @@ $(document).ready(function() {
     });
 });
 </script>
+ <script>
+        "use strict";
+
+        // Class definition
+        var KTProfile = function () {
+            // Elements
+            var avatar;
+            var offcanvas;
+
+            // Private functions
+            var _initAside = function () {
+                // Mobile offcanvas for mobile mode
+                offcanvas = new KTOffcanvas('kt_profile_aside', {
+                    overlay: true,
+                    baseClass: 'offcanvas-mobile',
+                    //closeBy: 'kt_user_profile_aside_close',
+                    toggleBy: 'kt_subheader_mobile_toggle'
+                });
+            }
+
+            var _initForm = function () {
+                avatar = new KTImageInput('kt_profile_avatar');
+            }
+
+            return {
+                // public functions
+                init: function () {
+                    _initAside();
+                    _initForm();
+                }
+            };
+        }();
+
+        jQuery(document).ready(function () {
+            KTProfile.init();
+        });
+    </script>
+{% endblock %}
+
+{% block css %}
+<style>
+.image-input .image-input-wrapper {
+    width: 200px;
+    height: 200px;
+    border-radius: 0.42rem;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+</style>
 {% endblock %}
