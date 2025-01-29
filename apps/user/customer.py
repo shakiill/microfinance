@@ -72,12 +72,12 @@ class AddressForm(forms.ModelForm):
 
     # Permanent address
     is_address = forms.BooleanField(label='Permanent same as present address?', required=False)
-    p_village = forms.CharField(max_length=50, label='Permanent Village', required=False)
-    p_word_no = forms.CharField(max_length=50, label='Permanent Word No.', required=False)
-    p_post_office = forms.CharField(max_length=50, label='Permanent Post Office', required=False)
-    p_union = forms.CharField(max_length=50, label='Permanent Union', required=False)
-    p_upazila = forms.CharField(max_length=50, label='Permanent Upazila', required=False)
-    p_district = forms.CharField(max_length=50, label='Permanent District', required=False)
+    p_village = forms.CharField(max_length=50, label='Village', required=False)
+    p_word_no = forms.CharField(max_length=50, label='Word No.', required=False)
+    p_post_office = forms.CharField(max_length=50, label='Post Office', required=False)
+    p_union = forms.CharField(max_length=50, label='Union', required=False)
+    p_upazila = forms.CharField(max_length=50, label='Upazila', required=False)
+    p_district = forms.CharField(max_length=50, label='District', required=False)
 
     class Meta:
         model = Customer
@@ -91,34 +91,41 @@ class AddressForm(forms.ModelForm):
         self.helper.form_method = 'post'
         self.helper.form_id = 'address-form'
         self.helper.layout = Layout(
-            HTML("<h2>Present Address</h2>"),
+
             Row(
-                Column('village', css_class='form-group col-md-4'),
-                Column('word_no', css_class='form-group col-md-4'),
-                Column('post_office', css_class='form-group col-md-4'),
-                Column('union', css_class='form-group col-md-4'),
-                Column('upazila', css_class='form-group col-md-4'),
-                Column('district', css_class='form-group col-md-4'),
+                Column(
+                    Row(
+                        HTML("<h5>Present Address:</h5>"),
+                        Column('village', css_class='form-group col-md-10 mb-0'),
+                        Column('word_no', css_class='form-group col-md-10 mb-0'),
+                        Column('post_office', css_class='form-group col-md-10 mb-0'),
+                        Column('union', css_class='form-group col-md-10 mb-0'),
+                        Column('upazila', css_class='form-group col-md-10 mb-0'),
+                        Column('district', css_class='form-group col-md-10 mb-0'),
+                    )
+                    , css_class='form-group col-md-6 mb-0'),
+                Column(
+                    Row(
+                        HTML("<h5>Permanent Address</h5>"),
+                        Column('is_address', css_class='form-group col-md-10 mb-0'),
+                        Column('p_village', css_class='form-group col-md-10 permanent-address mb-0'),
+                        Column('p_word_no', css_class='form-group col-md-10 permanent-address mb-0'),
+                        Column('p_post_office', css_class='form-group col-md-10 permanent-address mb-0'),
+                        Column('p_union', css_class='form-group col-md-10 permanent-address mb-0'),
+                        Column('p_upazila', css_class='form-group col-md-10 permanent-address mb-0'),
+                        Column('p_district', css_class='form-group col-md-10 permanent-address mb-0'),
+                    )
+                    , css_class='form-group col-md-6 mb-0'),
             ),
-            HTML("<h2>Permanent Address</h2>"),
-            Row(
-                Column('is_address', css_class='form-group col-md-12'),
-            ),
-            Row(
-                Column('p_village', css_class='form-group col-md-4 permanent-address'),
-                Column('p_word_no', css_class='form-group col-md-4 permanent-address'),
-                Column('p_post_office', css_class='form-group col-md-4 permanent-address'),
-                Column('p_union', css_class='form-group col-md-4 permanent-address'),
-                Column('p_upazila', css_class='form-group col-md-4 permanent-address'),
-                Column('p_district', css_class='form-group col-md-4 permanent-address'),
-            ),
-            Div(
-                Submit('submit', 'Save Address Information', css_class='btn btn-primary'),
-                css_class='text-right'
-            ),
+
             Div(
                 HTML('<input type="hidden" name="step" value="address">'),
-            )
+            ),
+            Row(
+                Column(
+                    Submit('submit', 'Save Address Information', css_class='btn btn-primary'),
+                    css_class='text-center'
+                ), css_class='form-group col-md-12 mb-0'),
         )
 
 
