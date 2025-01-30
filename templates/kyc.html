@@ -11,7 +11,93 @@
                     <div class="card-header">
                         <h3 class="card-title">Application #{{ object.id }}: {{ object.customer.name }}</h3>
                         <div class="card-toolbar">
-                            <button class="btn btn-primary">Edit Application</button>
+                            <!-- Modal for Editing Application -->
+
+                            <button type="button" class="btn btn-success loan-edit" data-toggle="modal"
+                                    data-target="#editApplicationModal">edit application
+                            </button>
+
+                            <div class="modal fade" id="editApplicationModal" tabindex="-1" role="dialog"
+                                 aria-labelledby="editApplicationModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editApplicationModalLabel">Edit Application</h5>
+                                            <button type="button" class="btn-close" data-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="editApplicationForm">
+                                                <div class="mb-3">
+                                                    <label for="editAmount" class="form-label">Amount</label>
+                                                    <input type="text" class="form-control" id="editAmount"
+                                                           name="amount" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="editDuration" class="form-label">Duration
+                                                        (Months)</label>
+                                                    <input type="number" class="form-control" id="editDuration"
+                                                           name="duration_months" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="editPurpose" class="form-label">Purpose</label>
+                                                    <input type="text" class="form-control" id="editPurpose"
+                                                           name="purpose">
+                                                </div>
+
+                                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <script>
+                                // Function to open modal and fetch data
+                                document.querySelector('.loan-edit').addEventListener('click', () => {
+                                    fetch(`/api/v1/loan-applications/{{ object.id }}/`)
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            // Populate the form with the fetched data
+                                            document.querySelector('#editAmount').value = data.amount;
+                                            document.querySelector('#editDuration').value = data.duration_months;
+                                            document.querySelector('#editPurpose').value = data.purpose;
+
+                                            // Show the modal
+                                            $('#editApplicationModal').modal('show');
+                                        })
+                                        .catch(error => console.error('Error fetching application data: ', error));
+                                });
+
+                                // Form submission to update application
+                                document.querySelector('#editApplicationForm').addEventListener('submit', (event) => {
+                                    event.preventDefault();
+
+                                    // Form data gathering
+                                    const formData = new FormData(event.target);
+                                    const formObject = Object.fromEntries(formData.entries());
+
+                                    fetch(`/api/v1/loan-applications/{{ object.id }}/`, {
+                                        method: 'PATCH', // Use PATCH method to update the application',
+                                        headers: {
+                                            'Content-Type': 'application/json', // Set correct content type
+                                            'X-CSRFToken': '{{ csrf_token }}', // Include CSRF token for Django
+                                            'Accept': 'application/json'
+                                        },
+                                        body: JSON.stringify(formObject) // Send data as JSON
+                                    })
+                                        .then(response => {
+                                            if (response.ok) {
+                                                // Refresh the page to update the template upon success
+                                                location.reload();
+                                            } else {
+                                                return response.json().then(data => {
+                                                    console.error('Error updating application: ', data);
+                                                });
+                                            }
+                                        })
+                                        .catch(error => console.error('Error during update request: ', error));
+                                });
+                            </script>
                         </div>
                     </div>
                     <div class="card-body">
@@ -51,7 +137,96 @@
                             <div class="card-header">
                                 <h3 class="card-title">Products</h3>
                                 <div class="card-toolbar">
-                                    <button class="btn btn-success btn-sm">Add Product</button>
+                                    <button class="btn btn-success btn-sm product-add" data-toggle="modal"
+                                            data-target="#createProductModal">Add Product
+                                    </button>
+
+                                    <div class="modal fade" id="createProductModal" tabindex="-1" role="dialog"
+                                         aria-labelledby="createProductModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="createProductModalLabel">Add
+                                                        Product</h5>
+                                                    <button type="button" class="btn-close" data-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form id="createProductForm">
+                                                        <div style="display: none">
+                                                            <input type="text" class="form-control" id="loanApplication"
+                                                                   name="loan_application" value="{{ object.pk }}" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="productName" class="form-label">Product
+                                                                Name</label>
+                                                            <input type="text" class="form-control" id="productName"
+                                                                   name="product_name" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="unitType" class="form-label">Unit Type</label>
+                                                            <input type="text" class="form-control" id="unitType"
+                                                                   name="unit_type" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="units" class="form-label">Units</label>
+                                                            <input type="number" class="form-control" id="units"
+                                                                   name="units" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="unitPrice" class="form-label">Unit Price</label>
+                                                            <input type="number" step="0.01" class="form-control"
+                                                                   id="unitPrice" name="unit_price" required>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-primary">Save Product
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <script>
+                                        // Function to open modal and fetch data
+                                        document.querySelector('.product-add').addEventListener('click', () => {
+                                            $('#createProductModal').modal('show');
+                                        });
+                                        // AJAX form submission for creating a product
+                                        document.getElementById('createProductForm').addEventListener('submit',
+                                            function (event) {
+                                                event.preventDefault(); // Prevent default form submission
+
+                                                // Collect form data
+                                                const formData = new FormData(this);
+
+                                                // Send AJAX request
+                                                fetch('/api/v1/application-products/', { // Replace with your endpoint for product creation
+                                                    method: 'POST',
+                                                    body: formData,
+                                                    headers: {
+                                                        'X-CSRFToken': '{{ csrf_token }}' // Ensure CSRF token is included
+                                                    }
+                                                })
+                                                    .then(response => {
+                                                        if (response.ok) {
+                                                            return response.json();
+                                                        } else {
+                                                            throw new Error('Failed to create product.');
+                                                        }
+                                                    })
+                                                    .then(data => {
+                                                        // Handle success
+                                                        alert('Product created successfully!');
+                                                        $('#createProductModal').modal('hide');
+                                                        location.reload(); // Optionally reload the page to update the table
+                                                    })
+                                                    .catch(error => {
+                                                        // Handle error
+                                                        console.error('Error:', error);
+                                                        alert('An error occurred while creating the product.');
+                                                    });
+                                            });
+                                    </script>
+
                                 </div>
                             </div>
                             <div class="card-body">
@@ -241,4 +416,29 @@
 {% endblock %}
 
 {% block js %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get the current URL
+            const urlParams = new URLSearchParams(window.location.search);
+            // Check if 'tab' parameter exists in the URL
+            const activeTab = urlParams.get('tab');
+
+            if (activeTab) {
+                // Find the tab link and content to activate using the URL parameter
+                const tabLink = document.querySelector(`[href="#${activeTab}"]`);
+                const tabPane = document.querySelector(`#${activeTab}`);
+
+                if (tabLink && tabPane) {
+                    // Deactivate currently active tab
+                    document.querySelector('.nav-link.active')?.classList.remove('active');
+                    document.querySelector('.tab-pane.show.active')?.classList.remove('show', 'active');
+
+                    // Activate the tab based on the URL parameter
+                    tabLink.classList.add('active');
+                    tabPane.classList.add('show', 'active');
+                }
+            }
+        });
+    </script>
 {% endblock %}

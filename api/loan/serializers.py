@@ -13,6 +13,7 @@ class ApplicationProductSerializers(serializers.ModelSerializer):
     class Meta:
         model = ApplicationProduct
         fields = '__all__'
+        read_only_fields = ['total_price']
 
 
 class GuarantorSerializers(serializers.ModelSerializer):

@@ -23,6 +23,7 @@ urlpatterns = [
     path('', login_required(TemplateView.as_view(template_name="home.html")), name='home'),
     path('account/', include('apps.user.urls')),
     path('loan/', include('apps.loan.urls')),
+    path('api/v1/', include('api.urls')),
 ]
 
 if settings.DEBUG:
