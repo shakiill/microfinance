@@ -27,7 +27,7 @@ class LoanApplication(TimeStamp):
     approved_date = models.DateField(null=True, blank=True)
     disbursed_date = models.DateField(null=True, blank=True)
 
-    risk_score = models.DecimalField(max_digits=5, decimal_places=2, null=True)
+    risk_score = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     credit_committee_approval = models.BooleanField(default=False)
     rejection_reason = models.TextField(null=True, blank=True)
 
@@ -79,6 +79,7 @@ class Guarantor(TimeStamp):
     education = models.CharField(max_length=100, null=True, blank=True)
     relationship = models.CharField(max_length=100)
     mobile = models.CharField(max_length=100)
+    photo = models.ImageField(upload_to='guarantor_photos/', null=True, blank=True)
 
     address = models.TextField()
     village = models.CharField(max_length=100, null=True, blank=True)
@@ -110,6 +111,7 @@ class Asset(TimeStamp):
     estimated_value = models.DecimalField(max_digits=15, decimal_places=2)
     description = models.TextField(null=True, blank=True)
     year_of_mortgage = models.IntegerField(null=True, blank=True)
+    document = models.FileField(upload_to='assets/', null=True, blank=True)
 
 
 class FinancialRecord(TimeStamp):
