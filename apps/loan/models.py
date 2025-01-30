@@ -69,7 +69,7 @@ class ApplicationProduct(TimeStamp):
 
 
 class Guarantor(TimeStamp):
-    application = models.ForeignKey(LoanApplication, on_delete=models.CASCADE, related_name='guarantors')
+    loan_application = models.ForeignKey(LoanApplication, on_delete=models.CASCADE, related_name='guarantors')
     # customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='guarantor')
     name = models.CharField(max_length=100)
     father = models.CharField(max_length=100)
@@ -100,7 +100,7 @@ class Asset(TimeStamp):
         COMMERCIAL = 'commercial', 'Commercial Land'
         INDUSTRIAL = 'industrial', 'Industrial Land'
 
-    application = models.ForeignKey(LoanApplication, on_delete=models.CASCADE, related_name='lands')
+    loan_application = models.ForeignKey(LoanApplication, on_delete=models.CASCADE, related_name='lands')
     land_type = models.CharField(max_length=20, choices=LandTypeChoices.choices)
     owner_name = models.CharField(max_length=255)
     mouza_no = models.CharField(max_length=50)
@@ -148,7 +148,7 @@ class FinancialRecord(TimeStamp):
 
 
 class CheckInfo(TimeStamp):
-    application = models.ForeignKey(
+    loan_application = models.ForeignKey(
         LoanApplication,
         on_delete=models.CASCADE,
         related_name='check_list'
@@ -170,7 +170,7 @@ class CheckInfo(TimeStamp):
 
 
 class Loan(TimeStamp):
-    application = models.OneToOneField(LoanApplication, on_delete=models.CASCADE, related_name='loan',
+    loan_application = models.OneToOneField(LoanApplication, on_delete=models.CASCADE, related_name='loan',
                                        help_text="The approved loan application")
     principal_amount = models.DecimalField(max_digits=15, decimal_places=2, help_text="Approved loan amount")
     interest_rate = models.DecimalField(max_digits=5, decimal_places=2, help_text="Annual interest rate (percentage)")

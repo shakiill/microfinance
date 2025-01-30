@@ -27,8 +27,8 @@ class LoanKYCView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['products'] = ApplicationProduct.objects.filter(loan_application=self.object)
-        context['guarantors'] = Guarantor.objects.filter(application=self.object)
-        context['assets'] = Asset.objects.filter(application=self.object)
+        context['guarantors'] = Guarantor.objects.filter(loan_application=self.object)
+        context['assets'] = Asset.objects.filter(loan_application=self.object)
         context['financials'] = FinancialRecord.objects.filter(loan_application=self.object)
-        context['checks'] = CheckInfo.objects.filter(application=self.object)
+        context['checks'] = CheckInfo.objects.filter(loan_application=self.object)
         return context
