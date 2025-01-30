@@ -1,9 +1,8 @@
-from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView
 
 from apps.loan.forms import LoanApplicationForm
-from apps.loan.models import LoanApplication
+from apps.loan.models import LoanApplication, ApplicationProduct, Guarantor, Asset, FinancialRecord, CheckInfo
 
 
 # Create your views here.
@@ -23,4 +22,13 @@ class LoanApplicationView(CreateView):
 
 class LoanKYCView(DetailView):
     model = LoanApplication
-    template_name = 'add.html'
+    template_name = 'kyc.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['products'] = ApplicationProduct.objects.filter(loan_application=self.object)
+        context['guarantors'] = Guarantor.objects.filter(application=self.object)
+        context['assets'] = Asset.objects.filter(application=self.object)
+        context['financials'] = FinancialRecord.objects.filter(loan_application=self.object)
+        context['checks'] = CheckInfo.objects.filter(application=self.object)
+        return context

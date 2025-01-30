@@ -1,0 +1,244 @@
+{% extends 'includes/main.html' %}
+{% load static %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <!-- Main Application Details Card -->
+                <div class="card card-custom gutter-b">
+                    <div class="card-header">
+                        <h3 class="card-title">Application #{{ object.id }}: {{ object.customer.name }}</h3>
+                        <div class="card-toolbar">
+                            <button class="btn btn-primary">Edit Application</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3"><strong>Amount:</strong> {{ object.amount }}</div>
+                            <div class="col-md-3"><strong>Duration:</strong> {{ object.duration_months }} months</div>
+                            <div class="col-md-3"><strong>Status:</strong> {{ object.status }}</div>
+                            <div class="col-md-3"><strong>Applied Date:</strong> {{ object.applied_date }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs Navigation -->
+                <ul class="nav nav-tabs" id="loanTabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#products">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#guarantors">Guarantors</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#assets">Assets</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#financials">Financial Records</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#checks">Check Info</a>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content mt-3">
+                    <!-- Products Tab -->
+                    <div class="tab-pane fade show active" id="products">
+                        <div class="card card-custom">
+                            <div class="card-header">
+                                <h3 class="card-title">Products</h3>
+                                <div class="card-toolbar">
+                                    <button class="btn btn-success btn-sm">Add Product</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered datatable">
+                                    <thead>
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <th>Unit Type</th>
+                                        <th>Units</th>
+                                        <th>Unit Price</th>
+                                        <th>Total Price</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for product in products %}
+                                        <tr data-id="{{ product.id }}">
+                                            <td>{{ product.product_name }}</td>
+                                            <td>{{ product.unit_type }}</td>
+                                            <td>{{ product.unit }}</td>
+                                            <td>{{ product.unit_price }}</td>
+                                            <td>{{ product.total_price }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Guarantors Tab -->
+                    <div class="tab-pane fade" id="guarantors">
+                        <div class="card card-custom">
+                            <div class="card-header">
+                                <h3 class="card-title">Guarantors</h3>
+                                <div class="card-toolbar">
+                                    <button class="btn btn-success btn-sm">Add Guarantor
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered datatable">
+                                    <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Relationship</th>
+                                        <th>Mobile</th>
+                                        <th>Address</th>
+                                        <th>Deposit Amount</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for guarantor in guarantors %}
+                                        <tr data-id="{{ guarantor.id }}">
+                                            <td>{{ guarantor.name }}</td>
+                                            <td>{{ guarantor.relationship }}</td>
+                                            <td>{{ guarantor.mobile }}</td>
+                                            <td>{{ guarantor.address }}</td>
+                                            <td>{{ guarantor.deposit_amount }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Assets Tab -->
+                    <div class="tab-pane fade" id="assets">
+                        <div class="card card-custom">
+                            <div class="card-header">
+                                <h3 class="card-title">Assets</h3>
+                                <div class="card-toolbar">
+                                    <button class="btn btn-success btn-sm">Add Asset</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered datatable">
+                                    <thead>
+                                    <tr>
+                                        <th>Land Type</th>
+                                        <th>Owner</th>
+                                        <th>Area</th>
+                                        <th>Value</th>
+                                        <th>Documents</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for asset in assets %}
+                                        <tr data-id="{{ asset.id }}">
+                                            <td>{{ asset.get_land_type_display }}</td>
+                                            <td>{{ asset.owner_name }}</td>
+                                            <td>{{ asset.land_area }}</td>
+                                            <td>{{ asset.estimated_value }}</td>
+                                            <td>
+                                                {% if asset.document %}
+                                                    <a href="{{ asset.document.url }}" target="_blank">View</a>
+                                                {% endif %}
+                                            </td>
+
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Financial Records Tab -->
+                    <div class="tab-pane fade" id="financials">
+                        <div class="card card-custom">
+                            <div class="card-header">
+                                <h3 class="card-title">Financial Records</h3>
+                                <div class="card-toolbar">
+                                    <button class="btn btn-success btn-sm">Add Record
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered datatable">
+                                    <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Institution</th>
+                                        <th>Amount</th>
+                                        <th>Interest Rate</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for record in financials %}
+                                        <tr data-id="{{ record.id }}">
+                                            <td>{{ record.get_record_type_display }}</td>
+                                            <td>{{ record.institution_name }}</td>
+                                            <td>{{ record.amount }}</td>
+                                            <td>{{ record.interest_rate }}%</td>
+                                            <td>{{ record.status }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Check Info Tab -->
+                    <div class="tab-pane fade" id="checks">
+                        <div class="card card-custom">
+                            <div class="card-header">
+                                <h3 class="card-title">Check Information</h3>
+                                <div class="card-toolbar">
+                                    <button class="btn btn-success btn-sm">Add Check</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered datatable">
+                                    <thead>
+                                    <tr>
+                                        <th>Account Name</th>
+                                        <th>Account No</th>
+                                        <th>Check No</th>
+                                        <th>Bank</th>
+                                        <th>Branch</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for check in checks %}
+                                        <tr data-id="{{ check.id }}">
+                                            <td>{{ check.account_name }}</td>
+                                            <td>{{ check.account_no }}</td>
+                                            <td>{{ check.check_no }}</td>
+                                            <td>{{ check.bank_name }}</td>
+                                            <td>{{ check.branch_name }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+{% endblock %}

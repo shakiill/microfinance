@@ -15,6 +15,7 @@ from .forms import (ProfileUpdateForm,
 from .models import Customer
 from ..helpers.customer import CustomerTable, CustomerFilterSet
 from ..helpers.views import PageHeaderMixin
+from ..loan.models import LoanApplication
 
 # Create your views here.
 
@@ -116,6 +117,11 @@ class UserInfoView(LoginRequiredMixin, PageHeaderMixin, DetailView):
     permission_required = 'user.view_customer'
     model = Customer
     template_name = 'user/info.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['applications'] = LoanApplication.objects.filter(customer=self.object)
+        return context
 
 
 class UserDeleteView(LoginRequiredMixin, DeleteView):
