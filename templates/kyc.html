@@ -381,7 +381,7 @@
                             </div>
 
                             <div class="card-body">
-                                <table class="table table-bordered datatable">
+                                <table class="table table-bordered" id="guarantor-table">
                                     <thead>
                                     <tr>
                                         <th>Name</th>
@@ -404,7 +404,7 @@
                                                 <button type="button" class="btn btn-secondary update-guarantor"
                                                         data-id="{{ guarantor.id }}">Edit
                                                 </button>
-                                                <button type="button" class="btn btn-danger delete-guarantor"
+                                               <button type="button" class="btn btn-danger delete-guarantor"
                                                         data-id="{{ guarantor.id }}">Delete
                                                 </button>
                                             </td>
@@ -491,107 +491,109 @@
                                 </div>
                             </div>
                             <script>
-                                document.querySelector('.guarantor-add').addEventListener('click', () => {
-                                    $('#createGuarantorModal').modal('show');
-                                });
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    let form = document.getElementById("createGuarantorForm");
+                                    let modal = $("#createGuarantorModal");
+                                    let submitButton = form.querySelector("button[type='submit']");
 
-                                document.getElementById('createGuarantorForm').addEventListener('submit', function (event) {
-                                    event.preventDefault();
-                                    const formData = new FormData(this);
+                                    // Hidden input field to track update mode
+                                    let hiddenGuarantorId = document.createElement("input");
+                                    hiddenGuarantorId.type = "hidden";
+                                    hiddenGuarantorId.id = "guarantorId";
+                                    hiddenGuarantorId.name = "guarantor_id";
+                                    form.appendChild(hiddenGuarantorId);
 
-                                    fetch('/api/v1/guarantors/', {
-                                        method: 'POST',
-                                        body: formData,
-                                        headers: {
-                                            'X-CSRFToken': '{{ csrf_token }}'
+                                    // Open "Create Guarantor" Modal (Reset Form)
+                                    document.querySelector(".guarantor-add").addEventListener("click", () => {
+                                        form.reset();  // Clear all fields
+                                        hiddenGuarantorId.value = "";  // Clear edit ID
+                                        submitButton.innerText = "Save Guarantor";  // Change button text
+                                        modal.modal("show");
+                                    });
+
+                                    // Handle Form Submission
+                                    form.addEventListener("submit", function (event) {
+                                        event.preventDefault();
+
+                                        let guarantorId = hiddenGuarantorId.value.trim();
+                                        let formData = new FormData(this);
+                                        let url = "/api/v1/guarantors/";
+                                        let method = "POST";  // Default is create
+
+                                        if (guarantorId) {
+                                            url = `/api/v1/guarantors/${guarantorId}/`;
+                                            method = "PUT";  // If ID exists, it's an update
                                         }
-                                    })
-                                        .then(response => {
-                                            if (response.ok) {
-                                                return response.json();
-                                            } else {
-                                                throw new Error('Failed to create guarantor.');
+
+                                        fetch(url, {
+                                            method: method,
+                                            body: formData,
+                                            headers: {
+                                                "X-CSRFToken": "{{ csrf_token }}"
                                             }
                                         })
-                                        .then(data => {
-                                            alert('Guarantor created successfully!');
-                                            $('#createGuarantorModal').modal('hide');
-                                            const params = new URLSearchParams(window.location.search);
-                                            params.set("tab", "guarantors");  // Set or update the 'tab' parameter
-                                            window.location.replace(window.location.pathname + "?" + params.toString());
-                                        })
-                                        .catch(error => {
-                                            console.error('Error:', error);
-                                            alert('An error occurred while creating the guarantor.');
-                                        });
-                                });
-
-                                document.querySelectorAll('.update-guarantor').forEach(button => {
-                                    button.addEventListener('click', function () {
-                                        const guarantorId = this.dataset.id;
-
-                                        fetch(`/api/v1/guarantors/${guarantorId}/`)
                                             .then(response => {
-                                                if (response.ok) {
-                                                    return response.json();
-                                                } else {
-                                                    throw new Error('Failed to fetch guarantor details.');
-                                                }
+                                                if (response.ok) return response.json();
+                                                throw new Error("Failed to save guarantor.");
                                             })
-                                            .then(data => {
-                                                document.getElementById('guarantorName').value = data.name;
-                                                document.getElementById('fatherName').value = data.father;
-                                                document.getElementById('motherName').value = data.mother;
-                                                document.getElementById('relationship').value = data.relationship;
-                                                document.getElementById('mobile').value = data.mobile;
-                                                document.getElementById('address').value = data.address;
-                                                document.getElementById('depositAmount').value = data.deposit_amount;
+                                            .then(() => {
+                                                alert(guarantorId ? "Guarantor updated successfully!" : "Guarantor created successfully!");
+                                                modal.modal("hide");
 
-                                                document.getElementById('createGuarantorForm').onsubmit = function (event) {
-                                                    event.preventDefault();
-                                                    const updatedData = new FormData(this);
-
-                                                    fetch(`/api/v1/guarantors/${guarantorId}/`, {
-                                                        method: 'PUT',
-                                                        body: updatedData,
-                                                        headers: {
-                                                            'X-CSRFToken': '{{ csrf_token }}'
-                                                        }
-                                                    })
-                                                        .then(response => {
-                                                            if (response.ok) {
-                                                                return response.json();
-                                                            } else {
-                                                                throw new Error('Failed to update guarantor.');
-                                                            }
-                                                        })
-                                                        .then(() => {
-                                                            alert('Guarantor updated successfully!');
-                                                            $('#createGuarantorModal').modal('hide');
-                                                            const params = new URLSearchParams(window.location.search);
-                                                            params.set("tab", "guarantors");  // Set or update the 'tab' parameter
-                                                            window.location.replace(window.location.pathname + "?" + params.toString());
-                                                        })
-                                                        .catch(error => {
-                                                            console.error('Error:', error);
-                                                            alert('An error occurred while updating the guarantor.');
-                                                        });
-                                                };
-
-                                                $('#createGuarantorModal').modal('show');
+                                                // Refresh with the correct tab
+                                                const params = new URLSearchParams(window.location.search);
+                                                params.set("tab", "guarantors");
+                                                window.location.replace(window.location.pathname + "?" + params.toString());
                                             })
                                             .catch(error => {
-                                                console.error('Error:', error);
-                                                alert('An error occurred while fetching guarantor details.');
+                                                console.error("Error:", error);
+                                                alert("An error occurred while saving the guarantor.");
                                             });
                                     });
+
+                                    // Open "Edit Guarantor" Modal
+                                    document.querySelectorAll(".update-guarantor").forEach(button => {
+                                        button.addEventListener("click", function () {
+                                            let guarantorId = this.dataset.id;
+
+                                            fetch(`/api/v1/guarantors/${guarantorId}/`)
+                                                .then(response => {
+                                                    if (!response.ok) throw new Error("Failed to fetch guarantor details.");
+                                                    return response.json();
+                                                })
+                                                .then(data => {
+                                                    // Populate form fields with fetched data
+                                                    document.getElementById("guarantorName").value = data.name;
+                                                    document.getElementById("fatherName").value = data.father;
+                                                    document.getElementById("motherName").value = data.mother;
+                                                    document.getElementById("relationship").value = data.relationship;
+                                                    document.getElementById("mobile").value = data.mobile;
+                                                    document.getElementById("address").value = data.address;
+                                                    document.getElementById("depositAmount").value = data.deposit_amount;
+
+                                                    hiddenGuarantorId.value = guarantorId;  // Set ID for update
+                                                    submitButton.innerText = "Update Guarantor";  // Change button text
+
+                                                    modal.modal("show");
+                                                })
+                                                .catch(error => {
+                                                    console.error("Error:", error);
+                                                    alert("An error occurred while fetching guarantor details.");
+                                                });
+                                        });
+                                    });
+
+
                                 });
 
+                                // Ensure delete functionality works even after updates
+                                // AJAX handler for deleting a product
                                 document.querySelectorAll('.delete-guarantor').forEach(button => {
                                     button.addEventListener('click', function () {
                                         const guarantorId = this.dataset.id;
 
                                         if (confirm('Are you sure you want to delete this guarantor?')) {
+                                            // AJAX request to delete product
                                             fetch(`/api/v1/guarantors/${guarantorId}/`, {
                                                 method: 'DELETE',
                                                 headers: {
@@ -605,17 +607,20 @@
                                                         params.set("tab", "guarantors");  // Set or update the 'tab' parameter
                                                         window.location.replace(window.location.pathname + "?" + params.toString());
                                                     } else {
-                                                        throw new Error('Failed to delete guarantor.');
+                                                        throw new Error('Failed to delete product.');
                                                     }
                                                 })
                                                 .catch(error => {
                                                     console.error('Error:', error);
-                                                    alert('An error occurred while deleting the guarantor.');
+                                                    alert('An error occurred while deleting the product.');
                                                 });
                                         }
                                     });
                                 });
+
+
                             </script>
+
                             {#                                    end modal#}
                         </div>
                     </div>
