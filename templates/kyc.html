@@ -265,9 +265,6 @@
                                     </tbody>
 
                                     <script>
-                                        <!-- Action Button -->
-
-
                                         // AJAX handler for updating a product
                                         document.querySelectorAll('.update-product').forEach(button => {
                                             button.addEventListener('click', function () {
@@ -313,7 +310,10 @@
                                                                 })
                                                                 .then(() => {
                                                                     alert('Product updated successfully!');
-                                                                    location.reload(); // Reload the page to reflect updates
+                                                                    $('#createProductModal').modal('hide');
+                                                                    const params = new URLSearchParams(window.location.search);
+                                                                    params.set("tab", "product");  // Set or update the 'tab' parameter
+                                                                    window.location.replace(window.location.pathname + "?" + params.toString());
                                                                 })
                                                                 .catch(error => {
                                                                     console.error('Error:', error);
@@ -347,7 +347,10 @@
                                                         .then(response => {
                                                             if (response.ok) {
                                                                 alert('Product deleted successfully!');
-                                                                location.reload(); // Reload the page to update the table
+                                                                $('#createProductModal').modal('hide');
+                                                                const params = new URLSearchParams(window.location.search);
+                                                                params.set("tab", "product");  // Set or update the 'tab' parameter
+                                                                window.location.replace(window.location.pathname + "?" + params.toString());
                                                             } else {
                                                                 throw new Error('Failed to delete product.');
                                                             }
