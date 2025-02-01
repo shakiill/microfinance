@@ -55,13 +55,13 @@ class ApplicationProduct(TimeStamp):
     # product = models.ForeignKey(LoanProduct, on_delete=models.CASCADE)
     product_name = models.CharField(max_length=200, help_text="Name of the product")
     unit_type = models.CharField(max_length=10, help_text="Unite type of the product (e.g., kg, beg,ton, etc.)")
-    unit = models.PositiveIntegerField(default=1, help_text="Number of units of the product")
+    units = models.PositiveIntegerField(default=1, help_text="Number of units of the product")
     unit_price = models.DecimalField(max_digits=15, decimal_places=2, help_text="Price per unit of the product")
     total_price = models.DecimalField(max_digits=15, decimal_places=2, help_text="Total price for the product")
 
     def save(self, *args, **kwargs):
         # Automatically calculate the total price as unit * unit_price
-        self.total_price = self.unit * self.unit_price
+        self.total_price = self.units * self.unit_price
         super().save(*args, **kwargs)
 
     def __str__(self):
