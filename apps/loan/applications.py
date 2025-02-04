@@ -32,7 +32,7 @@ def download_application_details(request, pk):
     html = HTML(string=html_string)
     css = CSS(string='''
         @page {
-            margin: 1.5cm;
+            margin: 1cm;
             @top-center {
                 content: "Loan Application Details";
             }
@@ -43,7 +43,7 @@ def download_application_details(request, pk):
         body { 
             font-family: Arial, sans-serif;
             font-size: 12pt;
-            line-height: 1.4;
+            line-height: 1.2;
         }
         table { 
             width: 100%;
