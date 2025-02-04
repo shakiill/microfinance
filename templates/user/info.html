@@ -25,7 +25,8 @@
                                 <div class="row">
                                     <div class="col text-center">
                                         <div class="position-relative mb-3">
-                                            <img src="{% if object.photo %}{{ object.photo.url }} {% else %} {% static 'images/dummy.jpg' %} {% endif %}"
+                                            <img src="
+                                                    {% if object.photo %}{{ object.photo.url }} {% else %} {% static 'images/dummy.jpg' %} {% endif %}"
                                                  class="rounded-circle shadow-sm"
                                                  style="width: 150px; height: 150px; object-fit: cover;"
                                                  alt="Customer Photo">
@@ -201,16 +202,21 @@
                                         </thead>
                                         <tbody>
                                         {% for ap in applications %}
-                                        <tr>
-                                            <td>{{ forloop.counter }}</td>
-                                            <td>{{ ap.applied_date|date:'d M, Y' }}</td>
-                                            <td>{{ ap.get_status_display }}</td>
-                                            <td>{{ ap.amount }}</td>
-                                            <td>{{ ap.duration_months }}</td>
-                                            <td>
-                                                <a href="{% url 'loan_kyc' ap.pk %}" class="btn btn-instagram">View</a>
-                                            </td>
-                                        </tr>
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ ap.applied_date|date:'d M, Y' }}</td>
+                                                <td>{{ ap.get_status_display }}</td>
+                                                <td>{{ ap.amount }}</td>
+                                                <td>{{ ap.duration_months }}</td>
+                                                <td>
+                                                    <a href="{% url 'loan_kyc' ap.pk %}"
+                                                       class="btn btn-instagram">View</a>
+                                                    <a href="{% url 'download_application_details' ap.id %}"
+                                                       class="btn btn-primary btn-sm">
+                                                        <i class="fa fa-download"></i> Download Full Details
+                                                    </a>
+                                                </td>
+                                            </tr>
                                         {% endfor %}
                                     </table>
                                 </div>

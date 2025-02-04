@@ -1,0 +1,86 @@
+<!-- application_download.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Loan Application Details - #{{ application.id }}</title>
+</head>
+<body>
+<div class="header">
+    <h1>Loan Application Details</h1>
+    <p>Application #{{ application.id }} - {{ application.customer.name }}</p>
+</div>
+
+<div class="section">
+    <div class="section-title">Application Information</div>
+    <table>
+        <tr>
+            <th>Amount</th>
+            <td>{{ application.amount }}</td>
+            <th>Duration</th>
+            <td>{{ application.duration_months }} months</td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td>{{ application.status }}</td>
+            <th>Applied Date</th>
+            <td>{{ application.applied_date }}</td>
+        </tr>
+        <tr>
+            <th>Purpose</th>
+            <td colspan="3">{{ application.purpose }}</td>
+        </tr>
+    </table>
+</div>
+
+<div class="section">
+    <div class="section-title">Products</div>
+    <table>
+        <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Unit Type</th>
+            <th>Units</th>
+            <th>Unit Price</th>
+            <th>Total Price</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for product in products %}
+            <tr>
+                <td>{{ product.product_name }}</td>
+                <td>{{ product.unit_type }}</td>
+                <td>{{ product.unit }}</td>
+                <td>{{ product.unit_price }}</td>
+                <td>{{ product.total_price }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Similar sections for Guarantors, Assets, Financial Records, Check Info -->
+<div class="section">
+    <div class="section-title">Guarantors</div>
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Relationship</th>
+            <th>Mobile</th>
+            <th>Address</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for guarantor in guarantors %}
+            <tr>
+                <td>{{ guarantor.name }}</td>
+                <td>{{ guarantor.relationship }}</td>
+                <td>{{ guarantor.mobile }}</td>
+                <td>{{ guarantor.address }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
