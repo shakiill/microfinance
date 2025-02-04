@@ -8,7 +8,6 @@
 <div class="header">
     <p>Application #{{ application.id }} - {{ application.customer.name }}</p>
 </div>
-
 <div class="section">
     <div class="section-title">Application Information</div>
     <table>
@@ -30,7 +29,6 @@
         </tr>
     </table>
 </div>
-
 <div class="section">
     <div class="section-title">Products</div>
     <table>
@@ -56,7 +54,6 @@
         </tbody>
     </table>
 </div>
-
 <div class="section">
     {% for guarantor in guarantors %}
         <div class="section-title">Guarantors - #{{ forloop.counter }}</div>
@@ -108,7 +105,6 @@
     </table>
     {% endfor %}
 </div>
-
 <div class="section">
     {% for check in check_info %}
         <div class="section-title">Check Info: {{ forloop.counter }}</div>
@@ -134,8 +130,6 @@
         </table>
     {% endfor %}
 </div>
-
-
 <div class="section">
 
     <div class="section-title">Assets</div>
@@ -167,7 +161,34 @@
     </table>
 
 </div>
+<div class="section">
 
+    <div class="section-title">Financial Records</div>
+    <table>
+        <tbody>
+        <tr>
+            <th>Category</th>
+            <th>Person/Institute</th>
+            <th>Amount</th>
+            <th>Interest rate</th>
+            <th>Installment</th>
+            <th>Outstanding amount</th>
+            <th>End/Maturity Date</th>
+        </tr>
+        {% for fn in financial_records %}
+            <tr>
+                <td>{{ fn.get_record_type_display }}</td>
+                <td>{{ fn.institution_name }}</td>
+                <td>{{ fn.amount }}</td>
+                <td>{% if fn.record_type == 'loan' %}{{ fn.interest_rate }} {% endif %}</td>
+                <td>{% if fn.record_type == 'loan' %}{{ fn.monthly_installment }} {% endif %}</td>
+                <td>{% if fn.record_type == 'loan' %}{{ fn.outstanding_amount }} {% endif %}</td>
+                <td>{% if fn.record_type == 'investment' %}{{ fn.maturity_date }} {% else %} {{ fn.end_date }}{% endif %} </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
+</div>
 </body>
 </html>
