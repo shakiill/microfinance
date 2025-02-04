@@ -136,5 +136,38 @@
 </div>
 
 
+<div class="section">
+
+    <div class="section-title">Assets</div>
+    <table>
+        <tbody>
+        <tr>
+            <th>Owner Name</th>
+            <th>Mouza No</th>
+            <th>Dag No</th>
+            <th>Khatian No</th>
+            <th>Holding No</th>
+            <th>Area</th>
+            <th>Holding Details</th>
+            <th>Estimated Value</th>
+        </tr>
+        {% for asset in assets %}
+            <tr>
+                <td>{{ asset.owner_name }}</td>
+                <td>{{ asset.mouza_no }}</td>
+                <td>{{ asset.dag_no }}</td>
+                <td>{{ asset.khatian_no }}</td>
+                <td>{{ asset.holding_no }}</td>
+                <td>{{ asset.land_area }}</td>
+                <td>{{ asset.description|default:'' }}</td>
+                <td>{{ asset.estimated_value }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+
 </body>
 </html>
