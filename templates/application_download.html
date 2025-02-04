@@ -6,7 +6,6 @@
 </head>
 <body>
 <div class="header">
-    <h1>Loan Application Details</h1>
     <p>Application #{{ application.id }} - {{ application.customer.name }}</p>
 </div>
 
@@ -49,7 +48,7 @@
             <tr>
                 <td>{{ product.product_name }}</td>
                 <td>{{ product.unit_type }}</td>
-                <td>{{ product.unit }}</td>
+                <td>{{ product.units }}</td>
                 <td>{{ product.unit_price }}</td>
                 <td>{{ product.total_price }}</td>
             </tr>
@@ -58,29 +57,85 @@
     </table>
 </div>
 
-<!-- Similar sections for Guarantors, Assets, Financial Records, Check Info -->
 <div class="section">
-    <div class="section-title">Guarantors</div>
+    {% for guarantor in guarantors %}
+        <div class="section-title">Guarantors - #{{ forloop.counter }}</div>
     <table>
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Relationship</th>
-            <th>Mobile</th>
-            <th>Address</th>
-        </tr>
-        </thead>
         <tbody>
-        {% for guarantor in guarantors %}
             <tr>
+                <th>Name:</th>
                 <td>{{ guarantor.name }}</td>
-                <td>{{ guarantor.relationship }}</td>
-                <td>{{ guarantor.mobile }}</td>
+
+                <th>Signature:</th>
+                <td></td>
+            </tr>
+            <tr>
+                <th>Father's Name:</th>
+                <td>{{ guarantor.father }}</td>
+
+                <th>Address:</th>
                 <td>{{ guarantor.address }}</td>
             </tr>
-        {% endfor %}
+            <tr>
+                <th>Mother's Name:</th>
+                <td>{{ guarantor.spouse }}</td>
+
+                <th>Village, Union, Post:</th>
+                <td>{{ guarantor.village }}, {{ guarantor.union }}, {{ guarantor.post }}</td>
+            </tr>
+            <tr>
+                <th>Spouse/Father:</th>
+                <td>{{ guarantor.spouse }}</td>
+
+                <th>Thana, District:</th>
+                <td>{{ guarantor.thana }}, {{ guarantor.district }}</td>
+            </tr>
+            <tr>
+                <th>Education:</th>
+                <td>{{ guarantor.education }}</td>
+
+                <th>Mobile:</th>
+                <td>{{ guarantor.mobile }}</td>
+            </tr>
+            <tr>
+                <th>Deposit No:</th>
+                <td>{{ guarantor.deposit_no }}</td>
+
+                <th>Deposit amount:</th>
+                <td>{{ guarantor.deposit_amount }}</td>
+            </tr>
         </tbody>
     </table>
+    {% endfor %}
 </div>
+
+<div class="section">
+
+    {% for check in check_info %}
+        <div class="section-title">Check Info: {{ forloop.counter }}</div>
+        <table>
+            <tbody>
+            <tr>
+                <th>Account Name</th>
+                <td>{{ check.account_name }}</td>
+                <th>Bank Name</th>
+                <td>{{ check.bank_name }}</td>
+                <th>Check No</th>
+                <td>{{ check.check_no }}</td>
+            </tr>
+            <tr>
+                <th>Account No</th>
+                <td>{{ check.account_no }}</td>
+                <th>Branch Name</th>
+                <td>{{ check.branch_name }}</td>
+                <th>Signature</th>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+    {% endfor %}
+</div>
+
+
 </body>
 </html>

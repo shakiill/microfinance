@@ -1,4 +1,3 @@
-# views.py
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -7,7 +6,6 @@ from django.conf import settings
 import os
 
 from apps.loan.models import LoanApplication, ApplicationProduct, Guarantor, Asset, FinancialRecord, CheckInfo
-
 
 def download_application_details(request, pk):
     # Fetch the loan application
@@ -33,17 +31,48 @@ def download_application_details(request, pk):
     # Create PDF
     html = HTML(string=html_string)
     css = CSS(string='''
-        body { font-family: Arial, sans-serif; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        .header { text-align: center; margin-bottom: 20px; }
-        .section-title { background-color: #f2f2f2; padding: 10px; font-weight: bold; }
+        @page {
+            margin: 1.5cm;
+            @top-center {
+                content: "Loan Application Details";
+            }
+            @bottom-right {
+                content: "Page " counter(page) " of " counter(pages);
+            }
+        }
+        body { 
+            font-family: Arial, sans-serif;
+            font-size: 12pt;
+            line-height: 1.4;
+        }
+        table { 
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        th, td { 
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .header { 
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18pt;
+        }
+        .section-title { 
+            background-color: #f2f2f2;
+            padding: 10px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
     ''')
 
-    pdf = html.write_pdf(stylesheets=[css])
+    # Generate PDF
+    pdf_bytes = html.write_pdf(stylesheets=[css])
 
     # Create HTTP response
-    response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = f'filename="loan_application_{pk}_details.pdf"'
+    response = HttpResponse(pdf_bytes, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="loan_application_{pk}_details.pdf"'
 
     return response
