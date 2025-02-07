@@ -30,8 +30,6 @@ class ApplicationListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin,
         })
         return context
 
-
-
 class LoanApplicationView(CreateView):
     model = LoanApplication
     form_class = LoanApplicationForm
@@ -52,6 +50,21 @@ class LoanKYCView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['products'] = ApplicationProduct.objects.filter(loan_application=self.object)
+        context['guarantors'] = Guarantor.objects.filter(loan_application=self.object)
+        context['assets'] = Asset.objects.filter(loan_application=self.object)
+        context['financials'] = FinancialRecord.objects.filter(loan_application=self.object)
+        context['checks'] = CheckInfo.objects.filter(loan_application=self.object)
+        return context
+
+
+class LoanDetailsView(DetailView):
+    model = LoanApplication
+    template_name = 'application.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['customer'] = self.object.customer
         context['products'] = ApplicationProduct.objects.filter(loan_application=self.object)
         context['guarantors'] = Guarantor.objects.filter(loan_application=self.object)
         context['assets'] = Asset.objects.filter(loan_application=self.object)
