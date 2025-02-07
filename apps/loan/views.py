@@ -1,11 +1,37 @@
-from django.urls import reverse
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView
+from django_filters.views import FilterView
+from django_tables2 import SingleTableMixin
 
+from apps.helpers.views import PageHeaderMixin
+from apps.loan.filters import LoanApplicationFilterSet
 from apps.loan.forms import LoanApplicationForm
 from apps.loan.models import LoanApplication, ApplicationProduct, Guarantor, Asset, FinancialRecord, CheckInfo
+from apps.loan.tables import LoanApplicationTable
 
 
 # Create your views here.
+class ApplicationListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
+    permission_required = 'loan.view_loanapplication'
+    model = LoanApplication
+    template_name = 'list.html'
+    paginate_by = 10
+    ordering = '-id'
+    table_class = LoanApplicationTable
+    filterset_class = LoanApplicationFilterSet
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Applications',
+            'add_link': reverse_lazy('user_add'),
+            'filter': self.filterset
+        })
+        return context
+
+
+
 class LoanApplicationView(CreateView):
     model = LoanApplication
     form_class = LoanApplicationForm

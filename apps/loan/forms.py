@@ -1,9 +1,10 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Row, Column, Submit
+from crispy_forms.layout import Layout, Row, Column, Submit, HTML
 from django import forms
 
 from apps.loan.models import LoanApplication
 from apps.user.models import Customer
+
 
 class LoanApplicationForm(forms.ModelForm):
     class Meta:
@@ -48,4 +49,23 @@ class LoanApplicationForm(forms.ModelForm):
                     Submit('submit', 'Save')
                 ),
             )
+        )
+
+
+class LoanApplicationFilterForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'get'
+        self.helper.layout = Layout(
+            Row(
+                Column('customer', css_class='form-group col-md-2 mb-0'),
+                Column('status', css_class='form-group col-md-2 mb-0'),
+                Column('applied_date', css_class='form-group col-md-2 mb-0'),
+                Column('approved_date', css_class='form-group col-md-2 mb-0'),
+                Column(HTML("""<button class="btn btn-lg btn-primary">Filter</button>"""),
+                       css_class='form-group col-md-1 p-5 mb-0'),
+            ),
         )
