@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Sum
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView
 from django_filters.views import FilterView
@@ -66,6 +67,7 @@ class LoanDetailsView(DetailView):
         context = super().get_context_data(**kwargs)
         context['customer'] = self.object.customer
         context['products'] = ApplicationProduct.objects.filter(loan_application=self.object)
+        context['total_price'] = context['products'].aggregate(total_price=Sum('total_price'))['total_price']
         context['guarantors'] = Guarantor.objects.filter(loan_application=self.object)
         context['assets'] = Asset.objects.filter(loan_application=self.object)
         context['financials'] = FinancialRecord.objects.filter(loan_application=self.object)
