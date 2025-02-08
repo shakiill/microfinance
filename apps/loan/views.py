@@ -91,6 +91,11 @@ class LoanStatusChangeView(View):
         new_status = request.POST.get('status')
         remarks = request.POST.get('remarks')
 
+        if loan.loan:
+            return JsonResponse(
+                {'status': 'error', 'message': 'This application is already sanctioned! Status will not be changed.'},
+                status=400)
+
         if new_status in dict(LoanApplication._meta.get_field('status').choices):
             # Save old status for history
             old_status = loan.status
