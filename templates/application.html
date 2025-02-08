@@ -98,7 +98,7 @@
                 </div>
 
 
-                {% if object.status == 'APPROVED' %}
+                {% if object.status == 'APPROVED' or object.status == 'DISBURSED' %}
                     <div class="card mb-4">
                         <div class="card-header">
                             <div class="d-flex justify-content-between align-items-center">
@@ -118,7 +118,7 @@
                                         <div class="form-group col-md-6">
                                             <label for="principal_amount">Principal Amount</label>
                                             <input type="number" step="0.01" class="form-control" id="principal_amount"
-                                                   name="principal_amount" required>
+                                                   name="principal_amount" value="{{ object.amount }}" required>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="interest_rate">Interest Rate (%)</label>

@@ -122,3 +122,4 @@ def generate_installments(loan):
 
     # Bulk create installments
     Installment.objects.bulk_create(installments)
+

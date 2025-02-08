@@ -209,6 +209,9 @@ class Loan(TimeStamp):
         if not self.maturity_date:
             self.maturity_date = self.disbursed_date + timedelta(days=30 * self.duration_months)
         self.full_clean()
+        self.loan_application.status = 'DISBURSED'
+        self.loan_application.disbursed_date = self.disbursed_date
+        self.loan_application.save()
         super().save(*args, **kwargs)
 
     class Meta:
