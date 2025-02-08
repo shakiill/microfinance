@@ -267,6 +267,8 @@ class Installment(TimeStamp):
 
     loan = models.ForeignKey(Loan, on_delete=models.CASCADE, related_name='installments',
                              help_text="The loan this installment belongs to")
+    interest_amount = models.DecimalField(max_digits=15, decimal_places=2, help_text="Interest amount")
+    principal_amount = models.DecimalField(max_digits=15, decimal_places=2, help_text="Main amount")
     amount = models.DecimalField(max_digits=15, decimal_places=2, help_text="Installment amount")
     paid_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0.00, help_text="Amount paid so far")
     due_date = models.DateField(help_text="Date by which this installment should be paid")

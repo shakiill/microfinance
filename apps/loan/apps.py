@@ -6,4 +6,4 @@ class LoanConfig(AppConfig):
     name = 'apps.loan'
 
     def ready(self):
-        import apps.user.signals
+        import apps.loan.signals

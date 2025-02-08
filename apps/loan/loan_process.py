@@ -1,9 +1,8 @@
 # forms.py
-from dateutil.relativedelta import relativedelta
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import Loan, LoanApplication
+from .models import Loan
 
 
 class LoanGenerationForm(forms.ModelForm):
@@ -48,9 +47,10 @@ class LoanGenerationForm(forms.ModelForm):
             raise ValidationError(f"Error in calculations: {str(e)}")
 
 
+from dateutil.relativedelta import relativedelta
 from django.db import transaction
 from django.http import JsonResponse
-
+from .models import LoanApplication, Installment
 
 @transaction.atomic
 def generate_loan(request, application_id):
@@ -72,9 +72,12 @@ def generate_loan(request, application_id):
                 loan.disbursed_amount = loan.principal_amount
                 loan.save()
 
+                # Generate Installments
+                generate_installments(loan)
+
                 return JsonResponse({
                     'status': 'success',
-                    'message': 'Loan generated successfully'
+                    'message': 'Loan and Installments generated successfully'
                 })
             else:
                 return JsonResponse({
@@ -93,3 +96,29 @@ def generate_loan(request, application_id):
         'status': 'error',
         'message': 'Invalid request method'
     }, status=405)
+
+
+def generate_installments(loan):
+    """
+    Generate installments for the given loan.
+    """
+    monthly_interest = loan.interest / loan.duration_months
+    monthly_principal = loan.principal_amount / loan.duration_months
+    total_monthly_payment = monthly_interest + monthly_principal
+
+    due_date = loan.disbursed_date
+
+    installments = []
+    for i in range(loan.duration_months):
+        due_date += relativedelta(months=1)  # Increment by 1 month
+
+        installments.append(Installment(
+            loan=loan,
+            interest_amount=round(monthly_interest, 2),
+            principal_amount=round(monthly_principal, 2),
+            amount=round(total_monthly_payment, 2),
+            due_date=due_date
+        ))
+
+    # Bulk create installments
+    Installment.objects.bulk_create(installments)
