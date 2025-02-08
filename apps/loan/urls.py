@@ -10,5 +10,5 @@ urlpatterns = [
     path('loan/applications/', staff_required(views.ApplicationListView.as_view()), name='applications'),
     path('application/<int:pk>/download/', download_application_details, name='download_application_details'),
     path('application/<int:pk>/details/', staff_required(views.LoanDetailsView.as_view()), name='application_details'),
-
+    path('application/<int:pk>/change-status/', staff_required(views.LoanStatusChangeView.as_view()), name='application_change_status'),
 ]

@@ -5,7 +5,7 @@ from django.db import models
 from django.utils.timezone import now
 
 from apps.helpers.models import TimeStamp
-from apps.user.models import Customer
+from apps.user.models import Customer, CustomUser
 
 
 # Create your models here.
@@ -48,6 +48,21 @@ class LoanApplication(TimeStamp):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+
+
+class LoanStatusHistory(TimeStamp):
+    loan = models.ForeignKey(LoanApplication, on_delete=models.CASCADE, related_name='status_history')
+    from_status = models.CharField(max_length=50, choices=LoanApplication._meta.get_field('status').choices)
+    to_status = models.CharField(max_length=50, choices=LoanApplication._meta.get_field('status').choices)
+    changed_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
+    remarks = models.TextField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.loan.id} - {self.from_status} to {self.to_status}"
 
 
 class ApplicationProduct(TimeStamp):
@@ -171,7 +186,7 @@ class CheckInfo(TimeStamp):
 
 class Loan(TimeStamp):
     loan_application = models.OneToOneField(LoanApplication, on_delete=models.CASCADE, related_name='loan',
-                                       help_text="The approved loan application")
+                                            help_text="The approved loan application")
     principal_amount = models.DecimalField(max_digits=15, decimal_places=2, help_text="Approved loan amount")
     interest_rate = models.DecimalField(max_digits=5, decimal_places=2, help_text="Annual interest rate (percentage)")
     duration_months = models.PositiveIntegerField(help_text="Repayment duration in months")

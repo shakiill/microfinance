@@ -1,6 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Sum
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
+from django.views import View
 from django.views.generic import CreateView, DetailView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
@@ -8,7 +11,8 @@ from django_tables2 import SingleTableMixin
 from apps.helpers.views import PageHeaderMixin
 from apps.loan.filters import LoanApplicationFilterSet
 from apps.loan.forms import LoanApplicationForm
-from apps.loan.models import LoanApplication, ApplicationProduct, Guarantor, Asset, FinancialRecord, CheckInfo
+from apps.loan.models import LoanApplication, ApplicationProduct, Guarantor, Asset, FinancialRecord, CheckInfo, \
+    LoanStatusHistory
 from apps.loan.tables import LoanApplicationTable
 
 
@@ -31,6 +35,7 @@ class ApplicationListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin,
         })
         return context
 
+
 class LoanApplicationView(CreateView):
     model = LoanApplication
     form_class = LoanApplicationForm
@@ -44,6 +49,7 @@ class LoanApplicationView(CreateView):
         pk = self.kwargs.get('pk')  # Get the user ID from the URL
         kwargs.update({'user': pk})  # Pass the user ID as a keyword argument
         return kwargs
+
 
 class LoanKYCView(DetailView):
     model = LoanApplication
@@ -73,3 +79,43 @@ class LoanDetailsView(DetailView):
         context['financials'] = FinancialRecord.objects.filter(loan_application=self.object)
         context['checks'] = CheckInfo.objects.filter(loan_application=self.object)
         return context
+
+
+# views.py
+from django.utils import timezone
+
+
+class LoanStatusChangeView(View):
+    def post(self, request, pk):
+        loan = get_object_or_404(LoanApplication, pk=pk)
+        new_status = request.POST.get('status')
+        remarks = request.POST.get('remarks')
+
+        if new_status in dict(LoanApplication._meta.get_field('status').choices):
+            # Save old status for history
+            old_status = loan.status
+
+            # Update loan status
+            loan.status = new_status
+            if new_status == 'APPROVED':
+                loan.approved_date = timezone.now()
+            elif new_status == 'DISBURSED':
+                loan.disbursed_date = timezone.now()
+            loan.save()
+
+            # Create status history entry
+            LoanStatusHistory.objects.create(
+                loan=loan,
+                from_status=old_status,
+                to_status=new_status,
+                changed_by=request.user,
+                remarks=remarks
+            )
+
+            return JsonResponse({
+                'status': 'success',
+                'new_status': new_status,
+                'changed_by': request.user.name,
+                'changed_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+            })
+        return JsonResponse({'status': 'error', 'message': 'Invalid status'}, status=400)
