@@ -180,7 +180,7 @@ class CheckInfo(TimeStamp):
         verbose_name_plural = 'Check Info Records'
 
     def __str__(self):
-        return f"Check {self.check_no} for Loan #{self.application.id}"
+        return f"Check {self.check_no} for Loan #{self.loan_application.id}"
 
 
 class Loan(TimeStamp):
@@ -188,6 +188,7 @@ class Loan(TimeStamp):
                                             help_text="The approved loan application")
     principal_amount = models.DecimalField(max_digits=15, decimal_places=2, help_text="Approved loan amount")
     interest_rate = models.DecimalField(max_digits=5, decimal_places=2, help_text="Annual interest rate (percentage)")
+    interest = models.DecimalField(max_digits=15, decimal_places=2, help_text="Total Interest")
     duration_months = models.PositiveIntegerField(help_text="Repayment duration in months")
     disbursed_date = models.DateField(null=True, blank=True, help_text="Loan disbursement date")
     maturity_date = models.DateField(null=True, blank=True, help_text="Loan maturity date")
@@ -200,15 +201,7 @@ class Loan(TimeStamp):
     disbursed_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0.00,
                                            help_text="disbursed paid so far")
 
-    def calculate_monthly_installment(self):
-        """Calculate the fixed monthly installment (EMI)."""
-        if self.interest_rate <= 0:
-            return self.principal_amount / self.duration_months
 
-        monthly_rate = self.interest_rate / (12 * 100)
-        numerator = self.principal_amount * monthly_rate * (1 + monthly_rate) ** self.duration_months
-        denominator = (1 + monthly_rate) ** self.duration_months - 1
-        return round(numerator / denominator, 2)
 
     def save(self, *args, **kwargs):
         if not self.disbursed_date:
@@ -223,7 +216,7 @@ class Loan(TimeStamp):
         verbose_name_plural = 'Loans'
 
     def __str__(self):
-        return f"Loan #{self.id} - {self.application.customer.name}"
+        return f"Loan #{self.id} - {self.loan_application.customer.name}"
 
 
 class LoanDisbursementTransaction(TimeStamp):

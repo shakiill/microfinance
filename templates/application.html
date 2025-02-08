@@ -73,8 +73,8 @@
                                 </button>
                             </div>
                         </div>
-
                     </div>
+
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
@@ -96,6 +96,76 @@
                         {% endif %}
                     </div>
                 </div>
+
+
+                {% if object.status == 'APPROVED' %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Generate Loan</h5>
+                                {% if not object.loan %}
+                                    <span class="badge badge-warning">Pending</span>
+                                {% else %}
+                                    <span class="badge badge-success">Generated</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if not object.loan %}
+                            <div class="card-body">
+                                <form id="loanGenerationForm" method="post">
+                                    {% csrf_token %}
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="principal_amount">Principal Amount</label>
+                                            <input type="number" step="0.01" class="form-control" id="principal_amount"
+                                                   name="principal_amount" required>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="interest_rate">Interest Rate (%)</label>
+                                            <input type="number" step="0.01" class="form-control" id="interest_rate"
+                                                   name="interest_rate" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="duration_months">Duration (Months)</label>
+                                            <input type="number" class="form-control" id="duration_months"
+                                                   name="duration_months" required>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="disbursed_date">Disbursement Date</label>
+                                            <input type="date" class="form-control" id="disbursed_date"
+                                                   name="disbursed_date" required>
+                                        </div>
+                                    </div>
+                                    <!-- Hidden fields for calculated values -->
+                                    <input type="hidden" name="interest" id="interest">
+                                    <input type="hidden" name="maturity_date" id="maturity_date">
+                                    <button type="submit" class="btn btn-primary" id="generateLoanBtn">Generate Loan
+                                    </button>
+                                </form>
+                            </div>
+                        {% else %}
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Principal Amount:</strong>
+                                            ৳ {{ object.loan.principal_amount|floatformat:2 }}</p>
+                                        <p><strong>Interest Rate:</strong> {{ object.loan.interest_rate }}%</p>
+                                        <p><strong>Total Interest:</strong> ৳{{ object.loan.interest|floatformat:2 }}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Duration:</strong> {{ object.loan.duration_months }} months</p>
+                                        <p><strong>Disbursed Date:</strong> {{ object.loan.disbursed_date }}</p>
+                                        <p><strong>Maturity Date:</strong> {{ object.loan.maturity_date }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
 
                 <!-- Products Section remains the same -->
                 <div class="card mb-4">
@@ -517,6 +587,46 @@
                     isSubmitting = false;
                     confirmButton.disabled = false;
                     confirmButton.innerHTML = 'Save Changes';
+                });
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const loanForm = document.getElementById('loanGenerationForm');
+
+            if (loanForm) {
+                loanForm.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+
+                    const submitBtn = document.getElementById('generateLoanBtn');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = 'Generating...';
+
+                    try {
+                        const formData = new FormData(this);
+                        const response = await fetch(`/loan/application/{{ object.id }}/generate-loan/`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: formData
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            alert('Loan generated successfully!');
+                            window.location.reload();
+                        } else {
+                            throw new Error(data.message || 'Failed to generate loan');
+                        }
+                    } catch (error) {
+                        alert(`Error: ${error.message}`);
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'Generate Loan';
+                    }
                 });
             }
         });
