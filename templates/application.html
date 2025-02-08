@@ -7,335 +7,335 @@
         <div class="row">
             <!-- Left Column -->
             <div class="col-md-3">
-                <div class="scrollable-column pl-2">
-                    <!-- Customer Photo Card -->
-                    <div class="card mb-4">
-                        <div class="card-body text-center">
-                            {% if customer.photo %}
-                                <img src="{{ customer.photo.url }}" alt="{{ customer.name }}"
-                                     class="rounded-circle img-thumbnail mb-3"
-                                     style="width: 150px; height: 150px; object-fit: cover;">
-                            {% endif %}
-                            <h5 class="mb-0">{{ customer.name }}</h5>
-                            <p class="text-muted">Customer ID: {{ customer.uuid }}</p>
-                        </div>
+                {#                <div class="scrollable-column pl-2">#}
+                <!-- Customer Photo Card -->
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        {% if customer.photo %}
+                            <img src="{{ customer.photo.url }}" alt="{{ customer.name }}"
+                                 class="rounded-circle img-thumbnail mb-3"
+                                 style="width: 150px; height: 150px; object-fit: cover;">
+                        {% endif %}
+                        <h5 class="mb-0">{{ customer.name }}</h5>
+                        <p class="text-muted">Customer ID: {{ customer.uuid }}</p>
+                    </div>
 
-                        <div class="card-body">
-                            <h6 class="border-bottom pb-2">Personal Information</h6>
-                            <p><strong>Full Name:</strong> {{ customer.name }}</p>
-                            <p><strong>Father's Name:</strong> {{ customer.father }}</p>
-                            <p><strong>Mother's Name:</strong> {{ customer.mother }}</p>
-                            <p><strong>Spouse:</strong> {{ customer.spouse|default:"N/A" }}</p>
-                            <p><strong>Education:</strong> {{ customer.education|default:"N/A" }}</p>
-                            <p><strong>Date of Birth:</strong> {{ customer.dob|default:"N/A" }}</p>
-                            <p><strong>Gender:</strong> {{ customer.get_gender_display }}</p>
-                            <p><strong>Mobile:</strong> {{ customer.mobile }}</p>
-                            <p><strong>Alternative Mobile:</strong> {{ customer.alt_mobile|default:"N/A" }}</p>
+                    <div class="card-body">
+                        <h6 class="border-bottom pb-2">Personal Information</h6>
+                        <p><strong>Full Name:</strong> {{ customer.name }}</p>
+                        <p><strong>Father's Name:</strong> {{ customer.father }}</p>
+                        <p><strong>Mother's Name:</strong> {{ customer.mother }}</p>
+                        <p><strong>Spouse:</strong> {{ customer.spouse|default:"N/A" }}</p>
+                        <p><strong>Education:</strong> {{ customer.education|default:"N/A" }}</p>
+                        <p><strong>Date of Birth:</strong> {{ customer.dob|default:"N/A" }}</p>
+                        <p><strong>Gender:</strong> {{ customer.get_gender_display }}</p>
+                        <p><strong>Mobile:</strong> {{ customer.mobile }}</p>
+                        <p><strong>Alternative Mobile:</strong> {{ customer.alt_mobile|default:"N/A" }}</p>
 
-                            <h6 class="border-bottom pb-2 pt-10">Present Address</h6>
-                            <p><strong>Village:</strong> {{ customer.village|default:"N/A" }}</p>
-                            <p><strong>Word No:</strong> {{ customer.word_no|default:"N/A" }}</p>
-                            <p><strong>Post Office:</strong> {{ customer.post_office|default:"N/A" }}</p>
-                            <p><strong>Union:</strong> {{ customer.union|default:"N/A" }}</p>
-                            <p><strong>Upazila:</strong> {{ customer.upazila|default:"N/A" }}</p>
-                            <p><strong>District:</strong> {{ customer.district|default:"N/A" }}</p>
+                        <h6 class="border-bottom pb-2 pt-10">Present Address</h6>
+                        <p><strong>Village:</strong> {{ customer.village|default:"N/A" }}</p>
+                        <p><strong>Word No:</strong> {{ customer.word_no|default:"N/A" }}</p>
+                        <p><strong>Post Office:</strong> {{ customer.post_office|default:"N/A" }}</p>
+                        <p><strong>Union:</strong> {{ customer.union|default:"N/A" }}</p>
+                        <p><strong>Upazila:</strong> {{ customer.upazila|default:"N/A" }}</p>
+                        <p><strong>District:</strong> {{ customer.district|default:"N/A" }}</p>
 
-                            {% if not customer.is_address %}
-                                <p><strong>Village:</strong> {{ customer.p_village|default:"N/A" }}</p>
-                                <p><strong>Word No:</strong> {{ customer.p_word_no|default:"N/A" }}</p>
-                                <p><strong>Post Office:</strong> {{ customer.p_post_office|default:"N/A" }}</p>
-                                <p><strong>Union:</strong> {{ customer.p_union|default:"N/A" }}</p>
-                                <p><strong>Upazila:</strong> {{ customer.p_upazila|default:"N/A" }}</p>
-                                <p><strong>District:</strong> {{ customer.p_district|default:"N/A" }}</p>
-                            {% endif %}
+                        {% if not customer.is_address %}
+                            <p><strong>Village:</strong> {{ customer.p_village|default:"N/A" }}</p>
+                            <p><strong>Word No:</strong> {{ customer.p_word_no|default:"N/A" }}</p>
+                            <p><strong>Post Office:</strong> {{ customer.p_post_office|default:"N/A" }}</p>
+                            <p><strong>Union:</strong> {{ customer.p_union|default:"N/A" }}</p>
+                            <p><strong>Upazila:</strong> {{ customer.p_upazila|default:"N/A" }}</p>
+                            <p><strong>District:</strong> {{ customer.p_district|default:"N/A" }}</p>
+                        {% endif %}
 
-                        </div>
                     </div>
                 </div>
+                {#                </div>#}
             </div>
 
             <!-- Right Column -->
             <div class="col-md-9">
-                <div class="scrollable-column pr-2">
-                    <!-- Loan Details Section remains the same -->
-                    <div class="card mb-4">
+                {#                <div class="scrollable-column pr-2">#}
+                <!-- Loan Details Section remains the same -->
+                <div class="card mb-4">
 
-                        <div class="card-header">
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <h5 class="mb-0">Loan Details #{{ object.id }}</h5>
-                                    <p class="text-muted mb-0">Applied on: {{ object.applied_date }}</p>
-                                </div>
-                                <div class="col-md-4 text-right">
-                                    <button class="btn btn-primary btn-sm" data-toggle="modal"
-                                            data-target="#statusChangeModal">
-                                        Change Status
-                                    </button>
-                                </div>
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5 class="mb-0">Loan Details #{{ object.id }}</h5>
+                                <p class="text-muted mb-0">Applied on: {{ object.applied_date }}</p>
                             </div>
+                            <div class="col-md-4 text-right">
+                                <button class="btn btn-primary btn-sm" data-toggle="modal"
+                                        data-target="#statusChangeModal">
+                                    Change Status
+                                </button>
+                            </div>
+                        </div>
 
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>Amount:</strong> ৳ {{ object.amount|floatformat:2 }}</p>
-                                    <p><strong>Duration:</strong> {{ object.duration_months }} months</p>
-                                    <p><strong>Applied Date:</strong> {{ object.applied_date }}</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>Risk Score:</strong> {{ object.risk_score|default:"Not calculated" }}</p>
-                                    <p><strong>Status:</strong> {{ object.status }}</p>
-                                    <p><strong>Approved Date:</strong> {{ object.approved_date|default:'Pending' }} </p>
-                                </div>
-                            </div>
-                            {% if object.purpose %}
-                                <div class="mt-3">
-                                    <h6>Purpose:</h6>
-                                    <p class="mb-0">{{ object.purpose }}</p>
-                                </div>
-                            {% endif %}
-                        </div>
                     </div>
-
-
-                    <!-- Products Section remains the same -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">Products</h5>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Amount:</strong> ৳ {{ object.amount|floatformat:2 }}</p>
+                                <p><strong>Duration:</strong> {{ object.duration_months }} months</p>
+                                <p><strong>Applied Date:</strong> {{ object.applied_date }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Risk Score:</strong> {{ object.risk_score|default:"Not calculated" }}</p>
+                                <p><strong>Status:</strong> {{ object.status }}</p>
+                                <p><strong>Approved Date:</strong> {{ object.approved_date|default:'Pending' }} </p>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead>
+                        {% if object.purpose %}
+                            <div class="mt-3">
+                                <h6>Purpose:</h6>
+                                <p class="mb-0">{{ object.purpose }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+
+                <!-- Products Section remains the same -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Products</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>SL#</th>
+                                    <th>Product</th>
+                                    <th>Unit Type</th>
+                                    <th>Units</th>
+                                    <th>Unit Price</th>
+                                    <th>Total</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for product in products %}
                                     <tr>
-                                        <th>SL#</th>
-                                        <th>Product</th>
-                                        <th>Unit Type</th>
-                                        <th>Units</th>
-                                        <th>Unit Price</th>
-                                        <th>Total</th>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ product.product_name }}</td>
+                                        <td>{{ product.unit_type }}</td>
+                                        <td>{{ product.units }}</td>
+                                        <td>৳ {{ product.unit_price|floatformat:2 }}</td>
+                                        <td>৳ {{ product.total_price|floatformat:2 }}</td>
                                     </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for product in products %}
-                                        <tr>
-                                            <td>{{ forloop.counter }}</td>
-                                            <td>{{ product.product_name }}</td>
-                                            <td>{{ product.unit_type }}</td>
-                                            <td>{{ product.units }}</td>
-                                            <td>৳ {{ product.unit_price|floatformat:2 }}</td>
-                                            <td>৳ {{ product.total_price|floatformat:2 }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                    <tfoot>
-                                    <tr>
-                                        <th colspan="5" class="text-right">Total =</th>
-                                        <th> ৳ {{ total_price }} </th>
-                                    </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Enhanced Guarantors Section -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">Guarantors</h5>
-                        </div>
-                        <div class="card-body">
-                            {% for guarantor in guarantors %}
-                                <div class="border rounded p-3 {% if not forloop.last %}mb-3{% endif %}">
-                                    <div class="d-flex align-items-center mb-3">
-                                        {% if guarantor.photo %}
-                                            <img src="{{ guarantor.photo.url }}" alt="{{ guarantor.name }}"
-                                                 class="rounded-circle mr-3"
-                                                 style="width: 50px; height: 50px; object-fit: cover;">
-                                        {% endif %}
-                                        <div>
-                                            <h6 class="mb-0">{{ guarantor.name }}</h6>
-                                            <small class="text-muted">{{ guarantor.relationship }}</small>
-                                        </div>
-                                    </div>
-
-                                    <h6 class="border-bottom pb-2">Personal Information</h6>
-                                    <p><strong>Father's Name:</strong> {{ guarantor.father }}</p>
-                                    <p><strong>Mother's Name:</strong> {{ guarantor.mother }}</p>
-
-                                    <p><strong>Spouse:</strong> {{ guarantor.spouse }}</p>
-
-                                    <p><strong>Date of Birth:</strong> {{ guarantor.dob }}</p>
-
-                                    <p><strong>Education:</strong> {{ guarantor.education }}</p>
-
-                                    <p><strong>Mobile:</strong> {{ guarantor.mobile }}</p>
-
-                                    <h6 class="border-bottom pb-2 mt-3">Address</h6>
-
-                                    <p><strong>Village:</strong> {{ guarantor.village }}</p>
-
-                                    <p><strong>Post Office:</strong> {{ guarantor.post }}</p>
-
-                                    <p><strong>Union:</strong> {{ guarantor.union }}</p>
-
-                                    <p><strong>Thana:</strong> {{ guarantor.thana }}</p>
-
-                                    <p><strong>District:</strong> {{ guarantor.district }}</p>
-
-                                    <h6 class="border-bottom pb-2 mt-3">Deposit Information</h6>
-                                    <p><strong>Deposit No:</strong> {{ guarantor.deposit_no }}</p>
-                                    <p><strong>Deposit Date:</strong> {{ guarantor.deposit_date }}</p>
-                                    <p><strong>Amount:</strong> ৳{{ guarantor.deposit_amount|floatformat:2 }}</p>
-
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <!-- Financial Records Section remains the same -->
-                    <!-- Financial Records Section remains the same -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">Financial Records</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead>
-                                    <tr>
-                                        <th>Institution Name</th>
-                                        <th>Type</th>
-                                        <th>Amount</th>
-                                        <th>Monthly Payment</th>
-                                        <th>Outstanding amount</th>
-                                        <th>End/Maturity Date</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for record in financials %}
-                                        <tr>
-                                            <td>{{ record.institution_name }}</td>
-                                            <td>{{ record.get_record_type_display }}</td>
-                                            <td>৳ {{ record.amount|floatformat:2 }}</td>
-                                            <td>
-                                                {% if record.monthly_installment %}
-                                                    ৳ {{ record.monthly_installment|floatformat:2 }}
-                                                {% else %}
-                                                    N/A
-                                                {% endif %}
-                                            </td>
-                                            <td>
-                                                {% if record.record_type == 'investment' %}
-                                                    N/A
-                                                {% else %}
-                                                  ৳ {{ record.outstanding_amount }}
-                                                {% endif %}
-                                            </td>
-                                            <td>
-                                                {% if record.record_type == 'investment' %}
-                                                   {{ record.maturity_date }}
-                                                {% else %}
-                                                   {{ record.end_date }}
-                                                {% endif %}
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Check Information Section remains the same -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">Check Information</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead>
-                                    <tr>
-                                        <th>Account</th>
-                                        <th>Account No</th>
-                                        <th>Check No</th>
-                                        <th>Bank</th>
-                                        <th>Branch</th>
-                                        <th>Image</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for check in checks %}
-                                        <tr>
-                                            <td>{{ check.account_name }}</td>
-                                            <td>{{ check.account_no }}</td>
-                                            <td>{{ check.check_no }}</td>
-                                            <td>{{ check.bank_name }}</td>
-                                            <td>{{ check.branch_name }}</td>
-                                            <td>
-                                                {% if check.image %}
-                                                    <img src="{{ check.image.url }}" alt="Check Image"
-                                                         class="img-thumbnail" style="max-width: 200px;">
-                                                {% endif %}
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Enhanced Assets Section -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">Asset Information</h5>
-                        </div>
-                        <div class="card-body">
-                            {% if assets %}
-                                {% for asset in assets %}
-                                    <div class="border rounded p-3 mb-3">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <h6 class="text-primary">Land Details - #{{ forloop.counter }}</h6>
-                                                <p><strong>Type:</strong> {{ asset.get_land_type_display }}</p>
-                                                <p><strong>Owner Name:</strong> {{ asset.owner_name }}</p>
-                                                <p><strong>Land Area:</strong> {{ asset.land_area }} decimal</p>
-                                                <p><strong>Estimated Value:</strong>
-                                                    ৳{{ asset.estimated_value|floatformat:2 }}</p>
-                                                {% if asset.year_of_mortgage %}
-                                                    <p><strong>Mortgage Year:</strong> {{ asset.year_of_mortgage }}</p>
-                                                {% endif %}
-                                            </div>
-                                            <div class="col-md-6">
-                                                <h6 class="text-primary">Document Information</h6>
-                                                <p><strong>Mouza No:</strong> {{ asset.mouza_no }}</p>
-                                                <p><strong>Dag No:</strong> {{ asset.dag_no }}</p>
-                                                <p><strong>Khatian No:</strong> {{ asset.khatian_no }}</p>
-                                                <p><strong>Holding No:</strong> {{ asset.holding_no }}</p>
-                                                {% if asset.document %}
-                                                    <p><strong>Document:</strong> <a href="{{ asset.document.url }}"
-                                                                                     target="_blank"
-                                                                                     class="btn btn-sm btn-outline-primary">View
-                                                        Document</a></p>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        {% if asset.description %}
-                                            <div class="mt-3">
-                                                <h6 class="text-primary">Description</h6>
-                                                <p class="mb-0">{{ asset.description }}</p>
-                                            </div>
-                                        {% endif %}
-                                    </div>
                                 {% endfor %}
-                            {% else %}
-                                <p class="text-muted mb-0">No assets recorded for this application.</p>
-                            {% endif %}
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <th colspan="5" class="text-right">Total =</th>
+                                    <th> ৳ {{ total_price }} </th>
+                                </tr>
+                                </tfoot>
+                            </table>
                         </div>
                     </div>
                 </div>
+
+                <!-- Enhanced Guarantors Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Guarantors</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for guarantor in guarantors %}
+                            <div class="border rounded p-3 {% if not forloop.last %}mb-3{% endif %}">
+                                <div class="d-flex align-items-center mb-3">
+                                    {% if guarantor.photo %}
+                                        <img src="{{ guarantor.photo.url }}" alt="{{ guarantor.name }}"
+                                             class="rounded-circle mr-3"
+                                             style="width: 50px; height: 50px; object-fit: cover;">
+                                    {% else %}
+                                        <img src="{% static 'images/dummy.jpg' %}" alt="{{ guarantor.name }}"
+                                             class="rounded-circle mr-3"
+                                             style="width: 50px; height: 50px; object-fit: cover;">
+                                    {% endif %}
+                                    <div>
+                                        <h6 class="mb-0">{{ guarantor.name }}</h6>
+                                        <small class="text-muted">{{ guarantor.relationship }}</small>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="border-bottom pb-2 mt-3">Personal Information</h6>
+                                        <p><strong>Father's Name:</strong> {{ guarantor.father }}</p>
+                                        <p><strong>Mother's Name:</strong> {{ guarantor.mother }}</p>
+                                        <p><strong>Spouse:</strong> {{ guarantor.spouse }}</p>
+                                        <p><strong>Date of Birth:</strong> {{ guarantor.dob }}</p>
+                                        <p><strong>Education:</strong> {{ guarantor.education }}</p>
+                                        <p><strong>Mobile:</strong> {{ guarantor.mobile }}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="border-bottom pb-2 mt-3">Address</h6>
+                                        <p><strong>Village:</strong> {{ guarantor.village }}</p>
+                                        <p><strong>Post Office:</strong> {{ guarantor.post }}</p>
+                                        <p><strong>Union:</strong> {{ guarantor.union }}</p>
+                                        <p><strong>Thana:</strong> {{ guarantor.thana }}</p>
+                                        <p><strong>District:</strong> {{ guarantor.district }}</p>
+                                    </div>
+                                </div>
+
+
+                                <h6 class="border-bottom pb-2 mt-3">Deposit Information</h6>
+                                <p><strong>Deposit No:</strong> {{ guarantor.deposit_no }}</p>
+                                <p><strong>Deposit Date:</strong> {{ guarantor.deposit_date }}</p>
+                                <p><strong>Amount:</strong> ৳{{ guarantor.deposit_amount|floatformat:2 }}</p>
+
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Financial Records Section remains the same -->
+                <!-- Financial Records Section remains the same -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Financial Records</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Institution Name</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Monthly Payment</th>
+                                    <th>Outstanding amount</th>
+                                    <th>End/Maturity Date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for record in financials %}
+                                    <tr>
+                                        <td>{{ record.institution_name }}</td>
+                                        <td>{{ record.get_record_type_display }}</td>
+                                        <td>৳ {{ record.amount|floatformat:2 }}</td>
+                                        <td>
+                                            {% if record.monthly_installment %}
+                                                ৳ {{ record.monthly_installment|floatformat:2 }}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if record.record_type == 'investment' %}
+                                                N/A
+                                            {% else %}
+                                                ৳ {{ record.outstanding_amount }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if record.record_type == 'investment' %}
+                                                {{ record.maturity_date }}
+                                            {% else %}
+                                                {{ record.end_date }}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Check Information Section remains the same -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Check Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Account</th>
+                                    <th>Account No</th>
+                                    <th>Check No</th>
+                                    <th>Bank</th>
+                                    <th>Branch</th>
+                                    <th>Image</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for check in checks %}
+                                    <tr>
+                                        <td>{{ check.account_name }}</td>
+                                        <td>{{ check.account_no }}</td>
+                                        <td>{{ check.check_no }}</td>
+                                        <td>{{ check.bank_name }}</td>
+                                        <td>{{ check.branch_name }}</td>
+                                        <td>
+                                            {% if check.image %}
+                                                <img src="{{ check.image.url }}" alt="Check Image"
+                                                     class="img-thumbnail" style="max-width: 200px;">
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Assets Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Asset Information</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if assets %}
+                            {% for asset in assets %}
+                                <div class="border rounded p-3 mb-3">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6 class="text-primary">Land Details - #{{ forloop.counter }}</h6>
+                                            <p><strong>Type:</strong> {{ asset.get_land_type_display }}</p>
+                                            <p><strong>Owner Name:</strong> {{ asset.owner_name }}</p>
+                                            <p><strong>Land Area:</strong> {{ asset.land_area }} decimal</p>
+                                            <p><strong>Estimated Value:</strong>
+                                                ৳{{ asset.estimated_value|floatformat:2 }}</p>
+                                            {% if asset.year_of_mortgage %}
+                                                <p><strong>Mortgage Year:</strong> {{ asset.year_of_mortgage }}</p>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6 class="text-primary">Document Information</h6>
+                                            <p><strong>Mouza No:</strong> {{ asset.mouza_no }}</p>
+                                            <p><strong>Dag No:</strong> {{ asset.dag_no }}</p>
+                                            <p><strong>Khatian No:</strong> {{ asset.khatian_no }}</p>
+                                            <p><strong>Holding No:</strong> {{ asset.holding_no }}</p>
+                                            {% if asset.document %}
+                                                <p><strong>Document:</strong> <a href="{{ asset.document.url }}"
+                                                                                 target="_blank"
+                                                                                 class="btn btn-sm btn-outline-primary">View
+                                                    Document</a></p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% if asset.description %}
+                                        <div class="mt-3">
+                                            <h6 class="text-primary">Description</h6>
+                                            <p class="mb-0">{{ asset.description }}</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted mb-0">No assets recorded for this application.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {#                </div>#}
 
                 <!-- Status History Card -->
 
