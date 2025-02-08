@@ -97,7 +97,6 @@
                     </div>
                 </div>
 
-
                 <!-- Products Section remains the same -->
                 <div class="card mb-4">
                     <div class="card-header">
@@ -163,7 +162,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <h6 class="border-bottom pb-2 mt-3">Personal Information</h6>
                                         <p><strong>Father's Name:</strong> {{ guarantor.father }}</p>
                                         <p><strong>Mother's Name:</strong> {{ guarantor.mother }}</p>
@@ -172,7 +171,7 @@
                                         <p><strong>Education:</strong> {{ guarantor.education }}</p>
                                         <p><strong>Mobile:</strong> {{ guarantor.mobile }}</p>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <h6 class="border-bottom pb-2 mt-3">Address</h6>
                                         <p><strong>Village:</strong> {{ guarantor.village }}</p>
                                         <p><strong>Post Office:</strong> {{ guarantor.post }}</p>
@@ -180,13 +179,14 @@
                                         <p><strong>Thana:</strong> {{ guarantor.thana }}</p>
                                         <p><strong>District:</strong> {{ guarantor.district }}</p>
                                     </div>
+                                    <div class="col-md-4">
+                                        <h6 class="border-bottom pb-2 mt-3">Deposit Information</h6>
+                                        <p><strong>Deposit No:</strong> {{ guarantor.deposit_no }}</p>
+                                        <p><strong>Deposit Date:</strong> {{ guarantor.deposit_date }}</p>
+                                        <p><strong>Amount:</strong> ৳{{ guarantor.deposit_amount|floatformat:2 }}</p>
+                                    </div>
                                 </div>
 
-
-                                <h6 class="border-bottom pb-2 mt-3">Deposit Information</h6>
-                                <p><strong>Deposit No:</strong> {{ guarantor.deposit_no }}</p>
-                                <p><strong>Deposit Date:</strong> {{ guarantor.deposit_date }}</p>
-                                <p><strong>Amount:</strong> ৳{{ guarantor.deposit_amount|floatformat:2 }}</p>
 
                             </div>
                         {% endfor %}
