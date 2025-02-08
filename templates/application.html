@@ -194,22 +194,56 @@
                     </div>
 
                     <!-- Financial Records Section remains the same -->
+                    <!-- Financial Records Section remains the same -->
                     <div class="card mb-4">
                         <div class="card-header">
                             <h5 class="mb-0">Financial Records</h5>
                         </div>
                         <div class="card-body">
-                            {% for record in financials %}
-                                <div class="{% if not forloop.last %}border-bottom mb-3 pb-3{% endif %}">
-                                    <h6>{{ record.institution_name }}</h6>
-                                    <p class="mb-1"><strong>Type:</strong> {{ record.get_record_type_display }}</p>
-                                    <p class="mb-1"><strong>Amount:</strong> ৳{{ record.amount|floatformat:2 }}</p>
-                                    {% if record.monthly_installment %}
-                                        <p class="mb-1"><strong>Monthly Payment:</strong>
-                                            ৳{{ record.monthly_installment|floatformat:2 }}</p>
-                                    {% endif %}
-                                </div>
-                            {% endfor %}
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>Institution Name</th>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                        <th>Monthly Payment</th>
+                                        <th>Outstanding amount</th>
+                                        <th>End/Maturity Date</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for record in financials %}
+                                        <tr>
+                                            <td>{{ record.institution_name }}</td>
+                                            <td>{{ record.get_record_type_display }}</td>
+                                            <td>৳ {{ record.amount|floatformat:2 }}</td>
+                                            <td>
+                                                {% if record.monthly_installment %}
+                                                    ৳ {{ record.monthly_installment|floatformat:2 }}
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if record.record_type == 'investment' %}
+                                                    N/A
+                                                {% else %}
+                                                  ৳ {{ record.outstanding_amount }}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if record.record_type == 'investment' %}
+                                                   {{ record.maturity_date }}
+                                                {% else %}
+                                                   {{ record.end_date }}
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
 
@@ -219,17 +253,37 @@
                             <h5 class="mb-0">Check Information</h5>
                         </div>
                         <div class="card-body">
-                            {% for check in checks %}
-                                <div class="{% if not forloop.last %}border-bottom mb-3 pb-3{% endif %}">
-                                    <p class="mb-1"><strong>Account:</strong> {{ check.account_name }}</p>
-                                    <p class="mb-1"><strong>Check No:</strong> {{ check.check_no }}</p>
-                                    <p class="mb-1"><strong>Bank:</strong> {{ check.bank_name }}</p>
-                                    {% if check.image %}
-                                        <img src="{{ check.image.url }}" alt="Check Image" class="img-thumbnail mt-2"
-                                             style="max-width: 200px;">
-                                    {% endif %}
-                                </div>
-                            {% endfor %}
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>Account</th>
+                                        <th>Account No</th>
+                                        <th>Check No</th>
+                                        <th>Bank</th>
+                                        <th>Branch</th>
+                                        <th>Image</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for check in checks %}
+                                        <tr>
+                                            <td>{{ check.account_name }}</td>
+                                            <td>{{ check.account_no }}</td>
+                                            <td>{{ check.check_no }}</td>
+                                            <td>{{ check.bank_name }}</td>
+                                            <td>{{ check.branch_name }}</td>
+                                            <td>
+                                                {% if check.image %}
+                                                    <img src="{{ check.image.url }}" alt="Check Image"
+                                                         class="img-thumbnail" style="max-width: 200px;">
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
 
@@ -244,7 +298,7 @@
                                     <div class="border rounded p-3 mb-3">
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <h6 class="text-primary">Land Details</h6>
+                                                <h6 class="text-primary">Land Details - #{{ forloop.counter }}</h6>
                                                 <p><strong>Type:</strong> {{ asset.get_land_type_display }}</p>
                                                 <p><strong>Owner Name:</strong> {{ asset.owner_name }}</p>
                                                 <p><strong>Land Area:</strong> {{ asset.land_area }} decimal</p>
