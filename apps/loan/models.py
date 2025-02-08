@@ -20,7 +20,6 @@ class LoanApplication(TimeStamp):
                                   ('APPROVED', 'Approved'),
                                   ('REJECTED', 'Rejected'),
                                   ('DISBURSED', 'Disbursed'),
-                                  ('CLOSED', 'Closed'),
                               ],
                               default='PENDING', help_text="Current status of the loan application")
     applied_date = models.DateField(auto_now_add=True)
