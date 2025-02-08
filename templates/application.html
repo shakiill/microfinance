@@ -59,9 +59,21 @@
                 <div class="scrollable-column pr-2">
                     <!-- Loan Details Section remains the same -->
                     <div class="card mb-4">
+
                         <div class="card-header">
-                            <h5 class="mb-0">Loan Details #{{ object.id }}</h5>
-                            <p class="text-muted mb-0">Applied on: {{ object.applied_date }}</p>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h5 class="mb-0">Loan Details #{{ object.id }}</h5>
+                                    <p class="text-muted mb-0">Applied on: {{ object.applied_date }}</p>
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <button class="btn btn-primary btn-sm" data-toggle="modal"
+                                            data-target="#statusChangeModal">
+                                        Change Status
+                                    </button>
+                                </div>
+                            </div>
+
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -283,9 +295,6 @@
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Status History</h5>
-                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#statusChangeModal">
-                    Change Status
-                </button>
             </div>
             <div class="card-body">
                 <div class="status-history-timeline">
@@ -422,20 +431,20 @@
                                 const newEntry = document.createElement('div');
                                 newEntry.className = 'timeline-item';
                                 newEntry.innerHTML = `
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <strong>${data.new_status}</strong>
-                                </div>
-                                <small class="text-muted">${data.changed_at}</small>
-                            </div>
-                            <div class="text-muted">Changed by: ${data.changed_by}</div>
-                            ${remarksField.value ? `
-                            <div class="mt-2">
-                                <small class="text-muted">Remarks:</small>
-                                <p class="mb-0">${remarksField.value}</p>
-                            </div>
-                            ` : ''}
-                        `;
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <strong>${data.new_status}</strong>
+                                        </div>
+                                        <small class="text-muted">${data.changed_at}</small>
+                                    </div>
+                                    <div class="text-muted">Changed by: ${data.changed_by}</div>
+                                    ${remarksField.value ? `
+                                    <div class="mt-2">
+                                        <small class="text-muted">Remarks:</small>
+                                        <p class="mb-0">${remarksField.value}</p>
+                                    </div>
+                                    ` : ''}
+                                `;
                                 timeline.insertBefore(newEntry, timeline.firstChild);
                             }
 
@@ -447,6 +456,7 @@
 
                             // Show success message
                             alert('Status updated successfully!');
+                            window.location.reload()
                         } else {
                             throw new Error(data.message || 'Unknown error occurred');
                         }
