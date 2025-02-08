@@ -12,7 +12,7 @@ from apps.helpers.views import PageHeaderMixin
 from apps.loan.filters import LoanApplicationFilterSet
 from apps.loan.forms import LoanApplicationForm
 from apps.loan.models import LoanApplication, ApplicationProduct, Guarantor, Asset, FinancialRecord, CheckInfo, \
-    LoanStatusHistory
+    LoanStatusHistory, Loan
 from apps.loan.tables import LoanApplicationTable
 
 
@@ -91,7 +91,9 @@ class LoanStatusChangeView(View):
         new_status = request.POST.get('status')
         remarks = request.POST.get('remarks')
 
-        if loan.loan:
+        disburse_loan = Loan.objects.filter(loan_application=loan.pk)
+
+        if disburse_loan:
             return JsonResponse(
                 {'status': 'error', 'message': 'This application is already sanctioned! Status will not be changed.'},
                 status=400)
