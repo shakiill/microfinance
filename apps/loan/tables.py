@@ -63,7 +63,8 @@ class LoanTable(tables.Table):
     class Meta:
         model = Loan
         fields = (
-            'customer_name', 'customer_mobile', 'amount', 'duration_months', 'status', 'applied_date', 'approved_date')
+        'customer_name', 'customer_mobile', 'principal_amount', 'interest_rate', 'interest', 'duration_months',
+        'disbursed_amount', 'status', 'disbursed_date', 'maturity_date')
         attrs = {
             'class': 'table table-hover table-separate table-head-custom table-checkable',
             'id': 'kt_datatable'

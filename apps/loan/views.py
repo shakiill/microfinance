@@ -9,11 +9,11 @@ from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
 from apps.helpers.views import PageHeaderMixin
-from apps.loan.filters import LoanApplicationFilterSet
+from apps.loan.filters import LoanApplicationFilterSet, LoanFilterSet
 from apps.loan.forms import LoanApplicationForm
 from apps.loan.models import LoanApplication, ApplicationProduct, Guarantor, Asset, FinancialRecord, CheckInfo, \
     LoanStatusHistory, Loan
-from apps.loan.tables import LoanApplicationTable
+from apps.loan.tables import LoanApplicationTable, LoanTable
 
 
 # Create your views here.
@@ -31,6 +31,25 @@ class ApplicationListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin,
         context.update({
             'page_title': 'Applications',
             'add_link': reverse_lazy('user_add'),
+            'filter': self.filterset
+        })
+        return context
+
+
+class LoanListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
+    permission_required = 'loan.view_loan'
+    model = Loan
+    template_name = 'list.html'
+    paginate_by = 10
+    ordering = '-created_at'
+    table_class = LoanTable
+    filterset_class = LoanFilterSet
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Disbursed Loans',
+            # 'add_link': reverse_lazy('user_add'),
             'filter': self.filterset
         })
         return context

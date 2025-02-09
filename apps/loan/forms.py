@@ -69,3 +69,23 @@ class LoanApplicationFilterForm(forms.Form):
                        css_class='form-group col-md-1 p-5 mb-0'),
             ),
         )
+
+
+class LoanFilterForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'get'
+        self.helper.layout = Layout(
+            Row(
+                Column('name', css_class='form-group col-md-2 mb-0'),
+                Column('mobile', css_class='form-group col-md-2 mb-0'),
+                Column('status', css_class='form-group col-md-2 mb-0'),
+                Column('maturity_date', css_class='form-group col-md-2 mb-0'),
+                Column('disbursed_date', css_class='form-group col-md-2 mb-0'),
+                Column(HTML("""<button class="btn btn-lg btn-primary">Filter</button>"""),
+                       css_class='form-group col-md-1 p-5 mb-0'),
+            ),
+        )
