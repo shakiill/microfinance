@@ -1,7 +1,7 @@
 import django_filters
 from django_filters.widgets import RangeWidget
 
-from apps.loan.forms import LoanApplicationFilterForm
+from apps.loan.forms import LoanApplicationFilterForm, LoanFilterForm
 from apps.loan.models import LoanApplication, Loan
 
 
@@ -30,4 +30,4 @@ class LoanFilterSet(django_filters.FilterSet):
     class Meta:
         model = Loan
         fields = ['status', 'disbursed_date', 'maturity_date']
-        form = LoanApplicationFilterForm
+        form = LoanFilterForm

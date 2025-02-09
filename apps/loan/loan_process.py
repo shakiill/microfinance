@@ -8,7 +8,8 @@ from .models import Loan
 class LoanGenerationForm(forms.ModelForm):
     class Meta:
         model = Loan
-        fields = ['principal_amount', 'interest_rate', 'duration_months', 'disbursed_date', 'interest', 'maturity_date']
+        fields = ['principal_amount', 'interest_rate', 'duration_months', 'disbursed_date', 'interest', 'maturity_date',
+                  'assign_by']
         widgets = {
             'disbursed_date': forms.DateInput(attrs={'type': 'date'}),
             'interest': forms.HiddenInput(),
@@ -20,6 +21,7 @@ class LoanGenerationForm(forms.ModelForm):
         # Make the hidden fields not required in the form
         self.fields['interest'].required = False
         self.fields['maturity_date'].required = False
+        self.fields['assign_by'].required = True
 
     def clean(self):
         cleaned_data = super().clean()
@@ -52,6 +54,7 @@ from django.db import transaction
 from django.http import JsonResponse
 from .models import LoanApplication, Installment
 
+
 @transaction.atomic
 def generate_loan(request, application_id):
     if request.method == 'POST':
@@ -69,7 +72,6 @@ def generate_loan(request, application_id):
             if form.is_valid():
                 loan = form.save(commit=False)
                 loan.loan_application = application
-                loan.disbursed_amount = loan.principal_amount
                 loan.save()
 
                 # Generate Installments
@@ -122,4 +124,3 @@ def generate_installments(loan):
 
     # Bulk create installments
     Installment.objects.bulk_create(installments)
-

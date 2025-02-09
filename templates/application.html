@@ -115,27 +115,35 @@
                                 <form id="loanGenerationForm" method="post">
                                     {% csrf_token %}
                                     <div class="form-row">
-                                        <div class="form-group col-md-6">
+                                        <div class="form-group col-md-3">
                                             <label for="principal_amount">Principal Amount</label>
                                             <input type="number" step="0.01" class="form-control" id="principal_amount"
                                                    name="principal_amount" value="{{ object.amount }}" required>
                                         </div>
-                                        <div class="form-group col-md-6">
+                                        <div class="form-group col-md-3">
                                             <label for="interest_rate">Interest Rate (%)</label>
                                             <input type="number" step="0.01" class="form-control" id="interest_rate"
                                                    name="interest_rate" required>
                                         </div>
-                                    </div>
-                                    <div class="form-row">
-                                        <div class="form-group col-md-6">
+                                    
+                                        <div class="form-group col-md-3">
                                             <label for="duration_months">Duration (Months)</label>
                                             <input type="number" class="form-control" id="duration_months"
                                                    name="duration_months" required>
                                         </div>
-                                        <div class="form-group col-md-6">
+                                        <div class="form-group col-md-3">
                                             <label for="disbursed_date">Disbursement Date</label>
                                             <input type="date" class="form-control" id="disbursed_date"
                                                    name="disbursed_date" required>
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <label for="assign_by">Disbursement Date</label>
+                                            <select class="form-control" id="assign_by" name="assign_by" required>
+                                                <option value="">Select an employee</option>
+                                                {% for employee in assign_by_list %}
+                                                    <option value="{{ employee.id }}">{{ employee.name }} - {{ employee.mobile }}</option>
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                     </div>
                                     <!-- Hidden fields for calculated values -->

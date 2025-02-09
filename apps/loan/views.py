@@ -14,6 +14,7 @@ from apps.loan.forms import LoanApplicationForm
 from apps.loan.models import LoanApplication, ApplicationProduct, Guarantor, Asset, FinancialRecord, CheckInfo, \
     LoanStatusHistory, Loan
 from apps.loan.tables import LoanApplicationTable, LoanTable
+from apps.user.models import CustomUser
 
 
 # Create your views here.
@@ -97,6 +98,7 @@ class LoanDetailsView(DetailView):
         context['assets'] = Asset.objects.filter(loan_application=self.object)
         context['financials'] = FinancialRecord.objects.filter(loan_application=self.object)
         context['checks'] = CheckInfo.objects.filter(loan_application=self.object)
+        context['assign_by_list'] = CustomUser.objects.all()
         return context
 
 

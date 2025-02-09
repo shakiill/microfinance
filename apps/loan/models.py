@@ -215,6 +215,9 @@ class Loan(TimeStamp):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True, blank=True, related_name='user_loans')
     added_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)
 
+    assign_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True,
+                                  related_name='loans_assign_by')
+
     def save(self, *args, **kwargs):
         if not self.disbursed_date:
             self.disbursed_date = now().date()
