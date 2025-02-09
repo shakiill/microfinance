@@ -26,6 +26,12 @@ class LoanApplicationViewSet(viewsets.ModelViewSet):
     serializer_class = LoanApplicationSerializers
     queryset = LoanApplicationSerializers.Meta.model.objects.all()
 
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(created_by=self.request.user)
+
 
 class ApplicationProductViewSet(viewsets.ModelViewSet):
     authentication_classes = [CsrfExemptSessionAuthentication]
@@ -35,6 +41,12 @@ class ApplicationProductViewSet(viewsets.ModelViewSet):
     """
     serializer_class = ApplicationProductSerializers
     queryset = ApplicationProductSerializers.Meta.model.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(added_by=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(added_by=self.request.user)
 
 
 class FinancialRecordViewSet(viewsets.ModelViewSet):
@@ -46,6 +58,12 @@ class FinancialRecordViewSet(viewsets.ModelViewSet):
     serializer_class = FinancialRecordSerializers
     queryset = FinancialRecordSerializers.Meta.model.objects.all()
 
+    def perform_create(self, serializer):
+        serializer.save(added_by=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(added_by=self.request.user)
+
 
 class CheckInfoViewSet(viewsets.ModelViewSet):
     authentication_classes = [CsrfExemptSessionAuthentication]
@@ -55,6 +73,12 @@ class CheckInfoViewSet(viewsets.ModelViewSet):
     """
     serializer_class = CheckInfoSerializers
     queryset = CheckInfoSerializers.Meta.model.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(added_by=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(added_by=self.request.user)
 
 
 class GuarantorViewSet(viewsets.ModelViewSet):
@@ -66,6 +90,12 @@ class GuarantorViewSet(viewsets.ModelViewSet):
     serializer_class = GuarantorSerializers
     queryset = GuarantorSerializers.Meta.model.objects.all()
 
+    def perform_create(self, serializer):
+        serializer.save(added_by=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(added_by=self.request.user)
+
 
 class AssetViewSet(viewsets.ModelViewSet):
     authentication_classes = [CsrfExemptSessionAuthentication]
@@ -75,3 +105,9 @@ class AssetViewSet(viewsets.ModelViewSet):
     """
     serializer_class = AssetSerializers
     queryset = AssetSerializers.Meta.model.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(added_by=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(added_by=self.request.user)

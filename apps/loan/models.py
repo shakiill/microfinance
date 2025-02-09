@@ -31,6 +31,8 @@ class LoanApplication(TimeStamp):
     credit_committee_approval = models.BooleanField(default=False)
     rejection_reason = models.TextField(null=True, blank=True)
 
+    created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='created_loans')
+
     class Meta:
         ordering = ['-applied_date']
         verbose_name = 'Loan Application'
@@ -72,6 +74,7 @@ class ApplicationProduct(TimeStamp):
     units = models.PositiveIntegerField(default=1, help_text="Number of units of the product")
     unit_price = models.DecimalField(max_digits=15, decimal_places=2, help_text="Price per unit of the product")
     total_price = models.DecimalField(max_digits=15, decimal_places=2, help_text="Total price for the product")
+    added_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
 
     def save(self, *args, **kwargs):
         # Automatically calculate the total price as unit * unit_price
@@ -106,6 +109,8 @@ class Guarantor(TimeStamp):
     deposit_date = models.DateField(null=True, blank=True)
     deposit_amount = models.FloatField(null=True, blank=True)
 
+    added_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
+
 
 class Asset(TimeStamp):
     class LandTypeChoices(models.TextChoices):
@@ -126,6 +131,8 @@ class Asset(TimeStamp):
     description = models.TextField(null=True, blank=True)
     year_of_mortgage = models.IntegerField(null=True, blank=True)
     document = models.FileField(upload_to='assets/', null=True, blank=True)
+
+    added_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
 
 
 class FinancialRecord(TimeStamp):
@@ -153,6 +160,8 @@ class FinancialRecord(TimeStamp):
                                               help_text="Monthly installment amount (if applicable)")
     end_date = models.DateField(null=True, blank=True, help_text="Expected end date for the obligation (if applicable)")
 
+    added_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
+
     def __str__(self):
         return f"{self.institution_name} ({self.record_type})"
 
@@ -174,6 +183,8 @@ class CheckInfo(TimeStamp):
     branch_name = models.CharField(max_length=100, help_text="Branch name")
     remarks = models.TextField(null=True, blank=True, help_text="Additional remarks for the check")
     image = models.ImageField(upload_to='check_images/', null=True, blank=True, help_text="Upload image of the check")
+
+    added_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
 
     class Meta:
         verbose_name = 'Check Info'
@@ -200,6 +211,8 @@ class Loan(TimeStamp):
                               ], default='ACTIVE', help_text="Current loan status")
     disbursed_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0.00,
                                            help_text="disbursed paid so far")
+
+    added_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
 
     def save(self, *args, **kwargs):
         if not self.disbursed_date:
