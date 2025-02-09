@@ -12,7 +12,7 @@ from apps.helpers.views import PageHeaderMixin
 from apps.loan.filters import LoanApplicationFilterSet, LoanFilterSet
 from apps.loan.forms import LoanApplicationForm
 from apps.loan.models import LoanApplication, ApplicationProduct, Guarantor, Asset, FinancialRecord, CheckInfo, \
-    LoanStatusHistory, Loan
+    LoanStatusHistory, Loan, LoanDisbursementTransaction, Installment, Transaction
 from apps.loan.tables import LoanApplicationTable, LoanTable
 from apps.user.models import CustomUser
 
@@ -85,7 +85,7 @@ class LoanKYCView(DetailView):
         return context
 
 
-class LoanDetailsView(DetailView):
+class LoanApplicationDetailsView(DetailView):
     model = LoanApplication
     template_name = 'application.html'
 
@@ -147,3 +147,15 @@ class LoanStatusChangeView(View):
                 'changed_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')
             })
         return JsonResponse({'status': 'error', 'message': 'Invalid status'}, status=400)
+
+
+class LoanDetailsView(DetailView):
+    model = Loan
+    template_name = 'loans.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['customer'] = self.object.customer
+        context['installments'] = Installment.objects.filter(loan=self.object)
+        context['disbursement_transaction'] = LoanDisbursementTransaction.objects.filter(loan=self.object)
+        return context

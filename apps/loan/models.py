@@ -254,6 +254,11 @@ class LoanDisbursementTransaction(TimeStamp):
     disbursed_to = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='loan_disbursements',
                                      help_text="Customer receiving the loan disbursement")
 
+    created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='disbursement_created_by')
+    updated_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='disbursement_updated_by')
+
     def save(self, *args, **kwargs):
         # Update loan's disbursed amount (if needed, for auditing purposes)
         if self.pk is None:  # New transaction

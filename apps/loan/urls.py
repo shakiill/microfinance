@@ -3,6 +3,7 @@ from django.urls import path
 from . import views
 from .applications import download_application_details
 from .loan_process import generate_loan
+from .transections import create_disbursement, update_disbursement
 from ..helpers.views import staff_required
 
 urlpatterns = [
@@ -12,8 +13,13 @@ urlpatterns = [
     path('loan/applications/', staff_required(views.ApplicationListView.as_view()), name='applications'),
     path('all/', staff_required(views.LoanListView.as_view()), name='all_loans'),
 
+    path('<int:pk>/details/', staff_required(views.LoanDetailsView.as_view()), name='loan_details'),
+    path('<int:loan_id>/create-disbursement/', create_disbursement, name='create_disbursement'),
+    path('<int:disbursement_id>/update-disbursement/', update_disbursement, name='update_disbursement'),
+
     path('application/<int:pk>/download/', download_application_details, name='download_application_details'),
-    path('application/<int:pk>/details/', staff_required(views.LoanDetailsView.as_view()), name='application_details'),
+    path('application/<int:pk>/details/', staff_required(views.LoanApplicationDetailsView.as_view()),
+         name='application_details'),
     path('application/<int:pk>/change-status/', staff_required(views.LoanStatusChangeView.as_view()),
          name='application_change_status'),
     path('application/<int:application_id>/generate-loan/', generate_loan, name='generate_loan'),

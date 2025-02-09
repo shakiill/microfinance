@@ -54,7 +54,7 @@ class LoanTable(tables.Table):
 
     actions = tables.TemplateColumn(
         template_code='''
-            <a href="{% url 'download_application_details' record.id %}" class="btn btn-sm btn-light-danger"><i class="fa fa-download"></i></a>
+            <a href="{% url 'loan_details' record.id %}" class="btn btn-sm btn-light-danger"><i class="fa fa-eye"></i></a>
         ''',
         orderable=False,
         verbose_name='Actions'

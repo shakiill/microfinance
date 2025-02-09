@@ -1,0 +1,319 @@
+{% extends 'includes/main.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <!-- Loan Summary Card -->
+        <div class="row mb-4">
+            <div class="col">
+                <div class="card card-custom">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-file-invoice-dollar mr-2"></i>Loan Details #{{ loan.id }}
+                        </h3>
+                        <div class="card-toolbar">
+                            <span class="badge badge-{{ loan.status|lower }} px-3 py-2">
+                                <i class="fas fa-circle mr-1"></i>{{ loan.status }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Customer Information -->
+                            <div class="col-md-6">
+                                <div class="card card-custom card-stretch gutter-b">
+                                    <div class="card-body">
+                                        <h5 class="text-dark mb-4">
+                                            <i class="fas fa-user mr-2"></i>Customer Information
+                                        </h5>
+                                        <table class="table table-borderless">
+                                            <tr>
+                                                <td><strong>Name:</strong></td>
+                                                <td>{{ customer.name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Customer ID:</strong></td>
+                                                <td>{{ customer.id }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Loan Summary -->
+                            <div class="col-md-6">
+                                <div class="card card-custom card-stretch gutter-b">
+                                    <div class="card-body">
+                                        <h5 class="text-dark mb-4">
+                                            <i class="fas fa-chart-line mr-2"></i>Loan Summary
+                                        </h5>
+                                        <table class="table table-borderless">
+                                            <tr>
+                                                <td><strong>Principal Amount:</strong></td>
+                                                <td class="text-primary">${{ loan.principal_amount|floatformat:2 }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Interest Rate:</strong></td>
+                                                <td class="text-info">{{ loan.interest_rate }}%</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Duration:</strong></td>
+                                                <td>{{ loan.duration_months }} months</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Disbursed Date:</strong></td>
+                                                <td>{{ loan.disbursed_date }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Maturity Date:</strong></td>
+                                                <td>{{ loan.maturity_date }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Disbursement Transactions -->
+        <div class="row mb-4">
+            <div class="col">
+                <div class="card card-custom">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-money-bill-wave mr-2"></i>Disbursement Transactions
+                        </h3>
+                        <div class="card-toolbar">
+                            <button type="button" class="btn btn-primary" onclick="LoanDisbursement.showCreateModal()">
+                                <i class="fas fa-plus mr-2"></i>New Disbursement
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" id="disbursementTable">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Type</th>
+                                    <th>Remarks</th>
+                                    <th>Created By</th>
+                                    <th>Updated By</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for transaction in disbursement_transaction %}
+                                    <tr>
+                                        <td>{{ transaction.transaction_date }}</td>
+                                        <td class="text-right">${{ transaction.amount|floatformat:2 }}</td>
+                                        <td><span class="badge badge-info">{{ transaction.transaction_type }}</span>
+                                        </td>
+                                        <td>{{ transaction.remarks|default:"-" }}</td>
+                                        <td>{{ transaction.created_by }}</td>
+                                        <td>{{ transaction.updated_by }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary"
+                                                    onclick="LoanDisbursement.edit({{ transaction.id }}, this)"
+                                                    data-date="{{ transaction.transaction_date|date:'Y-m-d' }}"
+                                                    data-amount="{{ transaction.amount }}"
+                                                    data-remarks="{{ transaction.remarks|default:'' }}"
+                                            >
+                                                <i class="fas fa-edit"></i> Edit
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- New Disbursement Modal -->
+    <div class="modal fade" id="disbursementModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-plus-circle mr-2"></i>New Disbursement</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <form id="disbursementForm" method="post" action="{% url 'create_disbursement' loan.id %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label><i class="fas fa-dollar-sign mr-2"></i>Amount</label>
+                            <input type="number" step="0.01" class="form-control" name="amount" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar mr-2"></i>Transaction Date</label>
+                            <input type="date" class="form-control" name="transaction_date" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-comment mr-2"></i>Remarks</label>
+                            <textarea class="form-control" name="remarks" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                            <i class="fas fa-times mr-2"></i>Close
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save mr-2"></i>Create Disbursement
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Disbursement Modal -->
+    <div class="modal fade" id="editDisbursementModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-edit mr-2"></i>Edit Disbursement</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <form id="editDisbursementForm" method="post">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label><i class="fas fa-dollar-sign mr-2"></i>Amount</label>
+                            <input type="number" step="0.01" class="form-control" name="amount" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar mr-2"></i>Transaction Date</label>
+                            <input type="date" class="form-control" name="transaction_date" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-comment mr-2"></i>Remarks</label>
+                            <textarea class="form-control" name="remarks" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                            <i class="fas fa-times mr-2"></i>Close
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save mr-2"></i>Update Disbursement
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'js/loans/disbursement.js' %}"></script>
+    <script>
+        // Initialize the LoanDisbursement module
+        const LoanDisbursement = {
+            init() {
+                this.bindEvents();
+                this.initializeDatePickers();
+                this.initializeDataTable();
+            },
+
+            bindEvents() {
+                $('#disbursementForm').on('submit', this.handleCreate.bind(this));
+                $('#editDisbursementForm').on('submit', this.handleUpdate.bind(this));
+            },
+
+            initializeDatePickers() {
+                $('input[name="transaction_date"]').datepicker({
+                    format: 'yyyy-mm-dd',
+                    autoclose: true,
+                    todayHighlight: true
+                });
+            },
+
+            initializeDataTable() {
+                $('#disbursementTable').DataTable({
+                    order: [[0, 'desc']],
+                    pageLength: 10,
+                    responsive: true
+                });
+            },
+
+            showCreateModal() {
+                $('#disbursementModal').modal('show');
+                $('#disbursementForm')[0].reset();
+                $('input[name="transaction_date"]').val(new Date().toISOString().split('T')[0]);
+            },
+
+            edit(id, button) {
+                const $button = $(button);
+                const form = $('#editDisbursementForm');
+
+                form.attr('action', `/loan/${id}/update-disbursement/`);
+                form.find('input[name="amount"]').val($button.data('amount'));
+                form.find('input[name="transaction_date"]').val($button.data('date'));
+                form.find('textarea[name="remarks"]').val($button.data('remarks'));
+
+                $('#editDisbursementModal').modal('show');
+            },
+
+            async handleCreate(e) {
+                e.preventDefault();
+                const form = $(e.currentTarget);
+
+                try {
+                    const response = await this.submitForm(form);
+                    if (response.success) {
+                        toastr.success('Disbursement created successfully');
+                        location.reload();
+                    } else {
+                        toastr.error(response.error || 'Error creating disbursement');
+                    }
+                } catch (error) {
+                    toastr.error('Error creating disbursement');
+                }
+            },
+
+            async handleUpdate(e) {
+                e.preventDefault();
+                const form = $(e.currentTarget);
+
+                try {
+                    const response = await this.submitForm(form);
+                    if (response.success) {
+                        toastr.success('Disbursement updated successfully');
+                        location.reload();
+                    } else {
+                        toastr.error(response.error || 'Error updating disbursement');
+                    }
+                } catch (error) {
+                    toastr.error('Error updating disbursement');
+                }
+            },
+
+            async submitForm(form) {
+                const response = await $.ajax({
+                    url: form.attr('action'),
+                    method: 'POST',
+                    data: form.serialize(),
+                    headers: {
+                        'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                    }
+                });
+                return response;
+            }
+        };
+
+        // Initialize when document is ready
+        $(document).ready(() => LoanDisbursement.init());
+    </script>
+{% endblock %}
