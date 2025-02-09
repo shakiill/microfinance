@@ -56,6 +56,8 @@ def update_disbursement(request, disbursement_id):
         # Update the updated_by field
         disbursement.updated_by = request.user
 
+        print(request.user)
+
         # Save the changes
         disbursement.save()
 
