@@ -49,7 +49,7 @@
                                         <table class="table table-borderless">
                                             <tr>
                                                 <td><strong>Principal Amount:</strong></td>
-                                                <td class="text-primary">${{ loan.principal_amount|floatformat:2 }}</td>
+                                                <td class="text-primary">৳ {{ loan.principal_amount|floatformat:2 }}</td>
                                             </tr>
                                             <tr>
                                                 <td><strong>Interest Rate:</strong></td>
@@ -109,7 +109,7 @@
                                 {% for transaction in disbursement_transaction %}
                                     <tr>
                                         <td>{{ transaction.transaction_date }}</td>
-                                        <td class="text-right">${{ transaction.amount|floatformat:2 }}</td>
+                                        <td class="text-right">৳ {{ transaction.amount|floatformat:2 }}</td>
                                         <td><span class="badge badge-info">{{ transaction.transaction_type }}</span>
                                         </td>
                                         <td>{{ transaction.remarks|default:"-" }}</td>
@@ -160,10 +160,10 @@
                                 {% for installment in installments %}
                                     <tr>
                                         <td>{{ installment.due_date }}</td>
-                                        <td>${{ installment.principal_amount|floatformat:2 }}</td>
-                                        <td>${{ installment.interest_amount|floatformat:2 }}</td>
-                                        <td>${{ installment.amount|floatformat:2 }}</td>
-                                        <td>${{ installment.paid_amount|floatformat:2 }}</td>
+                                        <td>৳ {{ installment.principal_amount|floatformat:2 }}</td>
+                                        <td>৳ {{ installment.interest_amount|floatformat:2 }}</td>
+                                        <td>৳ {{ installment.amount|floatformat:2 }}</td>
+                                        <td>৳ {{ installment.paid_amount|floatformat:2 }}</td>
                                         <td>
                                             <span class="badge badge-{{ installment.payment_status|lower }}">
                                                 {{ installment.payment_status }}
