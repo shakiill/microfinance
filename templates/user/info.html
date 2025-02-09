@@ -26,6 +26,7 @@
                                     <div class="col text-center">
                                         <div class="position-relative mb-3">
                                             <img src="
+                                                    
                                                     {% if object.photo %}{{ object.photo.url }} {% else %} {% static 'images/dummy.jpg' %} {% endif %}"
                                                  class="rounded-circle shadow-sm"
                                                  style="width: 150px; height: 150px; object-fit: cover;"
@@ -209,8 +210,13 @@
                                                 <td>{{ ap.amount }}</td>
                                                 <td>{{ ap.duration_months }}</td>
                                                 <td>
-                                                    <a href="{% url 'loan_kyc' ap.pk %}"
-                                                       class="btn btn-instagram">View</a>
+                                                    {% if ap.loan %}
+                                                        <a href="{% url 'application_details' ap.pk %}"
+                                                           class="btn btn-instagram">View</a>
+                                                    {% else %}
+                                                        <a href="{% url 'loan_kyc' ap.pk %}"
+                                                           class="btn btn-instagram">View</a>
+                                                    {% endif %}
                                                     <a href="{% url 'download_application_details' ap.id %}"
                                                        class="btn btn-primary btn-sm">
                                                         <i class="fa fa-download"></i> Download Full Details
