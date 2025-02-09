@@ -156,6 +156,6 @@ class LoanDetailsView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['customer'] = self.object.customer
-        context['installments'] = Installment.objects.filter(loan=self.object)
+        context['installments'] = Installment.objects.filter(loan=self.object).order_by('due_date')
         context['disbursement_transaction'] = LoanDisbursementTransaction.objects.filter(loan=self.object)
         return context
