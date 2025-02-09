@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from decimal import Decimal
 from datetime import datetime
 
-from apps.loan.models import LoanDisbursementTransaction, Loan
+from apps.loan.models import LoanDisbursementTransaction, Loan, Installment, Transaction
 
 
 @login_required
@@ -70,3 +70,25 @@ def update_disbursement(request, disbursement_id):
             'success': False,
             'error': str(e)
         })
+
+
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib import messages
+
+
+def make_payment(request, installment_id):
+    if request.method == 'POST':
+        installment = get_object_or_404(Installment, id=installment_id)
+        amount = Decimal(request.POST.get('amount'))
+        remarks = request.POST.get('remarks')
+
+        # Create the transaction
+        Transaction.objects.create(
+            installment=installment,
+            amount=amount,
+            transaction_type=Transaction.TransactionTypeChoices.PAYMENT,
+            remarks=remarks
+        )
+
+        messages.success(request, 'Payment recorded successfully.')
+        return redirect('loan_detail', loan_id=installment.loan.id)
