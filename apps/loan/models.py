@@ -212,7 +212,7 @@ class Loan(TimeStamp):
                               ], default='ACTIVE', help_text="Current loan status")
     disbursed_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0.00,
                                            help_text="disbursed paid so far")
-
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True, blank=True, related_name='user_loans')
     added_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)
 
     def save(self, *args, **kwargs):
@@ -224,6 +224,7 @@ class Loan(TimeStamp):
         self.loan_application.status = 'DISBURSED'
         self.loan_application.disbursed_date = self.disbursed_date
         self.loan_application.save()
+        self.customer = self.loan_application.customer
         super().save(*args, **kwargs)
 
     class Meta:
