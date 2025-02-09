@@ -6,7 +6,7 @@ from apps.loan.models import LoanApplication, ApplicationProduct, Guarantor, Ass
 class LoanApplicationSerializers(serializers.ModelSerializer):
     class Meta:
         model = LoanApplication
-        fields = ['id', 'customer', 'amount', 'duration_months', 'purpose']
+        fields = ['id', 'customer', 'status', 'amount', 'duration_months', 'purpose']
 
 
 class ApplicationProductSerializers(serializers.ModelSerializer):

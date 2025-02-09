@@ -17,6 +17,7 @@ class LoanApplication(TimeStamp):
     status = models.CharField(max_length=50,
                               choices=[
                                   ('PENDING', 'Pending'),
+                                  ('SEND', 'Send for Approval'),
                                   ('APPROVED', 'Approved'),
                                   ('REJECTED', 'Rejected'),
                                   ('DISBURSED', 'Disbursed'),
@@ -47,7 +48,6 @@ class LoanApplication(TimeStamp):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
-
 
 
 class LoanStatusHistory(TimeStamp):
@@ -200,8 +200,6 @@ class Loan(TimeStamp):
                               ], default='ACTIVE', help_text="Current loan status")
     disbursed_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0.00,
                                            help_text="disbursed paid so far")
-
-
 
     def save(self, *args, **kwargs):
         if not self.disbursed_date:

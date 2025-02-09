@@ -45,7 +45,14 @@
                                                     <input type="text" class="form-control" id="editPurpose"
                                                            name="purpose">
                                                 </div>
-
+                                                {% if object.status == 'PENDING' %}
+                                                    <div class="mb-3">
+                                                        <label for="editStatus" class="form-label">Purpose</label>
+                                                        <select class="form-control" name="status" id="editStatus">
+                                                            <option value="SEND">Send for approval</option>
+                                                        </select>
+                                                    </div>
+                                                {% endif %}
                                                 <button type="submit" class="btn btn-primary">Save Changes</button>
                                             </form>
                                         </div>
@@ -105,7 +112,7 @@
                         <div class="row">
                             <div class="col-md-3"><strong>Amount:</strong> {{ object.amount }}</div>
                             <div class="col-md-3"><strong>Duration:</strong> {{ object.duration_months }} months</div>
-                            <div class="col-md-3"><strong>Status:</strong> {{ object.status }}</div>
+                            <div class="col-md-3"><strong>Status:</strong> {{ object.get_status_display }}</div>
                             <div class="col-md-3"><strong>Applied Date:</strong> {{ object.applied_date }}</div>
                         </div>
                     </div>

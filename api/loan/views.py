@@ -6,6 +6,7 @@ class IsStaffAndAuthenticated(BasePermission):
     """
     Custom permission to only allow access to authenticated staff users.
     """
+
     def has_permission(self, request, view):
         return request.user and request.user.is_authenticated and request.user.is_staff
 
