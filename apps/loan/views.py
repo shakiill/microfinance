@@ -159,3 +159,32 @@ class LoanDetailsView(DetailView):
         context['installments'] = Installment.objects.filter(loan=self.object).order_by('due_date')
         context['disbursement_transaction'] = LoanDisbursementTransaction.objects.filter(loan=self.object)
         return context
+
+
+def installment_details(request, installment_id):
+    installment = get_object_or_404(Installment, id=installment_id)
+    transactions = installment.transactions.all()
+
+    data = {
+        'installment_id': installment.id,
+        'due_date': installment.due_date,
+        'principal': installment.principal_amount,
+        'interest': installment.interest_amount,
+        'total_amount': installment.amount,
+        'paid_amount': installment.paid_amount,
+        'remaining_amount': installment.amount - installment.paid_amount,
+        'payment_status': installment.payment_status,
+        'payment_timing': installment.payment_timing,
+        'transactions': []
+    }
+
+    for transaction in transactions:
+        data['transactions'].append({
+            'id': transaction.id,
+            'date': transaction.transaction_date,
+            'amount': transaction.amount,
+            'type': transaction.transaction_type,
+            'remarks': transaction.remarks or ''
+        })
+
+    return JsonResponse(data)

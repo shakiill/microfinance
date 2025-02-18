@@ -91,4 +91,4 @@ def make_payment(request, installment_id):
         )
 
         messages.success(request, 'Payment recorded successfully.')
-        return redirect('loan_detail', loan_id=installment.loan.id)
+        return redirect('loan_details', pk=installment.loan.id)

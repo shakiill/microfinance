@@ -16,6 +16,7 @@ urlpatterns = [
     path('<int:pk>/details/', staff_required(views.LoanDetailsView.as_view()), name='loan_details'),
     path('<int:loan_id>/create-disbursement/', create_disbursement, name='create_disbursement'),
     path('<int:disbursement_id>/update-disbursement/', update_disbursement, name='update_disbursement'),
+    path('installments/<int:installment_id>/details/', views.installment_details, name='installment_details'),
     path('installment/<int:installment_id>/payment/', make_payment, name='make_payment'),
 
     path('application/<int:pk>/download/', download_application_details, name='download_application_details'),
