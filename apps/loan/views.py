@@ -198,10 +198,26 @@ class RepaymentListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, F
     permission_required = 'loan.view_installment'
     model = Installment
     template_name = 'repayments.html'
-    paginate_by = 10
+    paginate_by = 50
     ordering = '-due_date'
     table_class = RepaymentTable
     filterset_class = RepaymentFilterSet
+
+    def get_queryset(self):
+        # Optimize the main queryset with select_related and prefetch_related
+        return (
+            super()
+            .get_queryset()
+            .select_related(
+                'loan',
+                'loan__customer',
+            )
+            .prefetch_related(
+                'transactions',
+                'transactions__collected_by',
+                'transactions__verified_by'
+            )
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
