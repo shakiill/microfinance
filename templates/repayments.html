@@ -1,0 +1,100 @@
+{% extends 'includes/main.html' %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <div class="card card-custom gutter-b">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h3 class="card-label">{{ page_title }}</h3>
+                        </div>
+                        <div class="card-toolbar">
+                            {% if add_link %}
+                                <a href="{{ add_link }}" class="btn btn-info">Add New</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% if filter %}
+                            {% include 'includes/filter.html' %}
+                        {% endif %}
+                        <div class="table-responsive">
+                            {% render_table table %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block js %}
+    <script>
+        // static/js/repayment.js
+        $(document).ready(function () {
+            // Load transaction history when modal opens
+            $('.payment-modal-btn').on('click', function () {
+                const installmentId = $(this).data('installment-id');
+                loadTransactionHistory(installmentId);
+            });
+
+            // Handle payment form submission
+            $('.payment-form').on('submit', function (e) {
+                e.preventDefault();
+                const form = $(this);
+                const installmentId = form.find('input[name="installment_id"]').val();
+
+                $.ajax({
+                    url: '/loan/transactions/create/',
+                    method: 'POST',
+                    data: form.serialize(),
+                    success: function (response) {
+                        // Update the table row with new paid amount and status
+                        const row = $(`tr[data-installment-id="${installmentId}"]`);
+                        row.find('.paid-amount').text(response.new_paid_amount);
+                        row.find('.payment-status').text(response.new_status);
+
+                        // Reload transaction history
+                        loadTransactionHistory(installmentId);
+
+                        // Show success message
+                        toastr.success(response.message);
+
+                        // Reset form
+                        form[0].reset();
+
+                        // If fully paid, hide payment tab
+                        if (response.new_status === 'Paid') {
+                            $(`#payment-${installmentId}`).parent().find('[href="#payment-${installmentId}"]').hide();
+                        }
+                    },
+                    error: function (xhr) {
+                        toastr.error(xhr.responseJSON.message || 'An error occurred');
+                    }
+                });
+            });
+
+            function loadTransactionHistory(installmentId) {
+                $.get(`/loan/transactions/${installmentId}/`, function (data) {
+                    const tbody = $(`.transaction-history[data-installment-id="${installmentId}"]`);
+                    tbody.empty();
+
+                    data.transactions.forEach(function (t) {
+                        tbody.append(`
+                    <tr>
+                        <td>${t.date}</td>
+                        <td>${t.amount}</td>
+                        <td>${t.type}</td>
+                        <td>${t.collected_by}</td>
+                        <td>${t.verified_by}</td>
+                        <td>${t.remarks}</td>
+                    </tr>
+                `);
+                    });
+                });
+            }
+        });
+    </script>
+{% endblock %}

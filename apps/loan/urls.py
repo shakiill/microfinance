@@ -12,7 +12,6 @@ urlpatterns = [
 
     path('loan/applications/', staff_required(views.ApplicationListView.as_view()), name='applications'),
     path('all/', staff_required(views.LoanListView.as_view()), name='all_loans'),
-    path('repayments/', staff_required(views.RepaymentListView.as_view()), name='repayments'),
 
     path('<int:pk>/details/', staff_required(views.LoanDetailsView.as_view()), name='loan_details'),
     path('<int:loan_id>/create-disbursement/', create_disbursement, name='create_disbursement'),
@@ -26,4 +25,8 @@ urlpatterns = [
     path('application/<int:pk>/change-status/', staff_required(views.LoanStatusChangeView.as_view()),
          name='application_change_status'),
     path('application/<int:application_id>/generate-loan/', generate_loan, name='generate_loan'),
+
+    path('repayments/', staff_required(views.RepaymentListView.as_view()), name='repayments'),
+    path('transactions/<int:installment_id>/', views.get_transaction_history, name='transaction_history'),
+    path('transactions/create/', views.create_transaction, name='create_transaction'),
 ]

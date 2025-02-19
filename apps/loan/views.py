@@ -1,18 +1,21 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Sum
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
+from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, DetailView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
+from decimal import Decimal
 
 from apps.helpers.views import PageHeaderMixin
 from apps.loan.filters import LoanApplicationFilterSet, LoanFilterSet, RepaymentFilterSet
 from apps.loan.forms import LoanApplicationForm
 from apps.loan.models import LoanApplication, ApplicationProduct, Guarantor, Asset, FinancialRecord, CheckInfo, \
-    LoanStatusHistory, Loan, LoanDisbursementTransaction, Installment
+    LoanStatusHistory, Loan, LoanDisbursementTransaction, Installment, Transaction
 from apps.loan.tables import LoanApplicationTable, LoanTable, RepaymentTable
 from apps.user.models import CustomUser
 
@@ -194,7 +197,7 @@ def installment_details(request, installment_id):
 class RepaymentListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
     permission_required = 'loan.view_installment'
     model = Installment
-    template_name = 'list.html'
+    template_name = 'repayments.html'
     paginate_by = 10
     ordering = '-due_date'
     table_class = RepaymentTable
@@ -208,3 +211,71 @@ class RepaymentListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, F
             'filter': self.filterset
         })
         return context
+
+
+@login_required
+def get_transaction_history(request, installment_id):
+    transactions = Transaction.objects.filter(installment_id=installment_id) \
+        .select_related('collected_by', 'verified_by') \
+        .order_by('-transaction_date')
+
+    data = [{
+        'date': t.transaction_date.strftime('%Y-%m-%d'),
+        'amount': float(t.amount),
+        'type': t.transaction_type,
+        'collected_by': t.collected_by.get_full_name() if t.collected_by else '-',
+        'verified_by': t.verified_by.get_full_name() if t.verified_by else '-',
+        'remarks': t.remarks or '-'
+    } for t in transactions]
+
+    return JsonResponse({'transactions': data})
+
+
+@require_POST
+@login_required
+def create_transaction(request):
+    try:
+        installment_id = request.POST.get('installment_id')
+        amount = Decimal(request.POST.get('amount', '0'))  # Convert to Decimal
+        transaction_date = request.POST.get('transaction_date')
+        remarks = request.POST.get('remarks')
+
+        installment = Installment.objects.get(id=installment_id)
+
+        # Optional: Add validation
+        remaining_amount = installment.amount - installment.paid_amount
+        if amount > remaining_amount:
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Payment amount cannot exceed remaining balance of {remaining_amount}'
+            }, status=400)
+
+        transaction = Transaction.objects.create(
+            installment=installment,
+            amount=amount,
+            transaction_date=transaction_date,
+            transaction_type=Transaction.TransactionTypeChoices.PAYMENT,
+            remarks=remarks,
+            created_by=request.user,
+            collected_by=request.user
+        )
+
+        # Refresh installment to get updated paid_amount
+        installment.refresh_from_db()
+
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Payment recorded successfully',
+            'new_paid_amount': float(installment.paid_amount),
+            'new_status': installment.payment_status
+        })
+    except ValueError:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Invalid amount provided'
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=400)
