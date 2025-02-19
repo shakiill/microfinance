@@ -184,7 +184,8 @@ def installment_details(request, installment_id):
             'date': transaction.transaction_date,
             'amount': transaction.amount,
             'type': transaction.transaction_type,
-            'remarks': transaction.remarks or ''
+            'collected_by': transaction.collected_by.name if transaction.collected_by else '',
+            'remarks': transaction.remarks or '',
         })
 
     return JsonResponse(data)

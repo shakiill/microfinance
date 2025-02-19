@@ -303,6 +303,7 @@
                                 <th>Date</th>
                                 <th>Amount</th>
                                 <th>Type</th>
+                                <th>Collected By</th>
                                 <th>Remarks</th>
                             </tr>
                             </thead>
@@ -467,11 +468,12 @@
                                 row.append($('<td>').text(transaction.date));
                                 row.append($('<td>').html('৳ ' + parseFloat(transaction.amount).toFixed(2)));
                                 row.append($('<td>').text(transaction.type));
+                                row.append($('<td>').text(transaction.collected_by || ''));
                                 row.append($('<td>').text(transaction.remarks || ''));
                                 modal.find('tbody').append(row);
                             });
                         } else {
-                            modal.find('tbody').append('<tr><td colspan="4" class="text-center">No transactions found</td></tr>');
+                            modal.find('tbody').append('<tr><td colspan="5" class="text-center">No transactions found</td></tr>');
                         }
 
                         // Set max payment amount to remaining amount
@@ -481,7 +483,7 @@
                     },
                     error: function (xhr, status, error) {
                         console.error('AJAX Error:', status, error);
-                        modal.find('tbody').append('<tr><td colspan="4" class="text-center">Error loading transaction history</td></tr>');
+                        modal.find('tbody').append('<tr><td colspan="5" class="text-center">Error loading transaction history</td></tr>');
                         alert('Failed to load installment details: ' + error);
                     }
                 });

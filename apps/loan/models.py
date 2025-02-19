@@ -347,6 +347,13 @@ class Transaction(TimeStamp):
                                         help_text="Type of transaction (e.g., Payment or Adjustment)")
     remarks = models.TextField(null=True, blank=True, help_text="Additional remarks about the transaction")
 
+    verified_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
+    verified_at = models.DateTimeField(null=True, blank=True)
+    collected_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
+    collected_at = models.DateTimeField(null=True, blank=True)
+    created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
+    updated_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
+
     def save(self, *args, **kwargs):
         # Update the linked installment's paid amount whenever a transaction is created/updated
         if self.pk is None:  # New transaction

@@ -87,7 +87,10 @@ def make_payment(request, installment_id):
             installment=installment,
             amount=amount,
             transaction_type=Transaction.TransactionTypeChoices.PAYMENT,
-            remarks=remarks
+            remarks=remarks,
+            collected_by=request.user,
+            created_by=request.user,
+            collected_at=datetime.now(),
         )
 
         messages.success(request, 'Payment recorded successfully.')
