@@ -102,10 +102,9 @@ class RepaymentFilterForm(forms.Form):
             Row(
                 Column('name', css_class='form-group col-md-1 mb-0'),
                 Column('mobile', css_class='form-group col-md-1 mb-0'),
-                Column('payment_status', css_class='form-group col-md-1 mb-0'),
+                Column('payment_status', css_class='form-group col-md-2 mb-0'),
                 Column('assigned', css_class='form-group col-md-2 mb-0'),
                 Column('due_date', css_class='form-group col-md-2 mb-0'),
-                Column('paid_date', css_class='form-group col-md-2 mb-0'),
                 Column('paid_date', css_class='form-group col-md-2 mb-0'),
                 Column(HTML("""<button class="btn btn-lg btn-primary">Filter</button>"""),
                        css_class='form-group col-md-1 p-5 mb-0'),
