@@ -1,7 +1,7 @@
 # tables.py
 import django_tables2 as tables
 
-from apps.loan.models import LoanApplication, Loan
+from apps.loan.models import LoanApplication, Loan, Installment
 
 
 class LoanApplicationTable(tables.Table):
@@ -65,6 +65,39 @@ class LoanTable(tables.Table):
         fields = (
         'customer_name', 'customer_mobile', 'principal_amount', 'interest_rate', 'interest', 'duration_months',
         'disbursed_amount', 'status', 'disbursed_date', 'maturity_date')
+        attrs = {
+            'class': 'table table-hover table-separate table-head-custom table-checkable',
+            'id': 'kt_datatable'
+        }
+        row_attrs = {
+            'class': 'text-dark-75'
+        }
+
+
+class RepaymentTable(tables.Table):
+    customer_name = tables.Column(
+        accessor='loan.customer.name',
+        verbose_name='Customer Name',
+        attrs={'th': {'class': 'text-left'}}
+    )
+
+    customer_mobile = tables.Column(
+        accessor='loan.customer.mobile',
+        verbose_name='Customer Mobile',
+        attrs={'th': {'class': 'text-left'}}
+    )
+
+    actions = tables.TemplateColumn(
+        template_code='''
+            <a href="{% url 'loan_details' record.id %}" class="btn btn-sm btn-light-danger"><i class="fa fa-eye"></i></a>
+        ''',
+        orderable=False,
+        verbose_name='Actions'
+    )
+
+    class Meta:
+        model = Installment
+        fields = ('customer_name', 'customer_mobile', 'principal_amount', 'interest_amount', 'amount', 'paid_amount','due_date', 'payment_status')
         attrs = {
             'class': 'table table-hover table-separate table-head-custom table-checkable',
             'id': 'kt_datatable'

@@ -12,6 +12,7 @@ urlpatterns = [
 
     path('loan/applications/', staff_required(views.ApplicationListView.as_view()), name='applications'),
     path('all/', staff_required(views.LoanListView.as_view()), name='all_loans'),
+    path('repayments/', staff_required(views.RepaymentListView.as_view()), name='repayments'),
 
     path('<int:pk>/details/', staff_required(views.LoanDetailsView.as_view()), name='loan_details'),
     path('<int:loan_id>/create-disbursement/', create_disbursement, name='create_disbursement'),
