@@ -236,13 +236,13 @@ def get_transaction_history(request, installment_id):
 def create_transaction(request):
     try:
         installment_id = request.POST.get('installment_id')
-        amount = Decimal(request.POST.get('amount', '0'))  # Convert to Decimal
+        amount = Decimal(request.POST.get('amount', '0'))
         transaction_date = request.POST.get('transaction_date')
         remarks = request.POST.get('remarks')
 
         installment = Installment.objects.get(id=installment_id)
 
-        # Optional: Add validation
+        # Validation
         remaining_amount = installment.amount - installment.paid_amount
         if amount > remaining_amount:
             return JsonResponse({

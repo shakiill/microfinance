@@ -32,57 +32,61 @@
 {% endblock %}
 {% block js %}
     <script>
-        // static/js/repayment.js
-        $(document).ready(function () {
-            // Load transaction history when modal opens
-            $('.payment-modal-btn').on('click', function () {
-                const installmentId = $(this).data('installment-id');
+        $(document).ready(function() {
+    // Load transaction history when modal opens
+    $('.payment-modal-btn').on('click', function() {
+        const installmentId = $(this).data('installment-id');
+        loadTransactionHistory(installmentId);
+    });
+
+    // Handle payment form submission
+    $('.payment-form').on('submit', function(e) {
+        e.preventDefault();
+        const form = $(this);
+        const installmentId = form.find('input[name="installment_id"]').val();
+
+        $.ajax({
+            url: '/loan/transactions/create/',
+            method: 'POST',
+            data: form.serialize(),
+            success: function(response) {
+                // Update the table row with new paid amount and status
+                const row = $(`.payment-modal-btn[data-installment-id="${installmentId}"]`).closest('tr');
+
+                // Format the new paid amount with 2 decimal places
+                const formattedPaidAmount = Number(response.new_paid_amount).toFixed(2);
+
+                // Update using specific cell classes
+                row.find('.paid-amount-cell').text(formattedPaidAmount);
+                row.find('.payment-status-cell').text(response.new_status);
+
+                // Reload transaction history
                 loadTransactionHistory(installmentId);
-            });
 
-            // Handle payment form submission
-            $('.payment-form').on('submit', function (e) {
-                e.preventDefault();
-                const form = $(this);
-                const installmentId = form.find('input[name="installment_id"]').val();
+                // Show success message
+                toastr.success(response.message);
 
-                $.ajax({
-                    url: '/loan/transactions/create/',
-                    method: 'POST',
-                    data: form.serialize(),
-                    success: function (response) {
-                        // Update the table row with new paid amount and status
-                        const row = $(`tr[data-installment-id="${installmentId}"]`);
-                        row.find('.paid-amount').text(response.new_paid_amount);
-                        row.find('.payment-status').text(response.new_status);
+                // Reset form
+                form[0].reset();
 
-                        // Reload transaction history
-                        loadTransactionHistory(installmentId);
+                // If fully paid, hide payment tab
+                if (response.new_status === 'Paid') {
+                    $(`#payment-${installmentId}`).parent().find(`[href="#payment-${installmentId}"]`).hide();
+                }
+            },
+            error: function(xhr) {
+                toastr.error(xhr.responseJSON.message || 'An error occurred');
+            }
+        });
+    });
 
-                        // Show success message
-                        toastr.success(response.message);
+    function loadTransactionHistory(installmentId) {
+        $.get(`/loan/transactions/${installmentId}/`, function(data) {
+            const tbody = $(`.transaction-history[data-installment-id="${installmentId}"]`);
+            tbody.empty();
 
-                        // Reset form
-                        form[0].reset();
-
-                        // If fully paid, hide payment tab
-                        if (response.new_status === 'Paid') {
-                            $(`#payment-${installmentId}`).parent().find('[href="#payment-${installmentId}"]').hide();
-                        }
-                    },
-                    error: function (xhr) {
-                        toastr.error(xhr.responseJSON.message || 'An error occurred');
-                    }
-                });
-            });
-
-            function loadTransactionHistory(installmentId) {
-                $.get(`/loan/transactions/${installmentId}/`, function (data) {
-                    const tbody = $(`.transaction-history[data-installment-id="${installmentId}"]`);
-                    tbody.empty();
-
-                    data.transactions.forEach(function (t) {
-                        tbody.append(`
+            data.transactions.forEach(function(t) {
+                tbody.append(`
                     <tr>
                         <td>${t.date}</td>
                         <td>${t.amount}</td>
@@ -92,9 +96,9 @@
                         <td>${t.remarks}</td>
                     </tr>
                 `);
-                    });
-                });
-            }
+            });
         });
+    }
+});
     </script>
 {% endblock %}

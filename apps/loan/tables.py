@@ -87,24 +87,40 @@ class RepaymentTable(tables.Table):
         attrs={'th': {'class': 'text-left'}}
     )
 
+    paid_amount = tables.Column(
+        attrs={
+            'td': {'class': 'paid-amount-cell'},
+            'th': {'class': 'text-left'}
+        }
+    )
+
+    payment_status = tables.Column(
+        attrs={
+            'td': {'class': 'payment-status-cell'},
+            'th': {'class': 'text-left'}
+        }
+    )
+
     actions = tables.TemplateColumn(
         template_code='''
-                <button type="button" 
-                        class="btn btn-sm btn-primary payment-modal-btn" 
-                        data-toggle="modal" 
-                        data-target="#paymentModal-{{ record.id }}"
-                        data-installment-id="{{ record.id }}">
-                    View/Pay
-                </button>
-                {% include "payment_modal.html" %}
-            ''',
+            <button type="button" 
+                    class="btn btn-sm btn-primary payment-modal-btn" 
+                    data-toggle="modal" 
+                    data-target="#paymentModal-{{ record.id }}"
+                    data-installment-id="{{ record.id }}">
+                View/Pay
+            </button>
+            {% include "payment_modal.html" %}
+        ''',
         orderable=False,
         verbose_name='Actions'
     )
 
     class Meta:
         model = Installment
-        fields = ('customer_name', 'customer_mobile', 'principal_amount', 'interest_amount', 'amount', 'paid_amount','due_date', 'payment_status')
+        fields = (
+        'customer_name', 'customer_mobile', 'principal_amount', 'interest_amount', 'amount', 'paid_amount',
+        'due_date', 'payment_status')
         attrs = {
             'class': 'table table-hover table-separate table-head-custom table-checkable',
             'id': 'kt_datatable'
