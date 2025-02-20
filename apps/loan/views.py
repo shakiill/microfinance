@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.decorators.http import require_POST
-from django.views.generic import CreateView, DetailView
+from django.views.generic import CreateView, DetailView, UpdateView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
@@ -265,6 +265,30 @@ class AllTransectionListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMix
         return context
 
 
+# Add new view for handling transaction edits
+class TransactionUpdateView(LoginRequiredMixin, UpdateView):
+    model = Transaction
+    fields = ['amount', 'remarks']
+    template_name = 'transaction_edit_modal.html'
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        return JsonResponse({
+            'success': True,
+            'message': 'Transaction updated successfully',
+            'new_amount': str(form.instance.amount),
+            'new_remarks': form.instance.remarks,
+            'new_paid_amount': str(form.instance.installment.paid_amount),
+            'new_status': form.instance.installment.payment_status
+        })
+
+    def form_invalid(self, form):
+        return JsonResponse({
+            'success': False,
+            'message': 'Error updating transaction',
+            'errors': form.errors
+        }, status=400)
+
 @login_required
 def get_transaction_history(request, installment_id):
     transactions = Transaction.objects.filter(installment_id=installment_id) \
@@ -272,6 +296,7 @@ def get_transaction_history(request, installment_id):
         .order_by('-transaction_date')
 
     data = [{
+        'id': t.id,
         'date': t.transaction_date.strftime('%Y-%m-%d'),
         'amount': float(t.amount),
         'type': t.transaction_type,

@@ -29,57 +29,105 @@
         </div>
     </div>
 
+    <div class="modal fade" id="editTransactionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Transaction</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form class="transaction-edit-form">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="hidden" name="transaction_id">
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <input type="number" step="0.01" class="form-control" name="amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Remarks</label>
+                        <textarea class="form-control" name="remarks"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 {% block js %}
     <script>
-        $(document).ready(function() {
+      $(document).ready(function() {
+    // Initialize tooltips and other Bootstrap components
+    $('[data-toggle="tooltip"]').tooltip();
+
     // Load transaction history when modal opens
     $('.payment-modal-btn').on('click', function() {
         const installmentId = $(this).data('installment-id');
         loadTransactionHistory(installmentId);
     });
 
-    // Handle payment form submission
+    // Handle payment form submission for new payments
     $('.payment-form').on('submit', function(e) {
         e.preventDefault();
         const form = $(this);
         const installmentId = form.find('input[name="installment_id"]').val();
 
+        submitPayment(form, installmentId);
+    });
+
+    // Handle transaction edit form submission - Updated selector and data retrieval
+    $(document).on('submit', '.transaction-edit-form', function(e) {
+        e.preventDefault();
+        const form = $(this);
+        // Get transaction ID from the hidden input
+        const transactionId = form.find('input[name="transaction_id"]').val();
+
+        if (!transactionId) {
+            toastr.error('Transaction ID not found');
+            return;
+        }
+
+        submitTransactionEdit(form, transactionId);
+    });
+
+    // Function to submit new payment
+    function submitPayment(form, installmentId) {
         $.ajax({
             url: '/loan/transactions/create/',
             method: 'POST',
             data: form.serialize(),
             success: function(response) {
-                // Update the table row with new paid amount and status
-                const row = $(`.payment-modal-btn[data-installment-id="${installmentId}"]`).closest('tr');
-
-                // Format the new paid amount with 2 decimal places
-                const formattedPaidAmount = Number(response.new_paid_amount).toFixed(2);
-
-                // Update using specific cell classes
-                row.find('.paid-amount-cell').text(formattedPaidAmount);
-                row.find('.payment-status-cell').text(response.new_status);
-
-                // Reload transaction history
-                loadTransactionHistory(installmentId);
-
-                // Show success message
-                toastr.success(response.message);
-
-                // Reset form
-                form[0].reset();
-
-                // If fully paid, hide payment tab
-                if (response.new_status === 'Paid') {
-                    $(`#payment-${installmentId}`).parent().find(`[href="#payment-${installmentId}"]`).hide();
-                }
+                handlePaymentSuccess(response, installmentId, form);
             },
             error: function(xhr) {
-                toastr.error(xhr.responseJSON.message || 'An error occurred');
+                handleError(xhr);
             }
         });
-    });
+    }
 
+    // Function to submit transaction edit
+    function submitTransactionEdit(form, transactionId) {
+        $.ajax({
+            url: `/loan/transactions/${transactionId}/edit/`,
+            method: 'POST',
+            data: form.serialize(),
+            success: function(response) {
+                handleEditSuccess(response, form);
+            },
+            error: function(xhr) {
+                handleError(xhr);
+            }
+        });
+    }
+
+    // Updated loadTransactionHistory function
     function loadTransactionHistory(installmentId) {
         $.get(`/loan/transactions/${installmentId}/`, function(data) {
             const tbody = $(`.transaction-history[data-installment-id="${installmentId}"]`);
@@ -87,18 +135,99 @@
 
             data.transactions.forEach(function(t) {
                 tbody.append(`
-                    <tr>
+                    <tr data-transaction-id="${t.id}">
                         <td>${t.date}</td>
                         <td>${t.amount}</td>
                         <td>${t.type}</td>
                         <td>${t.collected_by}</td>
                         <td>${t.verified_by}</td>
                         <td>${t.remarks}</td>
+                        <td>
+                            <button type="button"
+                                    class="btn btn-sm btn-warning edit-transaction-btn"
+                                    data-toggle="modal"
+                                    data-target="#editTransactionModal"
+                                    data-transaction-id="${t.id}"
+                                    data-amount="${t.amount}"
+                                    data-remarks="${t.remarks || ''}"
+                                    data-installment-id="${installmentId}">
+                                Edit
+                            </button>
+                        </td>
                     </tr>
                 `);
             });
         });
     }
+
+    // Handle edit button click to populate modal
+    $(document).on('click', '.edit-transaction-btn', function() {
+        const button = $(this);
+        const transactionId = button.data('transaction-id');
+        alert(transactionId);
+        const amount = button.data('amount');
+        const remarks = button.data('remarks');
+
+        // Populate the edit modal
+        const modal = $('#editTransactionModal');
+        modal.find('input[name="transaction_id"]').val(transactionId);
+        modal.find('input[name="amount"]').val(amount);
+        modal.find('textarea[name="remarks"]').val(remarks);
+        modal.data('installment-id', button.data('installment-id'));
+    });
+
+    // Function to handle successful payment submission
+    function handlePaymentSuccess(response, installmentId, form) {
+        const row = $(`.payment-modal-btn[data-installment-id="${installmentId}"]`).closest('tr');
+        const formattedPaidAmount = Number(response.new_paid_amount).toFixed(2);
+
+        row.find('.paid-amount-cell').text(formattedPaidAmount);
+        row.find('.payment-status-cell').text(response.new_status);
+
+        loadTransactionHistory(installmentId);
+        toastr.success(response.message);
+        form[0].reset();
+
+        if (response.new_status === 'Paid') {
+            $(`#payment-${installmentId}`).parent().find(`[href="#payment-${installmentId}"]`).hide();
+        }
+    }
+
+    // Function to handle successful edit submission
+    function handleEditSuccess(response, form) {
+        const modal = form.closest('.modal');
+        const installmentId = modal.data('installment-id');
+
+        // Update installment row in main table
+        const installmentRow = $(`.payment-modal-btn[data-installment-id="${installmentId}"]`).closest('tr');
+        installmentRow.find('.paid-amount-cell').text(response.new_paid_amount);
+        installmentRow.find('.payment-status-cell').text(response.new_status);
+
+        // Close modal and show success message
+        modal.modal('hide');
+        toastr.success(response.message);
+
+        // Reload transaction history
+        loadTransactionHistory(installmentId);
+    }
+
+    // Function to handle errors
+    function handleError(xhr) {
+        const errorMessage = xhr.responseJSON?.message || 'An error occurred';
+        toastr.error(errorMessage);
+
+        if (xhr.responseJSON?.errors) {
+            console.error('Validation errors:', xhr.responseJSON.errors);
+        }
+    }
+
+    // Handle modal cleanup
+    $('.modal').on('hidden.bs.modal', function() {
+        const form = $(this).find('form');
+        if (form.length) {
+            form[0].reset();
+        }
+    });
 });
     </script>
 {% endblock %}

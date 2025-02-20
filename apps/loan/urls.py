@@ -4,6 +4,7 @@ from . import views
 from .applications import download_application_details
 from .loan_process import generate_loan
 from .transections import create_disbursement, update_disbursement, make_payment
+from .views import TransactionUpdateView
 from ..helpers.views import staff_required
 
 urlpatterns = [
@@ -18,6 +19,7 @@ urlpatterns = [
     path('<int:disbursement_id>/update-disbursement/', update_disbursement, name='update_disbursement'),
     path('installments/<int:installment_id>/details/', views.installment_details, name='installment_details'),
     path('installment/<int:installment_id>/payment/', make_payment, name='make_payment'),
+    path('transactions/<int:pk>/edit/', TransactionUpdateView.as_view(), name='transaction_edit'),
 
     path('application/<int:pk>/download/', download_application_details, name='download_application_details'),
     path('application/<int:pk>/details/', staff_required(views.LoanApplicationDetailsView.as_view()),

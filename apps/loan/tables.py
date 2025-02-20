@@ -103,15 +103,15 @@ class RepaymentTable(tables.Table):
 
     actions = tables.TemplateColumn(
         template_code='''
-            <button type="button" 
-                    class="btn btn-sm btn-primary payment-modal-btn" 
-                    data-toggle="modal" 
-                    data-target="#paymentModal-{{ record.id }}"
-                    data-installment-id="{{ record.id }}">
-                View/Pay
-            </button>
-            {% include "payment_modal.html" %}
-        ''',
+                <button type="button" 
+                        class="btn btn-sm btn-primary payment-modal-btn" 
+                        data-toggle="modal" 
+                        data-target="#paymentModal-{{ record.id }}"
+                        data-installment-id="{{ record.id }}">
+                    View/Pay
+                </button>
+                {% include "payment_modal.html" %}
+            ''',
         orderable=False,
         verbose_name='Actions'
     )
