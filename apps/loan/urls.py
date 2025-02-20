@@ -31,4 +31,5 @@ urlpatterns = [
     path('transactions/create/', views.create_transaction, name='create_transaction'),
 
     path('all_transactions/', staff_required(views.AllTransectionListView.as_view()), name='all_transactions'),
+    path('transaction/<int:transaction_id>/verify/',  views.verify_transaction,  name='verify_transaction'),
 ]

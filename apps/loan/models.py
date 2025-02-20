@@ -354,6 +354,8 @@ class Transaction(TimeStamp):
     created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
     updated_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
 
+    is_verified = models.BooleanField(default=False)
+
     def save(self, *args, **kwargs):
         # Update the linked installment's paid amount whenever a transaction is created/updated
         if self.pk is None:  # New transaction

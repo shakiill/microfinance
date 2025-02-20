@@ -13,7 +13,7 @@ from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
 from apps.helpers.views import PageHeaderMixin
-from apps.loan.filters import LoanApplicationFilterSet, LoanFilterSet, RepaymentFilterSet
+from apps.loan.filters import LoanApplicationFilterSet, LoanFilterSet, RepaymentFilterSet, TransactiontFilterSet
 from apps.loan.forms import LoanApplicationForm
 from apps.loan.models import LoanApplication, ApplicationProduct, Guarantor, Asset, FinancialRecord, CheckInfo, \
     LoanStatusHistory, Loan, LoanDisbursementTransaction, Installment, Transaction
@@ -233,9 +233,9 @@ class RepaymentListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, F
 class AllTransectionListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
     permission_required = 'loan.view_transaction'
     model = Transaction
-    template_name = 'list.html'
+    template_name = 'transections.html'
     paginate_by = 50
-    ordering = '-due_date'
+    ordering = '-transaction_date'
     table_class = TransactionTable
     filterset_class = TransactiontFilterSet
 
@@ -245,20 +245,20 @@ class AllTransectionListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMix
             super()
             .get_queryset()
             .select_related(
-                'loan',
-                'loan__customer',
+                'installment',
+                'installment__loan',
+                'installment__loan__customer',
             )
             .prefetch_related(
-                'transactions',
-                'transactions__collected_by',
-                'transactions__verified_by'
+                'collected_by',
+                'verified_by'
             )
         )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
-            'page_title': 'Repayments',
+            'page_title': 'Transaction',
             # 'add_link': reverse_lazy('user_add'),
             'filter': self.filterset
         })
@@ -331,3 +331,31 @@ def create_transaction(request):
             'status': 'error',
             'message': str(e)
         }, status=400)
+
+
+@require_POST
+@login_required
+def verify_transaction(request, transaction_id):
+    try:
+        transaction = Transaction.objects.get(id=transaction_id)
+        if not transaction.is_verified:
+            transaction.is_verified = True
+            transaction.verified_by = request.user
+            transaction.verified_at = timezone.now()
+            transaction.save()
+
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Transaction verified successfully',
+                'transaction_id': transaction_id
+            })
+    except Transaction.DoesNotExist:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Transaction not found'
+        }, status=404)
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)

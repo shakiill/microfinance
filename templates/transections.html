@@ -1,0 +1,110 @@
+{% extends 'includes/main.html' %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <div class="card card-custom gutter-b">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h3 class="card-label">{{ page_title }}</h3>
+                        </div>
+                        <div class="card-toolbar">
+                            {% if add_link %}
+                                <a href="{{ add_link }}" class="btn btn-info">Add New</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% csrf_token %}  <!-- Add this line -->
+                        {% if filter %}
+                            {% include 'includes/filter.html' %}
+                        {% endif %}
+                        <div class="table-responsive">
+                            {% render_table table %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        function verifyTransaction(transactionId) {
+            // Get CSRF token from the meta tag
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            // Show loading state
+            const verifyButton = document.querySelector(`button[data-transaction-id="${transactionId}"]`);
+            if (verifyButton) {
+                verifyButton.disabled = true;
+                verifyButton.innerHTML = 'Verifying...';
+            }
+
+            fetch(`/loan/transaction/${transactionId}/verify/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    // Find the row using the button's data attribute
+                    const row = document.querySelector(`button[data-transaction-id="${transactionId}"]`).closest('tr');
+
+                    // Find the status cell (second to last column)
+                    const cells = row.getElementsByTagName('td');
+                    const statusCell = cells[cells.length - 2];
+
+                    // Update status label
+                    statusCell.innerHTML = '<span class="label label-success label-inline">Verified</span>';
+
+                    // Remove verify button
+                    verifyButton.remove();
+
+                    // Show success message
+                    toastr.success('Transaction verified successfully');
+                } else {
+                    toastr.error(data.message || 'Error verifying transaction');
+                    // Reset button state
+                    if (verifyButton) {
+                        verifyButton.disabled = false;
+                        verifyButton.innerHTML = 'Verify';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                toastr.error('Error verifying transaction');
+                // Reset button state
+                if (verifyButton) {
+                    verifyButton.disabled = false;
+                    verifyButton.innerHTML = 'Verify';
+                }
+            });
+        }
+
+        // Add event listener to handle toastr initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize toastr if it exists
+            if (typeof toastr !== 'undefined') {
+                toastr.options = {
+                    "closeButton": true,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                }
+            }
+        });
+    </script>
+{% endblock %}

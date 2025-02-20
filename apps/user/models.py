@@ -74,7 +74,7 @@ class CustomUser(AbstractUser):
         super(CustomUser, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.email
+        return self.name if self.name else self.email
 
 
 class Staff(CustomUser):

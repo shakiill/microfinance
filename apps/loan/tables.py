@@ -142,32 +142,45 @@ class TransactionTable(tables.Table):
         verbose_name='Customer Mobile',
         attrs={'th': {'class': 'text-left'}}
     )
+
     collected_by = tables.Column(
         accessor='collected_by.name',
         verbose_name='Collected by',
         attrs={'th': {'class': 'text-left'}}
     )
 
+    verification_status = tables.TemplateColumn(
+        template_code='''
+            {% if record.is_verified %}
+                <span class="label label-success label-inline">Verified</span>
+            {% else %}
+                <span class="label label-warning label-inline">Pending</span>
+            {% endif %}
+        ''',
+        verbose_name='Status'
+    )
 
-    # actions = tables.TemplateColumn(
-    #     template_code='''
-    #         <button type="button"
-    #                 class="btn btn-sm btn-primary payment-modal-btn"
-    #                 data-toggle="modal"
-    #                 data-target="#paymentModal-{{ record.id }}"
-    #                 data-installment-id="{{ record.id }}">
-    #             View/Pay
-    #         </button>
-    #         {% include "payment_modal.html" %}
-    #     ''',
-    #     orderable=False,
-    #     verbose_name='Actions'
-    # )
+    actions = tables.TemplateColumn(
+        template_code='''
+                {% if not record.is_verified %}
+                    <button type="button"
+                            class="btn btn-sm btn-success verify-transaction-btn"
+                            data-transaction-id="{{ record.id }}"
+                            onclick="verifyTransaction({{ record.id }})"
+                            id="verify-btn-{{ record.id }}">
+                        Verify
+                    </button>
+                {% endif %}
+            ''',
+        orderable=False,
+        verbose_name='Actions'
+    )
 
     class Meta:
         model = Transaction
         fields = (
-            'customer_name', 'customer_mobile', 'amount', 'transaction_date', 'amount', 'collected_by',)
+            'customer_name', 'customer_mobile', 'amount', 'transaction_date',
+            'amount', 'collected_by', 'verification_status', 'verified_at', 'verified_by')
         attrs = {
             'class': 'table table-hover table-separate table-head-custom table-checkable',
             'id': 'kt_datatable'
