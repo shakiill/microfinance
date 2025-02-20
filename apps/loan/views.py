@@ -269,17 +269,21 @@ class AllTransectionListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMix
 class TransactionUpdateView(LoginRequiredMixin, UpdateView):
     model = Transaction
     fields = ['amount', 'remarks']
-    template_name = 'transaction_edit_modal.html'
 
     def form_valid(self, form):
-        response = super().form_valid(form)
+        transaction = form.save()
+        installment = transaction.installment
+
+        # Recalculate the installment's paid amount and status
+        installment.recalculate_payment_status()
+
         return JsonResponse({
             'success': True,
             'message': 'Transaction updated successfully',
-            'new_amount': str(form.instance.amount),
-            'new_remarks': form.instance.remarks,
-            'new_paid_amount': str(form.instance.installment.paid_amount),
-            'new_status': form.instance.installment.payment_status
+            'new_amount': str(transaction.amount),
+            'new_remarks': transaction.remarks,
+            'new_paid_amount': str(installment.paid_amount),
+            'new_status': installment.payment_status
         })
 
     def form_invalid(self, form):

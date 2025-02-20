@@ -329,6 +329,23 @@ class Installment(TimeStamp):
         verbose_name_plural = 'Installments'
         ordering = ['due_date']
 
+    def recalculate_payment_status(self):
+        """Recalculate paid amount and payment status"""
+        total_paid = self.transactions.aggregate(
+            total=models.Sum('amount')
+        )['total'] or 0
+
+        self.paid_amount = total_paid
+
+        if self.paid_amount >= self.amount:
+            self.payment_status = 'Paid'
+        elif self.paid_amount > 0:
+            self.payment_status = 'Partial'
+        else:
+            self.payment_status = 'Unpaid'
+
+        self.save()
+
     def __str__(self):
         return f"Installment for Loan #{self.loan.id} - Due {self.due_date}"
 
