@@ -273,6 +273,13 @@ class TransactionUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         transaction = form.save()
         installment = transaction.installment
+        if transaction.is_verified:
+            return JsonResponse({
+                'success': False,
+                'message': 'Cannot update a verified transaction',
+                'errors': form.errors
+            }, status=400)
+            # Recalculate the installment's paid amo
 
         # Recalculate the installment's paid amount and status
         installment.recalculate_payment_status()
