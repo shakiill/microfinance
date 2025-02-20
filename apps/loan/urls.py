@@ -29,4 +29,6 @@ urlpatterns = [
     path('repayments/', staff_required(views.RepaymentListView.as_view()), name='repayments'),
     path('transactions/<int:installment_id>/', views.get_transaction_history, name='transaction_history'),
     path('transactions/create/', views.create_transaction, name='create_transaction'),
+
+    path('all_transactions/', staff_required(views.AllTransectionListView.as_view()), name='all_transactions'),
 ]

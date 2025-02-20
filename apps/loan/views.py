@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Sum
@@ -9,14 +11,13 @@ from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, DetailView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
-from decimal import Decimal
 
 from apps.helpers.views import PageHeaderMixin
 from apps.loan.filters import LoanApplicationFilterSet, LoanFilterSet, RepaymentFilterSet
 from apps.loan.forms import LoanApplicationForm
 from apps.loan.models import LoanApplication, ApplicationProduct, Guarantor, Asset, FinancialRecord, CheckInfo, \
     LoanStatusHistory, Loan, LoanDisbursementTransaction, Installment, Transaction
-from apps.loan.tables import LoanApplicationTable, LoanTable, RepaymentTable
+from apps.loan.tables import LoanApplicationTable, LoanTable, RepaymentTable, TransactionTable
 from apps.user.models import CustomUser
 
 
@@ -202,6 +203,41 @@ class RepaymentListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, F
     ordering = '-due_date'
     table_class = RepaymentTable
     filterset_class = RepaymentFilterSet
+
+    def get_queryset(self):
+        # Optimize the main queryset with select_related and prefetch_related
+        return (
+            super()
+            .get_queryset()
+            .select_related(
+                'loan',
+                'loan__customer',
+            )
+            .prefetch_related(
+                'transactions',
+                'transactions__collected_by',
+                'transactions__verified_by'
+            )
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Repayments',
+            # 'add_link': reverse_lazy('user_add'),
+            'filter': self.filterset
+        })
+        return context
+
+
+class AllTransectionListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
+    permission_required = 'loan.view_transaction'
+    model = Transaction
+    template_name = 'list.html'
+    paginate_by = 50
+    ordering = '-due_date'
+    table_class = TransactionTable
+    filterset_class = TransactiontFilterSet
 
     def get_queryset(self):
         # Optimize the main queryset with select_related and prefetch_related

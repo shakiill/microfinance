@@ -1,7 +1,7 @@
 # tables.py
 import django_tables2 as tables
 
-from apps.loan.models import LoanApplication, Loan, Installment
+from apps.loan.models import LoanApplication, Loan, Installment, Transaction
 
 
 class LoanApplicationTable(tables.Table):
@@ -121,6 +121,53 @@ class RepaymentTable(tables.Table):
         fields = (
         'customer_name', 'customer_mobile', 'principal_amount', 'interest_amount', 'amount', 'paid_amount',
         'due_date', 'payment_status')
+        attrs = {
+            'class': 'table table-hover table-separate table-head-custom table-checkable',
+            'id': 'kt_datatable'
+        }
+        row_attrs = {
+            'class': 'text-dark-75'
+        }
+
+
+class TransactionTable(tables.Table):
+    customer_name = tables.Column(
+        accessor='installment.loan.customer.name',
+        verbose_name='Customer Name',
+        attrs={'th': {'class': 'text-left'}}
+    )
+
+    customer_mobile = tables.Column(
+        accessor='installment.loan.customer.mobile',
+        verbose_name='Customer Mobile',
+        attrs={'th': {'class': 'text-left'}}
+    )
+    collected_by = tables.Column(
+        accessor='collected_by.name',
+        verbose_name='Collected by',
+        attrs={'th': {'class': 'text-left'}}
+    )
+
+
+    # actions = tables.TemplateColumn(
+    #     template_code='''
+    #         <button type="button"
+    #                 class="btn btn-sm btn-primary payment-modal-btn"
+    #                 data-toggle="modal"
+    #                 data-target="#paymentModal-{{ record.id }}"
+    #                 data-installment-id="{{ record.id }}">
+    #             View/Pay
+    #         </button>
+    #         {% include "payment_modal.html" %}
+    #     ''',
+    #     orderable=False,
+    #     verbose_name='Actions'
+    # )
+
+    class Meta:
+        model = Transaction
+        fields = (
+            'customer_name', 'customer_mobile', 'amount', 'transaction_date', 'amount', 'collected_by',)
         attrs = {
             'class': 'table table-hover table-separate table-head-custom table-checkable',
             'id': 'kt_datatable'

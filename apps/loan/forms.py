@@ -91,7 +91,7 @@ class LoanFilterForm(forms.Form):
         )
 
 
-class RepaymentFilterForm(forms.Form):
+class TransactionFilterForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -100,12 +100,10 @@ class RepaymentFilterForm(forms.Form):
         self.helper.form_method = 'get'
         self.helper.layout = Layout(
             Row(
-                Column('name', css_class='form-group col-md-1 mb-0'),
-                Column('mobile', css_class='form-group col-md-1 mb-0'),
-                Column('payment_status', css_class='form-group col-md-2 mb-0'),
-                Column('assigned', css_class='form-group col-md-2 mb-0'),
-                Column('due_date', css_class='form-group col-md-2 mb-0'),
-                Column('paid_date', css_class='form-group col-md-2 mb-0'),
+                Column('name', css_class='form-group col-md-2 mb-0'),
+                Column('mobile', css_class='form-group col-md-2 mb-0'),
+                Column('transaction_date', css_class='form-group col-md-3 mb-0'),
+                Column('collected_by', css_class='form-group col-md-4 mb-0'),
                 Column(HTML("""<button class="btn btn-lg btn-primary">Filter</button>"""),
                        css_class='form-group col-md-1 p-5 mb-0'),
             ),

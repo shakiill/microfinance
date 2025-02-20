@@ -1,8 +1,8 @@
 import django_filters
 from django_filters.widgets import RangeWidget
 
-from apps.loan.forms import LoanApplicationFilterForm, LoanFilterForm, RepaymentFilterForm
-from apps.loan.models import LoanApplication, Loan, Installment
+from apps.loan.forms import LoanApplicationFilterForm, LoanFilterForm, RepaymentFilterForm, TransactionFilterForm
+from apps.loan.models import LoanApplication, Loan, Installment, Transaction
 from apps.user.models import CustomUser
 
 
@@ -48,3 +48,19 @@ class RepaymentFilterSet(django_filters.FilterSet):
         model = Installment
         fields = ['payment_status', 'due_date', 'paid_date']
         form = RepaymentFilterForm
+
+
+class TransactiontFilterSet(django_filters.FilterSet):
+    transaction_date = django_filters.DateFromToRangeFilter(widget=RangeWidget(attrs={
+        'class': 'dateinput date-range'}))
+    collected_by = django_filters.ModelChoiceFilter(
+        queryset=CustomUser.objects.filter(loans_assign_by__isnull=False).distinct(), label='Collected by')
+
+    name = django_filters.CharFilter(lookup_expr='icontains', field_name='installment__loan__customer__name', label='Name')
+    mobile = django_filters.CharFilter(lookup_expr='icontains', field_name='installment__loan__customer__mobile',
+                                       label='Mobile Number')
+
+    class Meta:
+        model = Transaction
+        fields = ['transaction_date', 'collected_by']
+        form = TransactionFilterForm
