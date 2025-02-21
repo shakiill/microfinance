@@ -29,6 +29,8 @@ class Investment(TimeStamp):
     interest_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.0,
                                         help_text="Annual interest rate in percentage (e.g., 5.25)")
     amount = models.DecimalField(max_digits=12, default=0, decimal_places=2, help_text="Total amount of the investment")
+    remarks = models.TextField(null=True, blank=True, help_text="Additional remarks for the investment")
+    history = models.JSONField(null=True, blank=True, help_text="History of the investment")
 
     class Meta:
         ordering = ['-investment_date']
@@ -54,6 +56,7 @@ class Investment(TimeStamp):
     def save(self, *args, **kwargs):
         # Trigger validation when saving
         self.amount = self.number_of_shares * self.share_price
+        self.full_clean()
         super().save(*args, **kwargs)
 
 
