@@ -18,17 +18,17 @@ class InvestmentTable(tables.Table):
 
     actions = tables.TemplateColumn(
         template_code='''
-            <div class="d-flex gap-2">
-                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editModal-{{ record.id }}">
+             <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editModal-{{ record.id }}">
                     <i class="fas fa-edit"></i> Edit
                 </button>
-                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ record.id }}">
+                <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteModal-{{ record.id }}">
                     <i class="fas fa-trash"></i> Delete
                 </button>
             </div>
 
             <!-- Edit Modal -->
-            <div class="modal fade" id="editModal-{{ record.id }}" tabindex="-1" aria-labelledby="editModalLabel-{{ record.id }}" aria-hidden="true">
+             <div class="modal fade" id="editModal-{{ record.id }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel-{{ record.id }}" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -67,7 +67,7 @@ class InvestmentTable(tables.Table):
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                 <button type="submit" class="btn btn-primary">Save changes</button>
                             </div>
                         </form>
@@ -76,7 +76,7 @@ class InvestmentTable(tables.Table):
             </div>
 
             <!-- Delete Modal -->
-            <div class="modal fade" id="deleteModal-{{ record.id }}" tabindex="-1" aria-labelledby="deleteModalLabel-{{ record.id }}" aria-hidden="true">
+             <div class="modal fade" id="deleteModal-{{ record.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel-{{ record.id }}" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -89,7 +89,7 @@ class InvestmentTable(tables.Table):
                             <strong>Shares:</strong> {{ record.number_of_shares }} @ {{ record.share_price }}
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             <form method="POST" action="{% url 'investment-delete' record.id %}" style="display: inline;">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger">Delete</button>

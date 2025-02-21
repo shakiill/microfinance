@@ -5,20 +5,31 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.views.generic import CreateView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
 from apps.helpers.views import PageHeaderMixin
 from apps.investment.filters import InvestmentFilterSet
+from apps.investment.forms import InvestmentAddForm
 from apps.investment.models import Investment
 from apps.investment.tables import InvestmentTable
 
 
 # Create your views here.
+class InvestmentAddView(PageHeaderMixin, LoginRequiredMixin,CreateView):
+    permission_required = 'investment.add_investment'
+    model = Investment
+    form_class = InvestmentAddForm
+    success_url = reverse_lazy('all_investments')
+    template_name = 'add.html'
+    page_title = 'Investment'
+    list_link = reverse_lazy('all_investments')
+
 class InvestmentListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
     permission_required = 'investment.view_investment'
     model = Investment
-    template_name = 'list.html'
+    template_name = 'investment.html'
     paginate_by = 20
     ordering = '-id'
     table_class = InvestmentTable
@@ -28,7 +39,7 @@ class InvestmentListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, 
         context = super().get_context_data(**kwargs)
         context.update({
             'page_title': 'Investment',
-            'add_link': reverse_lazy('user_add'),
+            'add_link': reverse_lazy('investment-add'),
             'filter': self.filterset
         })
         return context
@@ -71,7 +82,7 @@ def investment_update(request, pk):
         except Exception as e:
             messages.error(request, f'Error updating investment: {str(e)}')
 
-        return redirect('investment-list')
+        return redirect('all_investments')
 
 
 def investment_delete(request, pk):
@@ -94,4 +105,4 @@ def investment_delete(request, pk):
         except Exception as e:
             messages.error(request, f'Error deleting investment: {str(e)}')
 
-        return redirect('investment-list')
+        return redirect('all_investments')

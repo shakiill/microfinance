@@ -23,7 +23,7 @@ class Investment(TimeStamp):
                                                    help_text="Number of shares purchased")  # Minimum 1 share required
     share_price = models.DecimalField(max_digits=10, decimal_places=2,
                                       help_text="Price per share in the investment currency")
-    investment_date = models.DateField(auto_now_add=True)
+    investment_date = models.DateField()
     maturity_date = models.DateField(null=True, blank=True,
                                      help_text="The date when the investment matures")
     interest_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.0,
