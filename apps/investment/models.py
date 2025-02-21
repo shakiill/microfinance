@@ -17,8 +17,8 @@ class Investment(TimeStamp):
 
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='investments')
     status = models.IntegerField(choices=StatusChoices.choices, default=StatusChoices.APPLIED)
-    share_certificate_no = models.CharField(max_length=20, unique=True, blank=True, null=True)
-    share_certificate_url = models.URLField(blank=True, null=True, help_text="URL to the share certificate")
+    certificate_no = models.CharField(max_length=20, unique=True, blank=True, null=True)
+    certificate_url = models.URLField(blank=True, null=True, help_text="URL to the share certificate")
     number_of_shares = models.PositiveIntegerField(default=1,
                                                    help_text="Number of shares purchased")  # Minimum 1 share required
     share_price = models.DecimalField(max_digits=10, decimal_places=2,
@@ -28,6 +28,7 @@ class Investment(TimeStamp):
                                      help_text="The date when the investment matures")
     interest_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.0,
                                         help_text="Annual interest rate in percentage (e.g., 5.25)")
+    amount = models.DecimalField(max_digits=12, default=0, decimal_places=2, help_text="Total amount of the investment")
 
     class Meta:
         ordering = ['-investment_date']
@@ -52,7 +53,7 @@ class Investment(TimeStamp):
 
     def save(self, *args, **kwargs):
         # Trigger validation when saving
-        self.full_clean()
+        self.amount = self.number_of_shares * self.share_price
         super().save(*args, **kwargs)
 
 
