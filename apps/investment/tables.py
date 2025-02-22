@@ -1,6 +1,6 @@
 import django_tables2 as tables
 
-from apps.investment.models import Investment
+from apps.investment.models import Investment, DailySaving
 
 
 class InvestmentTable(tables.Table):
@@ -108,6 +108,52 @@ class InvestmentTable(tables.Table):
         fields = (
             'certificate_no', 'customer_name', 'customer_mobile',
             'number_of_shares', 'share_price', 'interest_rate', 'investment_date', 'maturity_date', 'status')
+        attrs = {
+            'class': 'table table-hover table-separate table-head-custom table-checkable',
+            'id': 'kt_datatable'
+        }
+        row_attrs = {
+            'class': 'text-dark-75'
+        }
+
+
+class DailySavingTable(tables.Table):
+    collected = tables.Column(
+        accessor='collected_by.name',
+        verbose_name='Collected by',
+        attrs={'th': {'class': 'text-left'}}
+    )
+    customer_name = tables.Column(
+        accessor='customer.name',
+        verbose_name='Customer Name',
+        attrs={'th': {'class': 'text-left'}}
+    )
+
+    customer_mobile = tables.Column(
+        accessor='customer.mobile',
+        verbose_name='Customer Mobile',
+        attrs={'th': {'class': 'text-left'}}
+    )
+
+    actions = tables.TemplateColumn(
+        template_code='''
+             <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editModal-{{ record.id }}">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+                <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteModal-{{ record.id }}">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
+            ''',
+        orderable=False,
+        verbose_name='Actions'
+    )
+
+    class Meta:
+        model = DailySaving
+        fields = (
+            'date', 'customer_name', 'customer_mobile', 'collected', 'amount', 'created_at')
         attrs = {
             'class': 'table table-hover table-separate table-head-custom table-checkable',
             'id': 'kt_datatable'

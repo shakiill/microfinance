@@ -10,14 +10,14 @@ from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
 from apps.helpers.views import PageHeaderMixin
-from apps.investment.filters import InvestmentFilterSet
-from apps.investment.forms import InvestmentAddForm
-from apps.investment.models import Investment
-from apps.investment.tables import InvestmentTable
+from apps.investment.filters import InvestmentFilterSet, DailySavingFilterSet
+from apps.investment.forms import InvestmentAddForm, DailySavingAddForm
+from apps.investment.models import Investment, DailySaving
+from apps.investment.tables import InvestmentTable, DailySavingTable
 
 
 # Create your views here.
-class InvestmentAddView(PageHeaderMixin, LoginRequiredMixin,CreateView):
+class InvestmentAddView(PageHeaderMixin, LoginRequiredMixin, CreateView):
     permission_required = 'investment.add_investment'
     model = Investment
     form_class = InvestmentAddForm
@@ -25,6 +25,7 @@ class InvestmentAddView(PageHeaderMixin, LoginRequiredMixin,CreateView):
     template_name = 'add.html'
     page_title = 'Investment'
     list_link = reverse_lazy('all_investments')
+
 
 class InvestmentListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
     permission_required = 'investment.view_investment'
@@ -106,3 +107,32 @@ def investment_delete(request, pk):
             messages.error(request, f'Error deleting investment: {str(e)}')
 
         return redirect('all_investments')
+
+
+class DailySavingAddView(PageHeaderMixin, LoginRequiredMixin, CreateView):
+    permission_required = 'investment.add_daily_saving'
+    model = DailySaving
+    form_class = DailySavingAddForm
+    success_url = reverse_lazy('daily-saving-list')
+    template_name = 'add.html'
+    page_title = 'Daily saving'
+    list_link = reverse_lazy('daily-saving-list')
+
+
+class DailySavingListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
+    permission_required = 'investment.view_daily_saving'
+    model = DailySaving
+    template_name = 'list.html'
+    paginate_by = 20
+    ordering = '-id'
+    table_class = DailySavingTable
+    filterset_class = DailySavingFilterSet
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Daily saving',
+            'add_link': reverse_lazy('daily-saving-add'),
+            'filter': self.filterset
+        })
+        return context
