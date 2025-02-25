@@ -63,7 +63,7 @@ class Investment(TimeStamp):
 class DailySaving(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="savings")
     amount = models.DecimalField(max_digits=12, decimal_places=2, help_text="Amount saved by the customer")
-    date = models.DateField(auto_now_add=True, help_text="Date the saving was made")
+    date = models.DateField(help_text="Date the saving was made")
     collected_by = models.ForeignKey(Staff, on_delete=models.SET_NULL, null=True, blank=True,
                                      help_text="Staff member who collected the saving")
     created_at = models.DateTimeField(auto_now_add=True, help_text="Timestamp of saving creation")
