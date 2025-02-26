@@ -161,3 +161,53 @@ class DailySavingTable(tables.Table):
         row_attrs = {
             'class': 'text-dark-75'
         }
+
+
+# In DailySavingTransectionTable
+class DailySavingTransectionTable(tables.Table):
+    collected = tables.Column(
+        accessor='collected_by.name',
+        verbose_name='Collected by',
+        attrs={'th': {'class': 'text-left'}}
+    )
+    customer_name = tables.Column(
+        accessor='customer.name',
+        verbose_name='Customer Name',
+        attrs={'th': {'class': 'text-left'}}
+    )
+    customer_mobile = tables.Column(
+        accessor='customer.mobile',
+        verbose_name='Customer Mobile',
+        attrs={'th': {'class': 'text-left'}}
+    )
+    status = tables.Column(
+        verbose_name='Status',
+        attrs={'th': {'class': 'text-left'}}
+    )
+    actions = tables.TemplateColumn(
+        template_code='''
+                <button class="btn btn-sm btn-primary change-status" 
+                        data-id="{{ record.id }}"
+                        data-status="{{ record.status }}"
+                        data-toggle="modal"
+                        data-target="#statusModal">
+                    Status
+                </button>
+            ''',
+        orderable=False,
+        verbose_name='Actions'
+    )
+
+    class Meta:
+        model = DailySaving
+        fields = (
+            'date', 'customer_name', 'customer_mobile', 'collected',
+            'amount', 'created_at', 'status', 'actions'
+        )
+        attrs = {
+            'class': 'table table-hover table-separate table-head-custom table-checkable',
+            'id': 'kt_datatable'
+        }
+        row_attrs = {
+            'class': 'text-dark-75'
+        }

@@ -26,39 +26,6 @@
                         </a>
                     </li>
 
-                    {#                    <li class="menu-item menu-item-submenu" aria-haspopup="true" data-menu-toggle="hover">#}
-                    {#                        <a href="javascript:;" class="menu-link menu-toggle">#}
-                    {#                            <span class="menu-text"> - Users</span>#}
-                    {#                            <i class="menu-arrow"></i>#}
-                    {#                        </a>#}
-                    {#                        <div class="menu-submenu">#}
-                    {#                            <i class="menu-arrow"></i>#}
-                    {#                            <ul class="menu-subnav">#}
-                    {#                                <li class="menu-item menu-item-parent" aria-haspopup="true">#}
-                    {#                                <span class="menu-link">#}
-                    {#                                    <span class="menu-text">Users</span>#}
-                    {#                                </span>#}
-                    {#                                </li>#}
-                    {##}
-                    {#                                <li class="menu-item" aria-haspopup="true">#}
-                    {#                                    <a href="" class="menu-link">#}
-                    {#                                        <i class="menu-bullet menu-bullet-dot">#}
-                    {#                                            <span></span>#}
-                    {#                                        </i>#}
-                    {#                                        <span class="menu-text">Customer</span>#}
-                    {#                                    </a>#}
-                    {#                                </li>#}
-                    {##}
-                    {#                            </ul>#}
-                    {#                        </div>#}
-                    {#                    </li>#}
-
-                    {#                    <li class="menu-item" aria-haspopup="true">#}
-                    {#                        <a href="" class="menu-link">#}
-                    {#                            <span class="menu-text"> - Staff </span>#}
-                    {#                        </a>#}
-                    {#                    </li>#}
-
                     <li class="menu-item {% if url_name == 'user_list' %}active_link{% endif %}" aria-haspopup="true">
                         <a href="{% url 'user_list' %}" class="menu-link">
                             <span class="menu-text"> - Customers </span>
@@ -100,11 +67,43 @@
                             <span class="menu-text"> - Repayments </span>
                         </a>
                     </li>
-                    <li class="menu-item {% if url_name == 'all_transactions' %}active_link{% endif %}" aria-haspopup="true">
-                        <a href="{% url 'all_transactions' %}" class="menu-link">
+
+
+
+
+                    <li class="menu-item menu-item-submenu {% if url_name == 'all_transactions' or url_name == 'daily-saving-transaction' %}menu-item-open{% endif %}"
+                        aria-haspopup="true" data-menu-toggle="hover">
+                        <a href="javascript:;" class="menu-link menu-toggle">
                             <span class="menu-text"> - Transactions </span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="menu-submenu">
+                            <i class="menu-arrow"></i>
+                            <ul class="menu-subnav">
+                                <li class="menu-item {% if url_name == 'all_transactions' %}active_link{% endif %}"
+                                    aria-haspopup="true">
+                                    <a href="{% url 'all_transactions' %}" class="menu-link">
+                                        <span class="menu-text"> - Installments </span>
+                                    </a>
+                                </li>
+                                <li class="menu-item {% if url_name == 'daily-saving-transaction' %}active_link{% endif %}"
+                                    aria-haspopup="true">
+                                    <a href="{% url 'daily-saving-transaction' %}" class="menu-link">
+                                        <span class="menu-text"> - Daily Savings </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="menu-item" aria-haspopup="true">
+                        <a href="" class="menu-link">
+                            <span class="menu-text"> - Staff </span>
                         </a>
                     </li>
+
+
+
                     <li class="menu-item {% if url_name == 'daily-saving-list' %}active_link{% endif %}" aria-haspopup="true">
                         <a href="{% url 'daily-saving-list' %}" class="menu-link">
                             <span class="menu-text"> - Daily savings  </span>
@@ -167,7 +166,7 @@
         }
 
         li.menu-item.menu-item-submenu.menu-item-open {
-            background: #000000;
+            background: #3fe1bb47;
         }
     </style>
 {% endblock %}

@@ -1,0 +1,179 @@
+{% extends 'includes/main.html' %}
+{% load render_table from django_tables2 %}
+{% load static %}
+
+{% block content %}
+    <div class="container-fluid">
+        <!-- Status Change Modal -->
+        <div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="statusModalLabel">Change Status</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="statusSelect">Select New Status:</label>
+                            <select class="form-control" id="statusSelect">
+                                <option value="pending">Pending</option>
+                                <option value="verified">Verified</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="submitStatus">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="card card-custom gutter-b">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h3 class="card-label">{{ page_title }}</h3>
+                        </div>
+                        <div class="card-toolbar">
+                            {% if add_link %}
+                                <a href="{{ add_link }}" class="btn btn-info">Add New</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% if filter %}
+                            {% include 'includes/filter.html' %}
+                        {% endif %}
+                        <div class="table-responsive">
+                            {% render_table table %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(document).ready(function() {
+            let currentSavingId = null;
+            let currentStatus = null;
+
+            // Initialize toastr if it exists
+            if (typeof toastr !== 'undefined') {
+                toastr.options = {
+                    "closeButton": true,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "timeOut": "3000"
+                };
+            }
+
+            // When change status button is clicked
+            $('.change-status').click(function() {
+                currentSavingId = $(this).data('id');
+                currentStatus = $(this).data('status');
+
+                // Pre-select the current status in the modal
+                $('#statusSelect').val(currentStatus);
+
+                // Show the modal
+                $('#statusModal').modal('show');
+            });
+
+            // When submit button in modal is clicked
+            $('#submitStatus').click(function() {
+                var $button = $(this);
+                var newStatus = $('#statusSelect').val();
+
+                if (newStatus === currentStatus) {
+                    if (typeof toastr !== 'undefined') {
+                        toastr.error('Please select a different status');
+                    } else {
+                        alert('Please select a different status');
+                    }
+                    return;
+                }
+
+                // Disable submit button and show loading state
+                $button.prop('disabled', true);
+                $button.text('Processing...');
+
+                // Send AJAX request
+                $.ajax({
+                    url: '/investment/change-saving-status/',
+                    type: 'POST',
+                    data: {
+                        'id': currentSavingId,
+                        'status': newStatus,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Update status in the table
+                            var $row = $('.change-status[data-id="' + currentSavingId + '"]').closest('tr');
+                            var $statusCell = $row.find('td:nth-child(7)'); // Adjust column index if needed
+
+                            // Update with a status label
+                            var statusLabel = 'label-warning';
+                            if (newStatus === 'verified') statusLabel = 'label-success';
+                            if (newStatus === 'rejected') statusLabel = 'label-danger';
+
+                            var capitalizedStatus = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+                            $statusCell.html('<span class="label ' + statusLabel + ' label-inline">' + capitalizedStatus + '</span>');
+
+                            // Update data attribute on button
+                            $('.change-status[data-id="' + currentSavingId + '"]').data('status', newStatus);
+
+                            // Show success toast
+                            if (typeof toastr !== 'undefined') {
+                                toastr.success('Status updated to ' + newStatus);
+                            } else {
+                                alert('Status updated to ' + newStatus);
+                            }
+
+                            // Close the modal
+                            $('#statusModal').modal('hide');
+                        } else {
+                            // Show error toast
+                            if (typeof toastr !== 'undefined') {
+                                toastr.error(response.error || 'Failed to update status');
+                            } else {
+                                alert(response.error || 'Failed to update status');
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+
+                        // Show error toast
+                        if (typeof toastr !== 'undefined') {
+                            toastr.error('An error occurred while updating status');
+                        } else {
+                            alert('An error occurred while updating status');
+                        }
+                    },
+                    complete: function() {
+                        // Reset button state
+                        $button.prop('disabled', false);
+                        $button.text('Submit');
+                    }
+                });
+            });
+
+            // Reset modal when closed
+            $('#statusModal').on('hidden.bs.modal', function() {
+                currentSavingId = null;
+                currentStatus = null;
+                $('#submitStatus').prop('disabled', false);
+                $('#submitStatus').text('Submit');
+            });
+        });
+    </script>
+{% endblock %}

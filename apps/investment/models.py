@@ -60,7 +60,12 @@ class Investment(TimeStamp):
         super().save(*args, **kwargs)
 
 
+
 class DailySaving(models.Model):
+    class StatusChoices(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        VERIFIED = 'verified', 'Verified'
+        REJECTED = 'rejected', 'Rejected'
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="savings")
     amount = models.DecimalField(max_digits=12, decimal_places=2, help_text="Amount saved by the customer")
     date = models.DateField(help_text="Date the saving was made")
@@ -73,6 +78,13 @@ class DailySaving(models.Model):
         help_text="Type of saving (e.g., Shonchoy for emergency savings)"
     )
     remarks = models.TextField(null=True, blank=True, help_text="Additional remarks for the saving")
+    status = models.CharField(
+        max_length=10,
+        choices=StatusChoices.choices,
+        default=StatusChoices.PENDING,
+        help_text="Status of the saving"
+    )
+    history = models.JSONField(null=True, blank=True, help_text="History of the saving")
 
     def clean(self):
         if self.amount <= 0:

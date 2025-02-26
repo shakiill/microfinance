@@ -13,7 +13,7 @@ from apps.helpers.views import PageHeaderMixin
 from apps.investment.filters import InvestmentFilterSet, DailySavingFilterSet
 from apps.investment.forms import InvestmentAddForm, DailySavingAddForm
 from apps.investment.models import Investment, DailySaving
-from apps.investment.tables import InvestmentTable, DailySavingTable
+from apps.investment.tables import InvestmentTable, DailySavingTable, DailySavingTransectionTable
 
 
 # Create your views here.
@@ -132,6 +132,25 @@ class DailySavingListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin,
         context = super().get_context_data(**kwargs)
         context.update({
             'page_title': 'Daily saving',
+            'add_link': reverse_lazy('daily-saving-add'),
+            'filter': self.filterset
+        })
+        return context
+
+
+class DailySavingTransactionView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
+    permission_required = 'investment.view_daily_saving'
+    model = DailySaving
+    template_name = 'daily-savings.html'
+    paginate_by = 20
+    ordering = '-id'
+    table_class = DailySavingTransectionTable
+    filterset_class = DailySavingFilterSet
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Daily saving transaction',
             'add_link': reverse_lazy('daily-saving-add'),
             'filter': self.filterset
         })
