@@ -23,6 +23,15 @@
                                 <option value="rejected">Rejected</option>
                             </select>
                         </div>
+
+                        <!-- Remarks field (initially hidden) -->
+                        <div class="form-group" id="remarksGroup" style="display: none;">
+                            <label for="statusRemarks">Remarks: <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="statusRemarks" rows="3" placeholder="Please provide a reason for rejection"></textarea>
+                            <div class="invalid-feedback">
+                                Please provide remarks for rejection.
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -75,6 +84,15 @@
                 };
             }
 
+            // Show/hide remarks field based on status selection
+            $('#statusSelect').change(function() {
+                if ($(this).val() === 'rejected') {
+                    $('#remarksGroup').show();
+                } else {
+                    $('#remarksGroup').hide();
+                }
+            });
+
             // When change status button is clicked
             $('.change-status').click(function() {
                 currentSavingId = $(this).data('id');
@@ -82,6 +100,17 @@
 
                 // Pre-select the current status in the modal
                 $('#statusSelect').val(currentStatus);
+
+                // Check if we need to show remarks field
+                if ($('#statusSelect').val() === 'rejected') {
+                    $('#remarksGroup').show();
+                } else {
+                    $('#remarksGroup').hide();
+                }
+
+                // Clear previous remarks
+                $('#statusRemarks').val('');
+                $('#statusRemarks').removeClass('is-invalid');
 
                 // Show the modal
                 $('#statusModal').modal('show');
@@ -91,6 +120,7 @@
             $('#submitStatus').click(function() {
                 var $button = $(this);
                 var newStatus = $('#statusSelect').val();
+                var remarks = $('#statusRemarks').val().trim();
 
                 if (newStatus === currentStatus) {
                     if (typeof toastr !== 'undefined') {
@@ -101,19 +131,35 @@
                     return;
                 }
 
+                // Check if remarks are required and provided
+                if (newStatus === 'rejected' && remarks === '') {
+                    $('#statusRemarks').addClass('is-invalid');
+                    return;
+                } else {
+                    $('#statusRemarks').removeClass('is-invalid');
+                }
+
                 // Disable submit button and show loading state
                 $button.prop('disabled', true);
                 $button.text('Processing...');
+
+                // Prepare data for sending
+                var sendData = {
+                    'id': currentSavingId,
+                    'status': newStatus,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                };
+
+                // Add remarks if status is rejected
+                if (newStatus === 'rejected') {
+                    sendData.remarks = remarks;
+                }
 
                 // Send AJAX request
                 $.ajax({
                     url: '/investment/change-saving-status/',
                     type: 'POST',
-                    data: {
-                        'id': currentSavingId,
-                        'status': newStatus,
-                        'csrfmiddlewaretoken': '{{ csrf_token }}'
-                    },
+                    data: sendData,
                     success: function(response) {
                         if (response.success) {
                             // Update status in the table
@@ -127,6 +173,14 @@
 
                             var capitalizedStatus = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
                             $statusCell.html('<span class="label ' + statusLabel + ' label-inline">' + capitalizedStatus + '</span>');
+
+                            // If there's a remarks column, update it
+                            if (newStatus === 'rejected' && remarks) {
+                                var $remarksCell = $row.find('td:nth-child(8)'); // Adjust column index for remarks if needed
+                                if ($remarksCell.length) {
+                                    $remarksCell.text(remarks);
+                                }
+                            }
 
                             // Update data attribute on button
                             $('.change-status[data-id="' + currentSavingId + '"]').data('status', newStatus);
@@ -173,6 +227,9 @@
                 currentStatus = null;
                 $('#submitStatus').prop('disabled', false);
                 $('#submitStatus').text('Submit');
+                $('#remarksGroup').hide();
+                $('#statusRemarks').val('');
+                $('#statusRemarks').removeClass('is-invalid');
             });
         });
     </script>
