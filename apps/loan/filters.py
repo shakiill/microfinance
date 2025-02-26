@@ -71,7 +71,7 @@ class LoanDisbursementTransactionFilterSet(django_filters.FilterSet):
     transaction_date = django_filters.DateFromToRangeFilter(widget=RangeWidget(attrs={
         'class': 'dateinput date-range'}))
     name = django_filters.CharFilter(lookup_expr='icontains', field_name='disbursed_to__name',
-                                     label='Name')
+                                     label='Customer Name')
     mobile = django_filters.CharFilter(lookup_expr='icontains', field_name='disbursed_to__mobile',
                                        label='Mobile Number')
     loan_id = django_filters.CharFilter(lookup_expr='exact', field_name='loan__loan_application__id',
