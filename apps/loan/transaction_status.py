@@ -75,3 +75,43 @@ class ChangeTransactionStatus(APIView):
                 'success': False,
                 'error': str(e)
             }, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        transaction_id = request.data.get('id')
+
+        try:
+            transaction = Transaction.objects.get(id=transaction_id)
+
+            # Only allow deletion if status is pending
+            if transaction.status != Transaction.StatusChoices.PENDING:
+                return Response({
+                    'success': False,
+                    'error': 'Only pending transactions can be deleted'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # Store the installment before deleting the transaction
+            installment = transaction.installment
+            transaction_amount = transaction.amount
+
+            # Delete the transaction
+            transaction.delete()
+
+            # Update the installment's paid amount
+            installment.paid_amount -= transaction_amount
+            installment.save()
+
+            return Response({
+                'success': True,
+                'message': 'Transaction deleted successfully'
+            }, status=status.HTTP_200_OK)
+
+        except Transaction.DoesNotExist:
+            return Response({
+                'success': False,
+                'error': 'Transaction record not found'
+            }, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({
+                'success': False,
+                'error': str(e)
+            }, status=status.HTTP_400_BAD_REQUEST)

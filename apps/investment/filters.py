@@ -27,5 +27,5 @@ class DailySavingFilterSet(django_filters.FilterSet):
 
     class Meta:
         model = DailySaving
-        fields = ['customer', 'collected_by', 'amount', 'date', 'created_at']
+        fields = ['customer', 'collected_by', 'amount', 'date', 'created_at', 'status']
         form = DailySavingFilterForm

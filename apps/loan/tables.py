@@ -158,6 +158,11 @@ class TransactionTable(tables.Table):
                            data-target="#statusModal">
                        Status
                    </button>
+                   <button class="btn btn-sm btn-danger delete-record" 
+                    data-id="{{ record.id }}"
+                    data-name="{{ record.name|default:record.id }}">
+                Delete
+            </button>
                ''',
         orderable=False,
         verbose_name='Actions'

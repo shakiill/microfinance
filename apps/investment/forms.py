@@ -104,6 +104,7 @@ class DailySavingFilterForm(forms.Form):
                 Column('collected_by', css_class='form-group col-md-2 mb-0'),
                 Column('amount', css_class='form-group col-md-2 mb-0'),
                 Column('date', css_class='form-group col-md-2 mb-0'),
+                Column('status', css_class='form-group col-md-1 mb-0'),
                 Column('created_at', css_class='form-group col-md-2 mb-0'),
                 Column(HTML("""<button class="btn btn-lg btn-primary">Filter</button>"""),
                        css_class='form-group col-md-1 p-5 mb-0'),
