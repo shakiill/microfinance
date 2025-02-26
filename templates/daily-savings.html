@@ -233,4 +233,88 @@
             });
         });
     </script>
+    <script>
+        $(document).ready(function () {
+            // Initialize toastr if it exists (from your first example)
+            if (typeof toastr !== 'undefined') {
+                toastr.options = {
+                    "closeButton": true,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "timeOut": "3000"
+                };
+            }
+
+            // When delete button is clicked
+            $('.delete-record').click(function () {
+                var transactionId = $(this).data('id');
+                var $button = $(this);
+
+                // Show confirmation dialog (matching your second example's style)
+                if (!confirm(`Are you sure you want to delete this transaction?`)) {
+                    return;
+                }
+
+                // Disable button and show loading state (from first example)
+                $button.prop('disabled', true);
+                $button.text('Deleting...');
+
+                // Send AJAX request with ID in body
+                $.ajax({
+                    url: '/investment/change-saving-status/',
+                    type: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify({
+                        'id': transactionId,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'  // Using template variable like your first example
+                    }),
+                    success: function (response) {
+                        if (response.success) {
+                            // Remove the row from the table
+                            $button.closest('tr').remove();
+
+                            // Show success toast (from first example)
+                            if (typeof toastr !== 'undefined') {
+                                toastr.success('Transaction deleted successfully');
+                            } else {
+                                alert('Transaction deleted successfully');
+                            }
+                        } else {
+                            // Show error toast with response error (combining both examples)
+                            if (typeof toastr !== 'undefined') {
+                                toastr.error(response.error || 'Failed to delete transaction');
+                            } else {
+                                alert(response.error || 'Failed to delete transaction');
+                            }
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+
+                        // Enhanced error handling (mixing both approaches)
+                        let errorMessage = 'An error occurred while deleting transaction';
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            errorMessage = response.error || errorMessage;
+                        } catch (e) {
+                            // Fallback to basic error
+                        }
+
+                        if (typeof toastr !== 'undefined') {
+                            toastr.error(errorMessage);
+                        } else {
+                            alert(errorMessage);
+                        }
+                    },
+                    complete: function () {
+                        // Reset button state (from first example)
+                        $button.prop('disabled', false);
+                        $button.text('Delete');
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}
