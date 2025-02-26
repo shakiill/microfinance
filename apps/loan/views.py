@@ -13,11 +13,13 @@ from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
 from apps.helpers.views import PageHeaderMixin
-from apps.loan.filters import LoanApplicationFilterSet, LoanFilterSet, RepaymentFilterSet, TransactiontFilterSet
+from apps.loan.filters import LoanApplicationFilterSet, LoanFilterSet, RepaymentFilterSet, TransactiontFilterSet, \
+    LoanDisbursementTransactionFilterSet
 from apps.loan.forms import LoanApplicationForm
 from apps.loan.models import LoanApplication, ApplicationProduct, Guarantor, Asset, FinancialRecord, CheckInfo, \
     LoanStatusHistory, Loan, LoanDisbursementTransaction, Installment, Transaction
-from apps.loan.tables import LoanApplicationTable, LoanTable, RepaymentTable, TransactionTable
+from apps.loan.tables import LoanApplicationTable, LoanTable, RepaymentTable, TransactionTable, \
+    LoanDisbursementTransactionTable
 from apps.user.models import CustomUser
 
 
@@ -151,6 +153,41 @@ class LoanStatusChangeView(View):
                 'changed_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')
             })
         return JsonResponse({'status': 'error', 'message': 'Invalid status'}, status=400)
+
+
+class LoanDisbursementTransactiontListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
+    permission_required = 'loan.view_loan_disbursement_transaction'
+    model = LoanDisbursementTransaction
+    template_name = 'list.html'
+    paginate_by = 50
+    ordering = '-transaction_date'
+    table_class = LoanDisbursementTransactionTable
+    filterset_class = LoanDisbursementTransactionFilterSet
+
+    def get_queryset(self):
+        # Optimize the main queryset with select_related and prefetch_related
+        return (
+            super()
+            .get_queryset()
+            .select_related(
+                'loan',
+                'loan__loan_application',
+            )
+            .prefetch_related(
+                'disbursed_to',
+            )
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Loan disbursement transaction',
+            # 'add_link': reverse_lazy('user_add'),
+            'filter': self.filterset
+        })
+        return context
+
+
 
 
 class LoanDetailsView(DetailView):

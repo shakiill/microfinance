@@ -1,7 +1,7 @@
 # tables.py
 import django_tables2 as tables
 
-from apps.loan.models import LoanApplication, Loan, Installment, Transaction
+from apps.loan.models import LoanApplication, Loan, Installment, Transaction, LoanDisbursementTransaction
 
 
 class LoanApplicationTable(tables.Table):
@@ -173,6 +173,37 @@ class TransactionTable(tables.Table):
         fields = (
             'customer_name', 'customer_mobile', 'amount', 'transaction_date',
             'amount', 'collected_by', 'status', 'verified_at', 'verified_by')
+        attrs = {
+            'class': 'table table-hover table-separate table-head-custom table-checkable',
+            'id': 'kt_datatable'
+        }
+        row_attrs = {
+            'class': 'text-dark-75'
+        }
+
+
+class LoanDisbursementTransactionTable(tables.Table):
+    customer_name = tables.Column(
+        accessor='disbursed_to.name',
+        verbose_name='Customer Name',
+        attrs={'th': {'class': 'text-left'}}
+    )
+
+    customer_mobile = tables.Column(
+        accessor='disbursed_to.mobile',
+        verbose_name='Customer Mobile',
+        attrs={'th': {'class': 'text-left'}}
+    )
+    loan_id = tables.Column(
+        accessor='loan.loan_application.id',
+        verbose_name='Loan ID',
+        attrs={'th': {'class': 'text-left'}}
+    )
+
+
+    class Meta:
+        model = LoanDisbursementTransaction
+        fields = ('transaction_date', 'loan_id',  'amount', 'customer_name', 'customer_mobile')
         attrs = {
             'class': 'table table-hover table-separate table-head-custom table-checkable',
             'id': 'kt_datatable'

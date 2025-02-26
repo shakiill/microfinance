@@ -130,3 +130,23 @@ class TransactionFilterForm(forms.Form):
                        css_class='form-group col-md-1 p-5 mb-0'),
             ),
         )
+
+
+class LoanDisbursementTransactionFilterForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'get'
+        self.helper.layout = Layout(
+            Row(
+                Column('loan_id', css_class='form-group col-md-1 mb-0'),
+                Column('name', css_class='form-group col-md-2 mb-0'),
+                Column('mobile', css_class='form-group col-md-2 mb-0'),
+                Column('amount', css_class='form-group col-md-2 mb-0'),
+                Column('transaction_date', css_class='form-group col-md-3 mb-0'),
+                Column(HTML("""<button class="btn btn-lg btn-primary">Filter</button>"""),
+                       css_class='form-group col-md-1 p-5 mb-0'),
+            ),
+        )

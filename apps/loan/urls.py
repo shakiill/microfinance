@@ -13,6 +13,8 @@ urlpatterns = [
     path('loan/<int:pk>/kyc/', staff_required(views.LoanKYCView.as_view()), name='loan_kyc'),
 
     path('loan/applications/', staff_required(views.ApplicationListView.as_view()), name='applications'),
+    path('loan_disbursement_transaction/', staff_required(views.LoanDisbursementTransactiontListView.as_view()),
+         name='loan_disbursement_transaction'),
     path('all/', staff_required(views.LoanListView.as_view()), name='all_loans'),
 
     path('<int:pk>/details/', staff_required(views.LoanDetailsView.as_view()), name='loan_details'),

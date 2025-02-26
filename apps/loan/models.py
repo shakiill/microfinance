@@ -235,7 +235,7 @@ class Loan(TimeStamp):
         verbose_name_plural = 'Loans'
 
     def __str__(self):
-        return f"Loan #{self.id} - {self.loan_application.customer.name}"
+        return f"Loan #{self.loan_application.id} - {self.loan_application.customer.name}"
 
 
 class LoanDisbursementTransaction(TimeStamp):

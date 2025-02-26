@@ -1,8 +1,9 @@
 import django_filters
 from django_filters.widgets import RangeWidget
 
-from apps.loan.forms import LoanApplicationFilterForm, LoanFilterForm, RepaymentFilterForm, TransactionFilterForm
-from apps.loan.models import LoanApplication, Loan, Installment, Transaction
+from apps.loan.forms import LoanApplicationFilterForm, LoanFilterForm, RepaymentFilterForm, TransactionFilterForm, \
+    LoanDisbursementTransactionFilterForm
+from apps.loan.models import LoanApplication, Loan, Installment, Transaction, LoanDisbursementTransaction
 from apps.user.models import CustomUser
 
 
@@ -64,3 +65,20 @@ class TransactiontFilterSet(django_filters.FilterSet):
         model = Transaction
         fields = ['transaction_date', 'collected_by', 'status']
         form = TransactionFilterForm
+
+
+class LoanDisbursementTransactionFilterSet(django_filters.FilterSet):
+    transaction_date = django_filters.DateFromToRangeFilter(widget=RangeWidget(attrs={
+        'class': 'dateinput date-range'}))
+    name = django_filters.CharFilter(lookup_expr='icontains', field_name='disbursed_to__name',
+                                     label='Name')
+    mobile = django_filters.CharFilter(lookup_expr='icontains', field_name='disbursed_to__mobile',
+                                       label='Mobile Number')
+    loan_id = django_filters.CharFilter(lookup_expr='exact', field_name='loan__loan_application__id',
+                                        label='Loan ID')
+    amount = django_filters.RangeFilter(widget=RangeWidget(attrs={'class': 'date-range'}))
+
+    class Meta:
+        model = LoanDisbursementTransaction
+        fields = ['transaction_date', 'amount']
+        form = LoanDisbursementTransactionFilterForm
