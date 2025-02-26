@@ -368,30 +368,3 @@ def create_transaction(request):
             'message': str(e)
         }, status=400)
 
-
-@require_POST
-@login_required
-def verify_transaction(request, transaction_id):
-    try:
-        transaction = Transaction.objects.get(id=transaction_id)
-        if not transaction.is_verified:
-            transaction.is_verified = True
-            transaction.verified_by = request.user
-            transaction.verified_at = timezone.now()
-            transaction.save()
-
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Transaction verified successfully',
-                'transaction_id': transaction_id
-            })
-    except Transaction.DoesNotExist:
-        return JsonResponse({
-            'status': 'error',
-            'message': 'Transaction not found'
-        }, status=404)
-    except Exception as e:
-        return JsonResponse({
-            'status': 'error',
-            'message': str(e)
-        }, status=500)

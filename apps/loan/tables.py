@@ -149,29 +149,16 @@ class TransactionTable(tables.Table):
         attrs={'th': {'class': 'text-left'}}
     )
 
-    verification_status = tables.TemplateColumn(
-        template_code='''
-            {% if record.is_verified %}
-                <span class="label label-success label-inline">Verified</span>
-            {% else %}
-                <span class="label label-warning label-inline">Pending</span>
-            {% endif %}
-        ''',
-        verbose_name='Status'
-    )
-
     actions = tables.TemplateColumn(
         template_code='''
-                {% if not record.is_verified %}
-                    <button type="button"
-                            class="btn btn-sm btn-success verify-transaction-btn"
-                            data-transaction-id="{{ record.id }}"
-                            onclick="verifyTransaction({{ record.id }})"
-                            id="verify-btn-{{ record.id }}">
-                        Verify
-                    </button>
-                {% endif %}
-            ''',
+                   <button class="btn btn-sm btn-primary change-status" 
+                           data-id="{{ record.id }}"
+                           data-status="{{ record.status }}"
+                           data-toggle="modal"
+                           data-target="#statusModal">
+                       Status
+                   </button>
+               ''',
         orderable=False,
         verbose_name='Actions'
     )
@@ -180,7 +167,7 @@ class TransactionTable(tables.Table):
         model = Transaction
         fields = (
             'customer_name', 'customer_mobile', 'amount', 'transaction_date',
-            'amount', 'collected_by', 'verification_status', 'verified_at', 'verified_by')
+            'amount', 'collected_by', 'status', 'verified_at', 'verified_by')
         attrs = {
             'class': 'table table-hover table-separate table-head-custom table-checkable',
             'id': 'kt_datatable'

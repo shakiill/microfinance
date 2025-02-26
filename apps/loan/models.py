@@ -355,6 +355,12 @@ class Transaction(TimeStamp):
         PAYMENT = 'Payment', 'Payment'
         ADJUSTMENT = 'Adjustment', 'Adjustment'
 
+    class StatusChoices(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        VERIFIED = 'verified', 'Verified'
+        REJECTED = 'rejected', 'Rejected'
+
+
     installment = models.ForeignKey(Installment, on_delete=models.CASCADE, related_name='transactions',
                                     help_text="The installment this transaction is linked to")
     amount = models.DecimalField(max_digits=15, decimal_places=2, help_text="Amount of the transaction")
@@ -370,8 +376,13 @@ class Transaction(TimeStamp):
     collected_at = models.DateTimeField(null=True, blank=True)
     created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
     updated_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
-
-    is_verified = models.BooleanField(default=False)
+    status = models.CharField(
+        max_length=10,
+        choices=StatusChoices.choices,
+        default=StatusChoices.PENDING,
+        help_text="Status of the saving"
+    )
+    history = models.JSONField(null=True, blank=True, help_text="History of the saving")
 
     def save(self, *args, **kwargs):
         # Update the linked installment's paid amount whenever a transaction is created/updated

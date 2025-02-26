@@ -62,5 +62,5 @@ class TransactiontFilterSet(django_filters.FilterSet):
 
     class Meta:
         model = Transaction
-        fields = ['transaction_date', 'collected_by']
+        fields = ['transaction_date', 'collected_by', 'status']
         form = TransactionFilterForm

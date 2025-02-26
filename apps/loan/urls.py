@@ -3,6 +3,7 @@ from django.urls import path
 from . import views
 from .applications import download_application_details
 from .loan_process import generate_loan
+from .transaction_status import ChangeTransactionStatus
 from .transections import create_disbursement, update_disbursement, make_payment
 from .views import TransactionUpdateView
 from ..helpers.views import staff_required
@@ -33,5 +34,5 @@ urlpatterns = [
     path('transactions/create/', views.create_transaction, name='create_transaction'),
 
     path('all_transactions/', staff_required(views.AllTransectionListView.as_view()), name='all_transactions'),
-    path('transaction/<int:transaction_id>/verify/',  views.verify_transaction,  name='verify_transaction'),
+    path('change-transactions-status/', ChangeTransactionStatus.as_view(), name='change_transactions_status'),
 ]
