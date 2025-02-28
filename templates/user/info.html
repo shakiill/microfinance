@@ -367,98 +367,115 @@
 {% block js %}
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Check jQuery availability
+        // Check jQuery dependency
         if (typeof jQuery === 'undefined') {
             console.error('jQuery is required!');
             return;
         }
 
-        // Track initialized tables
-        const dataTablesInstances = {
-            'loan-applications-table': true,
-            'transactions-table': false,
-            'savings-table': false,
-            'installments-table': false
+        // State management
+        const tableState = {
+            initialized: {
+                'loan-applications-table': true,
+                'transactions-table': false,
+                'savings-table': false,
+                'installments-table': false
+            },
+            currentTab: null
         };
 
-        // Initialize loan applications table
+        // Initialize first tab
         $('#loan-applications-table').DataTable({
             responsive: true,
             language: { searchPlaceholder: "Search loan applications..." },
             order: [[1, 'desc']]
         });
 
-        // Bootstrap tab change handler
-        $('#customerHistoryTabs a').on('shown.bs.tab', function(e) {
-            const targetId = $(e.target).attr('href').substring(1);
-            const tableMap = {
-                'transactions': 'transactions-table',
-                'savings': 'savings-table',
-                'installments': 'installments-table'
-            };
+        // Tab change handler
+        $('#customerHistoryTabs').on('shown.bs.tab', 'a[data-toggle="tab"]', function(e) {
+            const targetTab = $(e.target).attr('href').substring(1);
+            tableState.currentTab = targetTab;
 
-            const tableId = tableMap[targetId];
-            if (tableId && !dataTablesInstances[tableId]) {
-                initializeDataTable(tableId);
-                dataTablesInstances[tableId] = true;
-            }
-
-            if (targetId !== 'loan-applications') {
-                loadTabData(targetId);
-            }
+            setTimeout(() => handleTabActivation(targetTab), 50);
         });
 
-        // Initialize DataTable for specific table
-        function initializeDataTable(tableId) {
-            if ($.fn.DataTable.isDataTable(`#${tableId}`)) {
-                return;
-            }
-
-            const configs = {
-                'transactions-table': {
-                    order: [[0, 'desc']],
-                    columns: [
-                        { title: "Date" }, { title: "Loan ID" }, { title: "Installment" },
-                        { title: "Amount" }, { title: "Type" }, { title: "Status" },
-                        { title: "Collected By" }, { title: "Remarks" }
-                    ]
-                },
-                'savings-table': {
-                    order: [[0, 'desc']],
-                    columns: [
-                        { title: "Date" }, { title: "Type" }, { title: "Amount" },
-                        { title: "Saving Type" }, { title: "Status" },
-                        { title: "Collected By" }, { title: "Remarks" }
-                    ]
-                },
-                'installments-table': {
-                    order: [[1, 'asc']],
-                    columns: [
-                        { title: "Loan ID" }, { title: "Due Date" }, { title: "Amount" },
-                        { title: "Principal" }, { title: "Interest" }, { title: "Paid Amount" },
-                        { title: "Status" }, { title: "Actions" }
-                    ]
-                }
+        // Handle tab activation
+        function handleTabActivation(tabId) {
+            const tableMap = {
+                transactions: 'transactions-table',
+                savings: 'savings-table',
+                installments: 'installments-table'
             };
 
-            $(`#${tableId}`).DataTable({
-                responsive: true,
-                language: { searchPlaceholder: `Search ${tableId.replace('-table', '')}...` },
-                ...configs[tableId]
-            });
+            const tableId = tableMap[tabId];
+
+            // Initialize DataTable if not already done
+            if (tableId && !tableState.initialized[tableId]) {
+                initializeDataTable(tableId);
+                tableState.initialized[tableId] = true;
+            }
+
+            // Load data for non-default tabs
+            if (tabId !== 'loan-applications') {
+                loadTabData(tabId);
+            }
         }
 
-        // Refresh buttons handlers
-        $('#refresh-transactions').on('click', () => loadTabData('transactions'));
-        $('#refresh-savings').on('click', () => loadTabData('savings'));
-        $('#refresh-installments').on('click', () => loadTabData('installments'));
+        // DataTable initialization
+        function initializeDataTable(tableId) {
+            if ($.fn.DataTable.isDataTable(`#${tableId}`)) return;
 
-        // Load data for specific tab
+            const config = {
+                responsive: true,
+                autoWidth: false,
+                language: { searchPlaceholder: `Search ${tableId.replace('-table', '')}...` },
+                columns: getColumnConfig(tableId),
+                order: getDefaultOrder(tableId)
+            };
+
+            const table = $(`#${tableId}`).DataTable(config);
+
+            setTimeout(() => table.columns.adjust().responsive.recalc(), 100);
+        }
+
+        // Column configurations
+        function getColumnConfig(tableId) {
+            const configs = {
+                'transactions-table': [
+                    { title: "Date" }, { title: "Loan ID" }, { title: "Installment" },
+                    { title: "Amount" }, { title: "Type" }, { title: "Status" },
+                    { title: "Collected By" }, { title: "Remarks" }
+                ],
+                'savings-table': [
+                    { title: "Date" }, { title: "Type" }, { title: "Amount" },
+                    { title: "Saving Type" }, { title: "Status" },
+                    { title: "Collected By" }, { title: "Remarks" }
+                ],
+                'installments-table': [
+                    { title: "Loan ID" }, { title: "Due Date" }, { title: "Amount" },
+                    { title: "Principal" }, { title: "Interest" }, { title: "Paid Amount" },
+                    { title: "Status" }, { title: "Actions" }
+                ]
+            };
+            return configs[tableId] || [];
+        }
+
+        // Default sorting order
+        function getDefaultOrder(tableId) {
+            const orders = {
+                'transactions-table': [[0, 'desc']],
+                'savings-table': [[0, 'desc']],
+                'installments-table': [[1, 'asc']]
+            };
+            return orders[tableId] || [];
+        }
+
+        // Data loading functionality
         function loadTabData(tabId) {
             const tableMap = {
-                'transactions': 'transactions-table',
-                'savings': 'savings-table',
-                'installments': 'installments-table'
+                transactions: 'transactions-table',
+                savings: 'savings-table',
+                installments: 'installments-table'
             };
             const tableId = tableMap[tabId];
 
@@ -469,16 +486,16 @@
 
             const dataTable = $(`#${tableId}`).DataTable();
             const customerId = '{{ object.id }}';
-            const apiUrls = {
-                'transactions': `/api/v1/customers/${customerId}/transactions/`,
-                'savings': `/api/v1/customers/${customerId}/savings/`,
-                'installments': `/api/v1/customers/${customerId}/installments/`
+            const endpoints = {
+                transactions: `/api/v1/customers/${customerId}/transactions/`,
+                savings: `/api/v1/customers/${customerId}/savings/`,
+                installments: `/api/v1/customers/${customerId}/installments/`
             };
 
             showLoading(tableId);
 
             $.ajax({
-                url: apiUrls[tabId],
+                url: endpoints[tabId],
                 type: 'GET',
                 dataType: 'json',
                 success: (data) => {
@@ -497,7 +514,7 @@
             });
         }
 
-        // Process data for different tabs
+        // Data processing
         function processData(tabId, items) {
             switch(tabId) {
                 case 'transactions':
@@ -544,86 +561,105 @@
                         ];
                     });
 
-                default:
-                    return [];
+                default: return [];
             }
         }
 
-        // Helper functions
-        function showLoading(selector) {
-            const table = $(selector).DataTable();
+        // UI Helpers
+        function showLoading(tableId) {
+            const table = $(`#${tableId}`).DataTable();
             table.clear().draw();
-            $(`${selector} tbody`).html(`
-                <tr>
-                    <td colspan="${$(selector).find('th').length}" class="text-center">
-                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        Loading data...
-                    </td>
-                </tr>
+            $(`#${tableId} tbody`).html(`
+                <tr><td colspan="${$(`#${tableId} th`).length}" class="text-center">
+                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    Loading data...
+                </td></tr>
             `);
         }
 
-        function showNoData(selector) {
-            const table = $(selector).DataTable();
+        function showNoData(tableId) {
+            const table = $(`#${tableId}`).DataTable();
             table.clear().draw();
-            $(`${selector} tbody`).html(`
-                <tr>
-                    <td colspan="${$(selector).find('th').length}" class="text-center">
-                        <i class="fas fa-info-circle me-2"></i>No records found
-                    </td>
-                </tr>
+            $(`#${tableId} tbody`).html(`
+                <tr><td colspan="${$(`#${tableId} th`).length}" class="text-center">
+                    <i class="fas fa-info-circle me-2"></i>No records found
+                </td></tr>
             `);
         }
 
-        function showError(selector, message) {
-            const table = $(selector).DataTable();
+        function showError(tableId, message) {
+            const table = $(`#${tableId}`).DataTable();
             table.clear().draw();
-            $(`${selector} tbody`).html(`
-                <tr>
-                    <td colspan="${$(selector).find('th').length}" class="text-center text-danger">
-                        <i class="fas fa-exclamation-circle me-2"></i>${message}
-                    </td>
-                </tr>
+            $(`#${tableId} tbody`).html(`
+                <tr><td colspan="${$(`#${tableId} th`).length}" class="text-center text-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>${message}
+                </td></tr>
             `);
         }
 
         function getStatusBadge(status) {
             const statusText = status || 'N/A';
-            const badgeClass = {
-                'pending': 'bg-warning',
-                'verified': 'bg-success',
-                'approved': 'bg-success',
-                'rejected': 'bg-danger',
-                'paid': 'bg-success',
+            const badgeClasses = {
+                pending: 'bg-warning',
+                verified: 'bg-success',
+                approved: 'bg-success',
+                rejected: 'bg-danger',
+                paid: 'bg-success',
                 'partial paid': 'bg-warning',
-                'overdue': 'bg-danger'
-            }[statusText.toLowerCase()] || 'bg-secondary';
-
-            return `<span class="badge ${badgeClass}">${statusText}</span>`;
+                overdue: 'bg-danger'
+            };
+            return `<span class="badge ${badgeClasses[statusText.toLowerCase()] || 'bg-secondary'}">
+                ${statusText}
+            </span>`;
         }
 
         function getProgressBarClass(status) {
             return {
-                'paid': 'bg-success',
+                paid: 'bg-success',
                 'partial paid': 'bg-warning',
-                'overdue': 'bg-danger'
+                overdue: 'bg-danger'
             }[status.toLowerCase()] || 'bg-secondary';
         }
 
         function formatDate(dateString) {
             if (!dateString) return 'N/A';
-            const options = { year: 'numeric', month: 'short', day: 'numeric' };
-            return new Date(dateString).toLocaleDateString('en-US', options);
+            try {
+                return new Date(dateString).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            } catch {
+                return 'Invalid Date';
+            }
         }
 
-        // Handle initial active tab
+        // Refresh buttons
+        $('#refresh-transactions').click(() => loadTabData('transactions'));
+        $('#refresh-savings').click(() => loadTabData('savings'));
+        $('#refresh-installments').click(() => loadTabData('installments'));
+
+        // Initial load
         const initialTab = $('#customerHistoryTabs .nav-link.active').attr('href').substring(1);
         if (initialTab !== 'loan-applications') {
-            initializeDataTable(initialTab);
-            loadTabData(initialTab);
+            handleTabActivation(initialTab);
         }
+
+        // Window resize handler
+        let resizeTimer;
+        $(window).resize(() => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                Object.keys(tableState.initialized).forEach(tableId => {
+                    if (tableState.initialized[tableId]) {
+                        const table = $(`#${tableId}`).DataTable();
+                        table.columns.adjust().responsive.recalc();
+                    }
+                });
+            }, 250);
+        });
     });
     </script>
 {% endblock %}
