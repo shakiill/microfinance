@@ -25,15 +25,13 @@
                                 <div class="row">
                                     <div class="col text-center">
                                         <div class="position-relative mb-3">
-                                            <img src="
-                                                    
-                                                    {% if object.photo %}{{ object.photo.url }} {% else %} {% static 'images/dummy.jpg' %} {% endif %}"
+                                            <img src="{% if object.photo %}{{ object.photo.url }}{% else %}{% static 'images/dummy.jpg' %}{% endif %}"
                                                  class="rounded-circle shadow-sm"
                                                  style="width: 150px; height: 150px; object-fit: cover;"
                                                  alt="Customer Photo">
                                             <span class="position-absolute bottom-0 end-0 p-2 bg-success rounded-circle">
-                                        <i class="fas fa-check text-white"></i>
-                                        </span>
+                                                <i class="fas fa-check text-white"></i>
+                                            </span>
                                         </div>
                                         <h5 class="mb-1">{{ object.name }}</h5>
                                         <p class="text-muted mb-2">ID: {{ object.uuid }}</p>
@@ -75,8 +73,7 @@
                                         <div class="card h-100 border-0 bg-light">
                                             <div class="card-body">
                                                 <h5 class="card-title mb-3">
-                                                    <i class="fas fa-map-marker-alt me-2 text-primary"></i>Address
-                                                    Information
+                                                    <i class="fas fa-map-marker-alt me-2 text-primary"></i>Address Information
                                                 </h5>
                                                 <div class="mb-2">
                                                     <label class="text-muted small">Village</label>
@@ -93,10 +90,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- Financial Summary -->
                                 </div>
-                                <!-- End of Row -->
-                                <div class="row mt-10">
+                                <!-- Financial Summary -->
+                                <div class="row mt-4">
                                     <div class="col-md-12">
                                         <div class="card border-0 bg-light">
                                             <div class="card-body">
@@ -116,8 +112,7 @@
                                                         <div class="card bg-success text-white">
                                                             <div class="card-body">
                                                                 <h6 class="card-title">Total Savings</h6>
-                                                                <h3 class="mb-0">
-                                                                    ৳{{ total_savings|default:"0.00" }}</h3>
+                                                                <h3 class="mb-0">৳{{ total_savings|default:"0.00" }}</h3>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -125,8 +120,7 @@
                                                         <div class="card bg-info text-white">
                                                             <div class="card-body">
                                                                 <h6 class="card-title">Investments</h6>
-                                                                <h3 class="mb-0">
-                                                                    ৳{{ total_investments|default:"0.00" }}</h3>
+                                                                <h3 class="mb-0">৳{{ total_investments|default:"0.00" }}</h3>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -150,13 +144,13 @@
                         <div class="row mt-4">
                             <div class="col-12">
                                 <div class="d-flex gap-2">
-                                    <a href="{% url 'customer_edit' object.pk %}" class="btn btn-primary mr-2">
+                                    <a href="{% url 'customer_edit' object.pk %}" class="btn btn-primary">
                                         <i class="fas fa-edit me-2"></i>Edit Information
                                     </a>
-                                    <a href="{% url 'loan_apply' object.pk %}" class="btn btn-success mr-2">
+                                    <a href="{% url 'loan_apply' object.pk %}" class="btn btn-success">
                                         <i class="fas fa-plus me-2"></i>New Loan Application
                                     </a>
-                                    <a href="#" class="btn btn-info mr-2">
+                                    <a href="#" class="btn btn-info">
                                         <i class="fas fa-history me-2"></i>Transaction History
                                     </a>
                                     <a href="#" class="btn btn-warning">
@@ -166,87 +160,470 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
-        <div class="row">
+
+        <!-- Customer History Tabbed Section -->
+        <div class="row mt-4">
             <div class="col">
                 <div class="card card-custom shadow-sm">
                     <div class="card-header bg-white py-4 d-flex justify-content-between align-items-center">
                         <div>
-                            <h3 class="card-title mb-0 text-primary">Load applications:</h3>
-                            <p class="text-muted small mb-0">Manage and view customer details</p>
-                        </div>
-                        <div class="card-toolbar">
-                            <a href="{% url 'user_list' %}" class="btn btn-primary">
-                                <i class="fas fa-list me-2"></i>Customer List
-                            </a>
+                            <h3 class="card-title mb-0 text-primary">Customer History</h3>
+                            <p class="text-muted small mb-0">View all customer activities and history</p>
                         </div>
                     </div>
 
                     <div class="card-body p-4">
-                        <!-- Customer Profile Section -->
-                        <div class="row mb-4">
-                            <div class="col-md-12">
+                        <!-- Tabs Navigation -->
+                        <ul class="nav nav-tabs" id="customerHistoryTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" id="loan-applications-tab" data-toggle="tab" href="#loan-applications" role="tab" aria-controls="loan-applications" aria-selected="true">
+                                    <i class="fas fa-file-signature me-2"></i>Loan Applications
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="transactions-tab" data-toggle="tab" href="#transactions" role="tab" aria-controls="transactions" aria-selected="false">
+                                    <i class="fas fa-exchange-alt me-2"></i>Transactions
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="savings-tab" data-toggle="tab" href="#savings" role="tab" aria-controls="savings" aria-selected="false">
+                                    <i class="fas fa-piggy-bank me-2"></i>Daily Savings
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="installments-tab" data-toggle="tab" href="#installments" role="tab" aria-controls="installments" aria-selected="false">
+                                    <i class="fas fa-calendar-alt me-2"></i>Installments
+                                </a>
+                            </li>
+                        </ul>
+
+                        <!-- Tab Contents -->
+                        <div class="tab-content py-3" id="customerHistoryTabContent">
+                            <!-- Loan Applications Tab -->
+                            <div class="tab-pane fade show active" id="loan-applications" role="tabpanel" aria-labelledby="loan-applications-tab">
                                 <div class="table-responsive">
-                                    <table class="table table-bordered">
-                                        <thead>
-                                        <tr>
-                                            <th style="white-space: nowrap">SL#</th>
-                                            <th>Date</th>
-                                            <th>Status</th>
-                                            <th>Amount</th>
-                                            <th>Duration</th>
-                                            <th>Action</th>
-                                        </tr>
+                                    <table class="table table-bordered table-hover" id="loan-applications-table">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th style="white-space: nowrap">SL#</th>
+                                                <th>Date</th>
+                                                <th>Status</th>
+                                                <th>Amount</th>
+                                                <th>Duration</th>
+                                                <th>Purpose</th>
+                                                <th>Action</th>
+                                            </tr>
                                         </thead>
                                         <tbody>
-                                        {% for ap in applications %}
+                                            {% for ap in applications %}
+                                                <tr>
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td>{{ ap.applied_date|date:'d M, Y' }}</td>
+                                                    <td>
+                                                        <span class="badge {% if ap.status == 'APPROVED' %}bg-success{% elif ap.status == 'REJECTED' %}bg-danger{% elif ap.status == 'DISBURSED' %}bg-info{% else %}bg-warning{% endif %}">
+                                                            {{ ap.get_status_display }}
+                                                        </span>
+                                                    </td>
+                                                    <td>৳{{ ap.amount }}</td>
+                                                    <td>{{ ap.duration_months }} month(s)</td>
+                                                    <td>{{ ap.purpose|truncatechars:30 }}</td>
+                                                    <td>
+                                                        {% if ap.loan %}
+                                                            <a href="{% url 'application_details' ap.pk %}" class="btn btn-primary btn-sm">View</a>
+                                                        {% else %}
+                                                            <a href="{% url 'loan_kyc' ap.pk %}" class="btn btn-primary btn-sm">View</a>
+                                                        {% endif %}
+                                                        <a href="{% url 'download_application_details' ap.id %}" class="btn btn-secondary btn-sm">
+                                                            <i class="fa fa-download"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            {% empty %}
+                                                <tr>
+                                                    <td colspan="7" class="text-center">No loan applications found</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Transactions Tab -->
+                            <div class="tab-pane fade" id="transactions" role="tabpanel" aria-labelledby="transactions-tab">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div>
+                                        <h5 class="mb-0">Transaction History</h5>
+                                        <p class="text-muted small">Showing all payment transactions for this customer</p>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-primary" id="refresh-transactions">
+                                            <i class="fas fa-sync-alt me-1"></i> Refresh
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover" id="transactions-table">
+                                        <thead class="bg-light">
                                             <tr>
-                                                <td>{{ forloop.counter }}</td>
-                                                <td>{{ ap.applied_date|date:'d M, Y' }}</td>
-                                                <td>{{ ap.get_status_display }}</td>
-                                                <td>{{ ap.amount }}</td>
-                                                <td>{{ ap.duration_months }}</td>
-                                                <td>
-                                                    {% if ap.loan %}
-                                                        <a href="{% url 'application_details' ap.pk %}"
-                                                           class="btn btn-instagram">View</a>
-                                                    {% else %}
-                                                        <a href="{% url 'loan_kyc' ap.pk %}"
-                                                           class="btn btn-instagram">View</a>
-                                                    {% endif %}
-                                                    <a href="{% url 'download_application_details' ap.id %}"
-                                                       class="btn btn-primary btn-sm">
-                                                        <i class="fa fa-download"></i> Download Full Details
-                                                    </a>
-                                                </td>
+                                                <th>Date</th>
+                                                <th>Loan ID</th>
+                                                <th>Installment</th>
+                                                <th>Amount</th>
+                                                <th>Type</th>
+                                                <th>Status</th>
+                                                <th>Collected By</th>
+                                                <th>Remarks</th>
                                             </tr>
-                                        {% endfor %}
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="8" class="text-center">Loading transactions...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Daily Savings Tab -->
+                            <div class="tab-pane fade" id="savings" role="tabpanel" aria-labelledby="savings-tab">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div>
+                                        <h5 class="mb-0">Daily Savings History</h5>
+                                        <p class="text-muted small">Showing all savings for this customer</p>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-primary" id="refresh-savings">
+                                            <i class="fas fa-sync-alt me-1"></i> Refresh
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover" id="savings-table">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Type</th>
+                                                <th>Amount</th>
+                                                <th>Saving Type</th>
+                                                <th>Status</th>
+                                                <th>Collected By</th>
+                                                <th>Remarks</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="7" class="text-center">Loading savings history...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Installments Tab -->
+                            <div class="tab-pane fade" id="installments" role="tabpanel" aria-labelledby="installments-tab">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div>
+                                        <h5 class="mb-0">Installment Schedule</h5>
+                                        <p class="text-muted small">Showing all loan installments for this customer</p>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-primary" id="refresh-installments">
+                                            <i class="fas fa-sync-alt me-1"></i> Refresh
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover" id="installments-table">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th>Loan ID</th>
+                                                <th>Due Date</th>
+                                                <th>Amount</th>
+                                                <th>Principal</th>
+                                                <th>Interest</th>
+                                                <th>Paid Amount</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="8" class="text-center">Loading installments...</td>
+                                            </tr>
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
-
-    <style>
-        .card-custom {
-            border: none;
-            transition: all 0.3s ease;
+{% endblock %}
+{% block js %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check jQuery availability
+        if (typeof jQuery === 'undefined') {
+            console.error('jQuery is required!');
+            return;
         }
 
-        .card-custom:hover {
-            transform: translateY(-5px);
+        // Track initialized tables
+        const dataTablesInstances = {
+            'loan-applications-table': true,
+            'transactions-table': false,
+            'savings-table': false,
+            'installments-table': false
+        };
+
+        // Initialize loan applications table
+        $('#loan-applications-table').DataTable({
+            responsive: true,
+            language: { searchPlaceholder: "Search loan applications..." },
+            order: [[1, 'desc']]
+        });
+
+        // Bootstrap tab change handler
+        $('#customerHistoryTabs a').on('shown.bs.tab', function(e) {
+            const targetId = $(e.target).attr('href').substring(1);
+            const tableMap = {
+                'transactions': 'transactions-table',
+                'savings': 'savings-table',
+                'installments': 'installments-table'
+            };
+
+            const tableId = tableMap[targetId];
+            if (tableId && !dataTablesInstances[tableId]) {
+                initializeDataTable(tableId);
+                dataTablesInstances[tableId] = true;
+            }
+
+            if (targetId !== 'loan-applications') {
+                loadTabData(targetId);
+            }
+        });
+
+        // Initialize DataTable for specific table
+        function initializeDataTable(tableId) {
+            if ($.fn.DataTable.isDataTable(`#${tableId}`)) {
+                return;
+            }
+
+            const configs = {
+                'transactions-table': {
+                    order: [[0, 'desc']],
+                    columns: [
+                        { title: "Date" }, { title: "Loan ID" }, { title: "Installment" },
+                        { title: "Amount" }, { title: "Type" }, { title: "Status" },
+                        { title: "Collected By" }, { title: "Remarks" }
+                    ]
+                },
+                'savings-table': {
+                    order: [[0, 'desc']],
+                    columns: [
+                        { title: "Date" }, { title: "Type" }, { title: "Amount" },
+                        { title: "Saving Type" }, { title: "Status" },
+                        { title: "Collected By" }, { title: "Remarks" }
+                    ]
+                },
+                'installments-table': {
+                    order: [[1, 'asc']],
+                    columns: [
+                        { title: "Loan ID" }, { title: "Due Date" }, { title: "Amount" },
+                        { title: "Principal" }, { title: "Interest" }, { title: "Paid Amount" },
+                        { title: "Status" }, { title: "Actions" }
+                    ]
+                }
+            };
+
+            $(`#${tableId}`).DataTable({
+                responsive: true,
+                language: { searchPlaceholder: `Search ${tableId.replace('-table', '')}...` },
+                ...configs[tableId]
+            });
         }
 
-        .badge {
-            padding: 0.5em 1em;
+        // Refresh buttons handlers
+        $('#refresh-transactions').on('click', () => loadTabData('transactions'));
+        $('#refresh-savings').on('click', () => loadTabData('savings'));
+        $('#refresh-installments').on('click', () => loadTabData('installments'));
+
+        // Load data for specific tab
+        function loadTabData(tabId) {
+            const tableMap = {
+                'transactions': 'transactions-table',
+                'savings': 'savings-table',
+                'installments': 'installments-table'
+            };
+            const tableId = tableMap[tabId];
+
+            if (!$.fn.DataTable.isDataTable(`#${tableId}`)) {
+                console.error('DataTable not initialized!');
+                return;
+            }
+
+            const dataTable = $(`#${tableId}`).DataTable();
+            const customerId = '{{ object.id }}';
+            const apiUrls = {
+                'transactions': `/api/v1/customers/${customerId}/transactions/`,
+                'savings': `/api/v1/customers/${customerId}/savings/`,
+                'installments': `/api/v1/customers/${customerId}/installments/`
+            };
+
+            showLoading(tableId);
+
+            $.ajax({
+                url: apiUrls[tabId],
+                type: 'GET',
+                dataType: 'json',
+                success: (data) => {
+                    dataTable.clear();
+                    if (data.results?.length > 0) {
+                        dataTable.rows.add(processData(tabId, data.results)).draw();
+                        dataTable.responsive.recalc();
+                    } else {
+                        showNoData(tableId);
+                    }
+                },
+                error: (xhr) => {
+                    console.error('Error:', xhr.responseText);
+                    showError(tableId, 'Failed to load data');
+                }
+            });
         }
-    </style>
+
+        // Process data for different tabs
+        function processData(tabId, items) {
+            switch(tabId) {
+                case 'transactions':
+                    return items.map(item => [
+                        formatDate(item.transaction_date),
+                        item.loan_id || 'N/A',
+                        item.installment_id ? `Installment #${item.installment_id}` : 'N/A',
+                        `৳${parseFloat(item.amount).toFixed(2)}`,
+                        item.transaction_type || 'N/A',
+                        getStatusBadge(item.status),
+                        item.collected_by_name || 'N/A',
+                        item.remarks || 'N/A'
+                    ]);
+
+                case 'savings':
+                    return items.map(item => [
+                        formatDate(item.date),
+                        'Deposit',
+                        `৳${parseFloat(item.amount).toFixed(2)}`,
+                        item.saving_type || 'Regular',
+                        getStatusBadge(item.status),
+                        item.collected_by_name || 'N/A',
+                        item.remarks || 'N/A'
+                    ]);
+
+                case 'installments':
+                    return items.map(item => {
+                        const paidPercentage = (item.paid_amount / item.amount) * 100;
+                        return [
+                            item.loan_id,
+                            formatDate(item.due_date),
+                            `৳${parseFloat(item.amount).toFixed(2)}`,
+                            `৳${parseFloat(item.principal_amount).toFixed(2)}`,
+                            `৳${parseFloat(item.interest_amount).toFixed(2)}`,
+                            `৳${parseFloat(item.paid_amount).toFixed(2)}`,
+                            `${getStatusBadge(item.payment_status)}<div class="progress mt-1" style="height: 5px;">
+                                <div class="progress-bar ${getProgressBarClass(item.payment_status)}"
+                                    role="progressbar" style="width: ${paidPercentage}%;"
+                                    aria-valuenow="${paidPercentage}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>`,
+                            `<button class="btn btn-sm btn-primary view-installment" data-id="${item.id}">
+                                <i class="fas fa-eye"></i>
+                            </button>`
+                        ];
+                    });
+
+                default:
+                    return [];
+            }
+        }
+
+        // Helper functions
+        function showLoading(selector) {
+            const table = $(selector).DataTable();
+            table.clear().draw();
+            $(`${selector} tbody`).html(`
+                <tr>
+                    <td colspan="${$(selector).find('th').length}" class="text-center">
+                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        Loading data...
+                    </td>
+                </tr>
+            `);
+        }
+
+        function showNoData(selector) {
+            const table = $(selector).DataTable();
+            table.clear().draw();
+            $(`${selector} tbody`).html(`
+                <tr>
+                    <td colspan="${$(selector).find('th').length}" class="text-center">
+                        <i class="fas fa-info-circle me-2"></i>No records found
+                    </td>
+                </tr>
+            `);
+        }
+
+        function showError(selector, message) {
+            const table = $(selector).DataTable();
+            table.clear().draw();
+            $(`${selector} tbody`).html(`
+                <tr>
+                    <td colspan="${$(selector).find('th').length}" class="text-center text-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>${message}
+                    </td>
+                </tr>
+            `);
+        }
+
+        function getStatusBadge(status) {
+            const statusText = status || 'N/A';
+            const badgeClass = {
+                'pending': 'bg-warning',
+                'verified': 'bg-success',
+                'approved': 'bg-success',
+                'rejected': 'bg-danger',
+                'paid': 'bg-success',
+                'partial paid': 'bg-warning',
+                'overdue': 'bg-danger'
+            }[statusText.toLowerCase()] || 'bg-secondary';
+
+            return `<span class="badge ${badgeClass}">${statusText}</span>`;
+        }
+
+        function getProgressBarClass(status) {
+            return {
+                'paid': 'bg-success',
+                'partial paid': 'bg-warning',
+                'overdue': 'bg-danger'
+            }[status.toLowerCase()] || 'bg-secondary';
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+
+        // Handle initial active tab
+        const initialTab = $('#customerHistoryTabs .nav-link.active').attr('href').substring(1);
+        if (initialTab !== 'loan-applications') {
+            initializeDataTable(initialTab);
+            loadTabData(initialTab);
+        }
+    });
+    </script>
 {% endblock %}

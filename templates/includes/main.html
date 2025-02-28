@@ -21,7 +21,6 @@
     <link href="{% static 'css/style.bundle.css' %}" rel="stylesheet" type="text/css"/>
     <link href="{% static 'plugins/quill/quill.snow.css' %}" rel="stylesheet" type="text/css"/>
     <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css"></script>
     <link href="{% static 'plugins/django_select2/django_select2.css' %}" rel="stylesheet" type="text/css"/>
     <!--end::Global Theme Styles-->
@@ -404,7 +403,6 @@
 <!--end::Scrolltop-->
 <!--end::Global Config-->
 <!--begin::Global Theme Bundle(used by all pages)-->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="{% static 'plugins/global/plugins.bundle.js' %}"></script>
 <script src="{% static 'plugins/global/toastr.js' %}"></script>
 <script src="{% static 'js/scripts.bundle.js' %}"></script>
@@ -412,8 +410,10 @@
 <script src="{% static 'plugins/quill/quill-textarea.js' %}" type="text/javascript"></script>
 <script src="{% static 'plugins/django_select2/django_select2.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/main.js' %}"></script>
-{#<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>#}
-{#<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>#}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
 
 <script type="text/javascript" src="https://www.youtube.com/iframe_api"></script>
 <script type="text/javascript"
