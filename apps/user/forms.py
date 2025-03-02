@@ -1,45 +1,90 @@
 from allauth.account.forms import LoginForm, ChangePasswordForm, ResetPasswordForm, ResetPasswordKeyForm, SignupForm
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column, HTML
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import Group
 from django.urls import reverse_lazy
 
-from apps.user.models import Customer
+from apps.user.models import Customer, Staff
 
 User = get_user_model()
 
 
-# class StaffCreateForm(forms.ModelForm):
-#     class Meta:
-#         model = User
-#         fields = ('username', 'name', 'password1', 'password2')
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#
-#         for fieldname in self.fields:
-#             self.fields[fieldname].help_text = None
-#             # self.fields[fieldname].widget.attrs['placeholder'] = self.fields[fieldname].label
-#
-#         self.helper = FormHelper()
-#         # self.helper.form_show_labels = False
-#         self.helper.layout = Layout(
-#             Row(
-#                 Column('username', css_class='form-group col-md-6 mb-0'),
-#                 Column('name', css_class='form-group col-md-6 mb-0'),
-#             ),
-#             Row(
-#                 Column('gender', css_class='form-group col-md-6 mb-0'),
-#                 Column('photo', css_class='form-group col-md-6 mb-0'),
-#             ),
-#             Row(
-#                 Column(
-#                     Submit('submit', 'Submit'), css_class='kt-login__actions'
-#                 )
-#             )
-#         )
+class StaffEditForm(forms.ModelForm):
+    # role = forms.ModelMultipleChoiceField(queryset=Group.objects.all())
+
+    class Meta:
+        model = Staff
+        fields = ('name', 'email', 'username')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].label = 'Phone Number'
+
+        for fieldname in self.fields:
+            self.fields[fieldname].help_text = None
+
+        self.helper = FormHelper()
+        # self.helper.form_show_labels = False
+        self.helper.layout = Layout(
+            Row(
+                Column('name', css_class='form-group col-md-6 mb-0'),
+            ),
+            Row(
+                Column('username', css_class='form-group col-md-6 mb-0'),
+                Column('email', css_class='form-group col-md-6 mb-0'),
+            ),
+
+            Row(
+                Column(
+                    Submit('submit', 'Save')
+                )
+            )
+        )
+
+
+class CustomStaffForm(SignupForm):
+    name = forms.CharField(max_length=100, label='Name')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['email'].widget.attrs['readonly'] = False
+        self.fields['email'].label = "Email"
+
+        for fieldname in self.fields:
+            self.fields[fieldname].help_text = None
+            # self.fields[fieldname].widget.attrs['placeholder'] = self.fields[fieldname].label
+        self.helper = FormHelper()
+        self.helper.form_show_labels = True
+        self.helper.layout = Layout(
+            Row(
+                Column('name', css_class='form-group col-md-4 mb-0'),
+                Column('username', css_class='form-group col-md-4 mb-0'),
+                Column('email', css_class='form-group col-md-4 mb-0'),
+            ),
+            Row(
+                Column('password1', css_class='form-group col-md-4 mb-0'),
+                Column('password2', css_class='form-group col-md-4 mb-0'),
+            ),
+            Row(
+                Column(
+                    Submit('submit', 'Save'), css_class='kt-login__actions'
+                )
+            )
+        )
+
+    def custom_signup(self, request, user):
+        user.name = self.cleaned_data['name']
+        group, created = Group.objects.get_or_create(name='staff')
+        user.groups.add(group)
+        user.is_staff = True
+        user.save()
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email', '')
+        if not email:
+            raise forms.ValidationError("Email address is required.")
+        return email
 
 
 class CustomLoginForm(LoginForm):
@@ -279,7 +324,6 @@ class NewSignUpForm(UserCreationForm):
 
 
 from django import forms
-from allauth.account.forms import SignupForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row, Column, Submit, HTML
 from .models import CustomUser

@@ -10,9 +10,11 @@ from django_tables2 import SingleTableMixin
 from formtools.wizard.views import SessionWizardView
 
 from .forms import (ProfileUpdateForm,
-                    CustomProfileCreateForm, CustomSignupForm, NewSignUpForm, CustomUserEditForm
+                    CustomProfileCreateForm, CustomSignupForm, NewSignUpForm, CustomUserEditForm, CustomStaffForm,
+                    StaffEditForm
                     )
-from .models import Customer
+from .models import Customer, Staff
+from .staff import StaffTable
 from ..helpers.customer import CustomerTable, CustomerFilterSet
 from ..helpers.views import PageHeaderMixin
 from ..loan.models import LoanApplication
@@ -140,3 +142,43 @@ def signup(request):
     else:
         form = NewSignUpForm()
     return render(request, 'account/signup.html', {'form': form})
+
+
+class StaffListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
+    permission_required = 'configuration.view_staff'
+    model = Staff
+    template_name = 'list.html'
+    paginate_by = 10
+    ordering = '-id'
+    table_class = StaffTable
+    filterset_class = CustomerFilterSet
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Staffs',
+            'add_link': reverse_lazy('staff_add'),
+            'filter': self.filterset
+        })
+        return context
+
+
+class StaffCreateView(LoginRequiredMixin, PageHeaderMixin, FormView):
+    permission_required = 'user.add_staff'
+    model = Staff
+    form_class = CustomStaffForm
+    success_url = reverse_lazy('staff_list')
+    template_name = 'add.html'
+
+    def form_valid(self, form):
+        user = form.save(self.request)
+        user.save()
+        return super().form_valid(form)
+
+
+class StaffEditView(LoginRequiredMixin, PageHeaderMixin, UpdateView):
+    permission_required = 'user.change_staff'
+    model = Staff
+    form_class = StaffEditForm
+    template_name = 'add.html'
+    success_url = reverse_lazy('staff_list')

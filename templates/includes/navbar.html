@@ -26,8 +26,8 @@
                         </a>
                     </li>
 
-                    <li class="menu-item" aria-haspopup="true">
-                        <a href="" class="menu-link">
+                    <li class="menu-item {% if url_name == 'staff_list' %}active_link{% endif %}" aria-haspopup="true">
+                        <a href="{% url 'staff_list' %}" class="menu-link">
                             <span class="menu-text"> - Staff </span>
                         </a>
                     </li>

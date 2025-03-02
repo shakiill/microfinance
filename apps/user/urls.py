@@ -34,4 +34,9 @@ urlpatterns = [
     path('user/<int:pk>/delete/', views.UserDeleteView.as_view(), name='user_delete'),
     # custom url
     path('customer/<int:pk>/edit/', customer_edit, name='customer_edit'),
+
+    path('staff/', views.StaffListView.as_view(), name='staff_list'),
+    path('staff/add/', views.StaffCreateView.as_view(), name='staff_add'),
+    path('staff/edit/<int:pk>/', views.StaffEditView.as_view(), name='staff_edit'),
+    path('manage_permissions/<int:user_id>/', manage_permissions, name='manage_permissions'),
 ]
