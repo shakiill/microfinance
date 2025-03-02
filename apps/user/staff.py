@@ -18,6 +18,7 @@ class StaffTable(tables.Table):
     actions = tables.TemplateColumn(
         template_code='''
             <a href="{% url 'staff_edit' record.id %}" class="btn btn-sm btn-light-warning"><i class="fa fa-edit"></i></a>
+            <a href="{% url 'manage_permissions' record.id %}" class="btn btn-sm btn-light-info"><i class="fa fa-lock" aria-hidden="true"></i></a>
         ''',
         orderable=False,
         verbose_name='Actions'

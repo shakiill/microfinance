@@ -93,7 +93,7 @@ def manage_permissions(request, user_id):
                     user.user_permissions.add(perm)
 
             user.save()
-            return redirect('user_list')
+            return redirect('staff_list')
     else:
         form = PermissionForm(user=user)
 

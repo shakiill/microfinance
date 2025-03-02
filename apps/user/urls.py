@@ -3,6 +3,7 @@ from django.urls import path, re_path
 
 from . import views
 from .customer import customer_edit
+from .permission import manage_permissions
 from .views import UserEditView, UserInfoView
 
 urlpatterns = [
