@@ -1,0 +1,228 @@
+{% extends 'includes/main.html' %}
+{% load crispy_forms_filters %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="card card-custom gutter-b">
+                    <div class="card-header">
+                        <h3 class="card-title">Manage Permissions for {{ user.username }}</h3>
+                        <div class="card-toolbar">
+                            {#                            {% if list_link %}#}
+                            {#                                <a href="{{ list_link }}" class="btn btn-info">{{ page_title }} List</a>#}
+                            {#                            {% endif %}#}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h4>User Permissions</h4>
+                                    <div class="form-check">
+                                        {{ form.perm_add_customuser }}
+                                        <label for="{{ form.perm_add_customuser.id_for_label }}"
+                                               class="form-check-label">{{ form.perm_add_customuser.label }}</label>
+                                    </div>
+                                    <div class="form-check">
+                                        {{ form.perm_change_customuser }}
+                                        <label for="{{ form.perm_change_customuser.id_for_label }}"
+                                               class="form-check-label">{{ form.perm_change_customuser.label }}</label>
+                                    </div>
+                                    <div class="form-check">
+                                        {{ form.perm_delete_customuser }}
+                                        <label for="{{ form.perm_delete_customuser.id_for_label }}"
+                                               class="form-check-label">{{ form.perm_delete_customuser.label }}</label>
+                                    </div>
+                                    <div class="form-check">
+                                        {{ form.perm_view_customuser }}
+                                        <label for="{{ form.perm_view_customuser.id_for_label }}"
+                                               class="form-check-label">{{ form.perm_view_customuser.label }}</label>
+                                    </div>
+                                    <div class="form-check">
+                                        {{ form.perm_add_permission }}
+                                        <label for="{{ form.perm_add_permission.id_for_label }}"
+                                               class="form-check-label">{{ form.perm_add_permission.label }}</label>
+                                    </div>
+                                    <br>
+
+                                    <h4>Member Permissions</h4>
+                                    <div class="form-check">
+                                        {{ form.perm_add_customer }}
+                                        <label for="{{ form.perm_add_customer.id_for_label }}"
+                                               class="form-check-label">{{ form.perm_add_customer.label }}</label>
+                                    </div>
+                                    <div class="form-check">
+                                        {{ form.perm_change_customer }}
+                                        <label for="{{ form.perm_change_customer.id_for_label }}"
+                                               class="form-check-label">{{ form.perm_change_customer.label }}</label>
+                                    </div>
+                                    <div class="form-check">
+                                        {{ form.perm_delete_customer }}
+                                        <label for="{{ form.perm_delete_customer.id_for_label }}"
+                                               class="form-check-label">{{ form.perm_delete_customer.label }}</label>
+                                    </div>
+                                    <div class="form-check">
+                                        {{ form.perm_view_customer }}
+                                        <label for="{{ form.perm_view_customer.id_for_label }}"
+                                               class="form-check-label">{{ form.perm_view_customer.label }}</label>
+                                    </div>
+                                    <div class="form-check">
+                                        {{ form.perm_approve_member }}
+                                        <label for="{{ form.perm_approve_member.id_for_label }}"
+                                               class="form-check-label">{{ form.perm_approve_member.label }}</label>
+                                    </div>
+                                    <br>
+
+{#                                    <h4>Bulk Email</h4>#}
+{#                                    <div class="form-check">#}
+{#                                        {{ form.perm_add_bulkemail }}#}
+{#                                        <label for="{{ form.perm_add_bulkemail.id_for_label }}"#}
+{#                                               class="form-check-label">{{ form.perm_add_bulkemail.label }}</label>#}
+{#                                    </div>#}
+{#                                    <div class="form-check">#}
+{#                                        {{ form.perm_change_bulkemail }}#}
+{#                                        <label for="{{ form.perm_change_bulkemail.id_for_label }}"#}
+{#                                               class="form-check-label">{{ form.perm_change_bulkemail.label }}</label>#}
+{#                                    </div>#}
+{#                                    <div class="form-check">#}
+{#                                        {{ form.perm_view_bulkemail }}#}
+{#                                        <label for="{{ form.perm_view_bulkemail.id_for_label }}"#}
+{#                                               class="form-check-label">{{ form.perm_view_bulkemail.label }}</label>#}
+{#                                    </div>#}
+{#                                    <div class="form-check">#}
+{#                                        {{ form.perm_delete_bulkemail }}#}
+{#                                        <label for="{{ form.perm_delete_bulkemail.id_for_label }}"#}
+{#                                               class="form-check-label">{{ form.perm_delete_bulkemail.label }}</label>#}
+{#                                    </div>#}
+{#                                    <br>#}
+
+{#                                    <h4>CMS Permissions</h4>#}
+{#                                    <div class="form-check">#}
+{#                                        {{ form.perm_cms_management }}#}
+{#                                        <label for="{{ form.perm_cms_management.id_for_label }}"#}
+{#                                               class="form-check-label">{{ form.perm_cms_management.label }}</label>#}
+{#                                    </div>#}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <h4>Installment Permissions</h4>
+                                    <div class="form-check">
+                                        {{ form.perm_add_installment }}
+                                        <label for="{{ form.perm_add_installment.id_for_label }}"
+                                               class="form-check-label">{{ form.perm_add_installment.label }}</label>
+                                    </div>
+                                    <div class="form-check">
+                                        {{ form.perm_change_installment }}
+                                        <label for="{{ form.perm_change_installment.id_for_label }}"
+                                               class="form-check-label">{{ form.perm_change_installment.label }}</label>
+                                    </div>
+                                    <div class="form-check">
+                                        {{ form.perm_delete_installment }}
+                                        <label for="{{ form.perm_delete_installment.id_for_label }}"
+                                               class="form-check-label">{{ form.perm_delete_installment.label }}</label>
+                                    </div>
+                                    <div class="form-check">
+                                        {{ form.perm_view_installment }}
+                                        <label for="{{ form.perm_view_installment.id_for_label }}"
+                                               class="form-check-label">{{ form.perm_view_installment.label }}</label>
+                                    </div>
+                                    <br>
+
+{#                                    <h4>Installment Payment Permissions</h4>#}
+{#                                    <div class="form-check">#}
+{#                                        {{ form.perm_add_installmentpay }}#}
+{#                                        <label for="{{ form.perm_add_installmentpay.id_for_label }}"#}
+{#                                               class="form-check-label">{{ form.perm_add_installmentpay.label }}</label>#}
+{#                                    </div>#}
+{#                                    <div class="form-check">#}
+{#                                        {{ form.perm_change_installmentpay }}#}
+{#                                        <label for="{{ form.perm_change_installmentpay.id_for_label }}"#}
+{#                                               class="form-check-label">{{ form.perm_change_installmentpay.label }}</label>#}
+{#                                    </div>#}
+{#                                    <div class="form-check">#}
+{#                                        {{ form.perm_delete_installmentpay }}#}
+{#                                        <label for="{{ form.perm_delete_installmentpay.id_for_label }}"#}
+{#                                               class="form-check-label">{{ form.perm_delete_installmentpay.label }}</label>#}
+{#                                    </div>#}
+{#                                    <div class="form-check">#}
+{#                                        {{ form.perm_view_installmentpay }}#}
+{#                                        <label for="{{ form.perm_view_installmentpay.id_for_label }}"#}
+{#                                               class="form-check-label">{{ form.perm_view_installmentpay.label }}</label>#}
+{#                                    </div>#}
+{#                                    <div class="form-check">#}
+{#                                        {{ form.perm_payment_approve }}#}
+{#                                        <label for="{{ form.perm_payment_approve.id_for_label }}"#}
+{#                                               class="form-check-label">{{ form.perm_payment_approve.label }}</label>#}
+{#                                    </div>#}
+{#                                    <div class="form-check">#}
+{#                                        {{ form.perm_fine_generate }}#}
+{#                                        <label for="{{ form.perm_fine_generate.id_for_label }}"#}
+{#                                               class="form-check-label">{{ form.perm_fine_generate.label }}</label>#}
+{#                                    </div>#}
+{##}
+{#                                    <br>#}
+
+{#                                    <h4>Plot Permissions</h4>#}
+{#                                    <div class="form-check">#}
+{#                                        {{ form.perm_add_plot }}#}
+{#                                        <label for="{{ form.perm_add_plot.id_for_label }}"#}
+{#                                               class="form-check-label">{{ form.perm_add_plot.label }}</label>#}
+{#                                    </div>#}
+{#                                    <div class="form-check">#}
+{#                                        {{ form.perm_change_plot }}#}
+{#                                        <label for="{{ form.perm_change_plot.id_for_label }}"#}
+{#                                               class="form-check-label">{{ form.perm_change_plot.label }}</label>#}
+{#                                    </div>#}
+{#                                    <div class="form-check">#}
+{#                                        {{ form.perm_delete_plot }}#}
+{#                                        <label for="{{ form.perm_delete_plot.id_for_label }}"#}
+{#                                               class="form-check-label">{{ form.perm_delete_plot.label }}</label>#}
+{#                                    </div>#}
+{#                                    <div class="form-check">#}
+{#                                        {{ form.perm_view_plot }}#}
+{#                                        <label for="{{ form.perm_view_plot.id_for_label }}"#}
+{#                                               class="form-check-label">{{ form.perm_view_plot.label }}</label>#}
+{#                                    </div>#}
+{#                                    <br>#}
+
+{#                                    <h4>Report Permissions</h4>#}
+{#                                    <div class="form-check">#}
+{#                                        {{ form.perm_member_report }}#}
+{#                                        <label for="{{ form.perm_member_report.id_for_label }}"#}
+{#                                               class="form-check-label">{{ form.perm_member_report.label }}</label>#}
+{#                                    </div>#}
+{#                                    <div class="form-check">#}
+{#                                        {{ form.perm_installment_report }}#}
+{#                                        <label for="{{ form.perm_installment_report.id_for_label }}"#}
+{#                                               class="form-check-label">{{ form.perm_installment_report.label }}</label>#}
+{#                                    </div>#}
+{#                                    <div class="form-check">#}
+{#                                        {{ form.perm_committee_report }}#}
+{#                                        <label for="{{ form.perm_committee_report.id_for_label }}"#}
+{#                                               class="form-check-label">{{ form.perm_committee_report.label }}</label>#}
+{#                                    </div>#}
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col text-center">
+                                    <button type="submit" class="btn btn-primary mt-4">
+                                        Save Permissions
+                                    </button>
+                                </div>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
