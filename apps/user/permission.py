@@ -28,27 +28,27 @@ class PermissionForm(forms.Form):
             "delete_installment": "Delete Installment",  # installment.delete_installment
             "view_installment": "View Installment",  # installment.view_installment
 
-            "add_installmentpay": "Add Installment Payment",  # installment.add_installmentpay
-            "change_installmentpay": "Change Installment Payment",  # installment.change_installmentpay
-            "delete_installmentpay": "Delete Installment Payment",  # installment.delete_installmentpay
-            "view_installmentpay": "View Installment Payment",  # installment.view_installmentpay
-            "payment_approve": "Approve or Decline Payment",  # installment.payment_approve
-            "fine_generate": "Fine Generate",  # installment.fine_generate
-
-            "add_plot": "Add or Assign Plot",  # project.add_plot
-            "change_plot": "Change Plot",  # project.change_plot
-            "delete_plot": "Delete Plot",  # project.delete_plot
-            "view_plot": "View Plot",  # project.view_plot
-
-            "add_bulkemail": "Add bulk email",  # dashboard.add_bulkemail
-            "change_bulkemail": "Change bulk email",  # dashboard.change_bulkemail
-            "view_bulkemail": "View bulk email",  # dashboard.view_bulkemail
-            "delete_bulkemail": "Delete bulk email",  # dashboard.delete_bulkemail
-
-            "member_report": "Member Report",  # user.member_report
-            "installment_report": "Installment Report",  # installment.installment_report
-            "committee_report": "Committee Report",  # cms.committee_report
-            "cms_management": "Content Management",  # cms.cms_management
+            # "add_installmentpay": "Add Installment Payment",  # installment.add_installmentpay
+            # "change_installmentpay": "Change Installment Payment",  # installment.change_installmentpay
+            # "delete_installmentpay": "Delete Installment Payment",  # installment.delete_installmentpay
+            # "view_installmentpay": "View Installment Payment",  # installment.view_installmentpay
+            # "payment_approve": "Approve or Decline Payment",  # installment.payment_approve
+            # "fine_generate": "Fine Generate",  # installment.fine_generate
+            #
+            # "add_plot": "Add or Assign Plot",  # project.add_plot
+            # "change_plot": "Change Plot",  # project.change_plot
+            # "delete_plot": "Delete Plot",  # project.delete_plot
+            # "view_plot": "View Plot",  # project.view_plot
+            #
+            # "add_bulkemail": "Add bulk email",  # dashboard.add_bulkemail
+            # "change_bulkemail": "Change bulk email",  # dashboard.change_bulkemail
+            # "view_bulkemail": "View bulk email",  # dashboard.view_bulkemail
+            # "delete_bulkemail": "Delete bulk email",  # dashboard.delete_bulkemail
+            #
+            # "member_report": "Member Report",  # user.member_report
+            # "installment_report": "Installment Report",  # installment.installment_report
+            # "committee_report": "Committee Report",  # cms.committee_report
+            # "cms_management": "Content Management",  # cms.cms_management
         }
 
         # Fetch the specific permissions from the database
