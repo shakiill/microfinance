@@ -16,6 +16,7 @@ from .forms import (ProfileUpdateForm,
 from .models import Customer, Staff
 from .staff import StaffTable
 from ..helpers.customer import CustomerTable, CustomerFilterSet
+from ..helpers.error_handling import CustomPermissionRequiredMixin
 from ..helpers.views import PageHeaderMixin
 from ..loan.models import LoanApplication
 
@@ -66,7 +67,7 @@ class RegistrationWizardView(SessionWizardView):
         return redirect(reverse_lazy('account_login'))
 
 
-class UserListView(PageHeaderMixin, LoginRequiredMixin, PermissionRequiredMixin, SingleTableMixin, FilterView):
+class UserListView(PageHeaderMixin, LoginRequiredMixin, CustomPermissionRequiredMixin, SingleTableMixin, FilterView):
     permission_required = 'user.view_customer'
     model = Customer
     template_name = 'list.html'
@@ -85,7 +86,7 @@ class UserListView(PageHeaderMixin, LoginRequiredMixin, PermissionRequiredMixin,
         return context
 
 
-class UserCreateView(LoginRequiredMixin, PageHeaderMixin, PermissionRequiredMixin, FormView):
+class UserCreateView(LoginRequiredMixin, PageHeaderMixin, CustomPermissionRequiredMixin, FormView):
     permission_required = 'user.add_customer'
     model = Customer
     form_class = CustomSignupForm
@@ -107,7 +108,7 @@ class UserCreateView(LoginRequiredMixin, PageHeaderMixin, PermissionRequiredMixi
         return super().form_valid(form)
 
 
-class UserEditView(LoginRequiredMixin, PageHeaderMixin, PermissionRequiredMixin, UpdateView):
+class UserEditView(LoginRequiredMixin, PageHeaderMixin, CustomPermissionRequiredMixin, UpdateView):
     permission_required = 'user.change_customer'
     model = Customer
     form_class = CustomUserEditForm
@@ -115,7 +116,7 @@ class UserEditView(LoginRequiredMixin, PageHeaderMixin, PermissionRequiredMixin,
     success_url = reverse_lazy('user_list')
 
 
-class UserInfoView(LoginRequiredMixin, PageHeaderMixin, PermissionRequiredMixin, DetailView):
+class UserInfoView(LoginRequiredMixin, PageHeaderMixin, CustomPermissionRequiredMixin, DetailView):
     permission_required = 'user.view_customer'
     model = Customer
     template_name = 'user/info.html'
@@ -126,7 +127,7 @@ class UserInfoView(LoginRequiredMixin, PageHeaderMixin, PermissionRequiredMixin,
         return context
 
 
-class UserDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+class UserDeleteView(LoginRequiredMixin, CustomPermissionRequiredMixin, DeleteView):
     permission_required = 'user.delete_customer'
     model = User
     success_url = reverse_lazy('user_list')
@@ -145,7 +146,7 @@ def signup(request):
     return render(request, 'account/signup.html', {'form': form})
 
 
-class StaffListView(PageHeaderMixin, LoginRequiredMixin, PermissionRequiredMixin, SingleTableMixin, FilterView):
+class StaffListView(PageHeaderMixin, LoginRequiredMixin, CustomPermissionRequiredMixin, SingleTableMixin, FilterView):
     permission_required = 'user.view_staff'
     model = Staff
     template_name = 'list.html'
@@ -164,7 +165,7 @@ class StaffListView(PageHeaderMixin, LoginRequiredMixin, PermissionRequiredMixin
         return context
 
 
-class StaffCreateView(LoginRequiredMixin, PageHeaderMixin, PermissionRequiredMixin, FormView):
+class StaffCreateView(LoginRequiredMixin, PageHeaderMixin, CustomPermissionRequiredMixin, FormView):
     permission_required = 'user.add_staff'
     model = Staff
     form_class = CustomStaffForm
@@ -177,7 +178,7 @@ class StaffCreateView(LoginRequiredMixin, PageHeaderMixin, PermissionRequiredMix
         return super().form_valid(form)
 
 
-class StaffEditView(LoginRequiredMixin, PageHeaderMixin, PermissionRequiredMixin, UpdateView):
+class StaffEditView(LoginRequiredMixin, PageHeaderMixin, CustomPermissionRequiredMixin, UpdateView):
     permission_required = 'user.change_staff'
     model = Staff
     form_class = StaffEditForm

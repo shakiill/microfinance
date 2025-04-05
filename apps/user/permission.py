@@ -79,7 +79,7 @@ def manage_permissions(request, user_id):
     user = CustomUser.objects.get(id=user_id)
 
     if not request.user.has_perm('auth.add_permission'):
-        return render(request, 'no_permission.html')
+        return render(request, '403.html')
 
     if request.method == 'POST':
         form = PermissionForm(request.POST, user=user)
