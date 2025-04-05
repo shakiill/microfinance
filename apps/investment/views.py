@@ -1,14 +1,17 @@
 from decimal import Decimal
 
 from django.contrib import messages
+from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.views.generic import CreateView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
+from apps.helpers.error_handling import CustomPermissionRequiredMixin
 from apps.helpers.views import PageHeaderMixin
 from apps.investment.filters import InvestmentFilterSet, DailySavingFilterSet
 from apps.investment.forms import InvestmentAddForm, DailySavingAddForm
@@ -17,7 +20,7 @@ from apps.investment.tables import InvestmentTable, DailySavingTable, DailySavin
 
 
 # Create your views here.
-class InvestmentAddView(PageHeaderMixin, LoginRequiredMixin, CreateView):
+class InvestmentAddView(PageHeaderMixin, LoginRequiredMixin, CustomPermissionRequiredMixin, CreateView):
     permission_required = 'investment.add_investment'
     model = Investment
     form_class = InvestmentAddForm
@@ -27,7 +30,8 @@ class InvestmentAddView(PageHeaderMixin, LoginRequiredMixin, CreateView):
     list_link = reverse_lazy('all_investments')
 
 
-class InvestmentListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
+class InvestmentListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, CustomPermissionRequiredMixin,
+                         FilterView):
     permission_required = 'investment.view_investment'
     model = Investment
     template_name = 'investment.html'
@@ -46,6 +50,7 @@ class InvestmentListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, 
         return context
 
 
+@method_decorator(permission_required('investment.change_investment'), name='dispatch')
 def investment_update(request, pk):
     if request.method == 'POST':
         investment = Investment.objects.get(pk=pk)
@@ -86,6 +91,7 @@ def investment_update(request, pk):
         return redirect('all_investments')
 
 
+@method_decorator(permission_required('investment.delete_investment'), name='dispatch')
 def investment_delete(request, pk):
     if request.method == 'POST':
         investment = Investment.objects.get(pk=pk)
@@ -109,8 +115,8 @@ def investment_delete(request, pk):
         return redirect('all_investments')
 
 
-class DailySavingAddView(PageHeaderMixin, LoginRequiredMixin, CreateView):
-    permission_required = 'investment.add_daily_saving'
+class DailySavingAddView(PageHeaderMixin, LoginRequiredMixin, CustomPermissionRequiredMixin, CreateView):
+    permission_required = 'investment.add_dailysaving'
     model = DailySaving
     form_class = DailySavingAddForm
     success_url = reverse_lazy('daily-saving-list')
@@ -119,8 +125,9 @@ class DailySavingAddView(PageHeaderMixin, LoginRequiredMixin, CreateView):
     list_link = reverse_lazy('daily-saving-list')
 
 
-class DailySavingListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
-    permission_required = 'investment.view_daily_saving'
+class DailySavingListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, CustomPermissionRequiredMixin,
+                          FilterView):
+    permission_required = 'investment.view_dailysaving'
     model = DailySaving
     template_name = 'list.html'
     paginate_by = 20
@@ -138,8 +145,9 @@ class DailySavingListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin,
         return context
 
 
-class DailySavingTransactionView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
-    permission_required = 'investment.view_daily_saving'
+class DailySavingTransactionView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, CustomPermissionRequiredMixin,
+                                 FilterView):
+    permission_required = 'investment.view_dailysaving'
     model = DailySaving
     template_name = 'daily-savings.html'
     paginate_by = 20

@@ -1,7 +1,8 @@
 from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils.decorators import method_decorator
+
 from django.db.models import Sum
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -12,6 +13,9 @@ from django.views.generic import CreateView, DetailView, UpdateView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
+from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from apps.helpers.error_handling import CustomPermissionRequiredMixin
 from apps.helpers.views import PageHeaderMixin
 from apps.loan.filters import LoanApplicationFilterSet, LoanFilterSet, RepaymentFilterSet, TransactiontFilterSet, \
     LoanDisbursementTransactionFilterSet
@@ -24,7 +28,8 @@ from apps.user.models import CustomUser
 
 
 # Create your views here.
-class ApplicationListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
+class ApplicationListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, CustomPermissionRequiredMixin,
+                          FilterView):
     permission_required = 'loan.view_loanapplication'
     model = LoanApplication
     template_name = 'list.html'
@@ -43,7 +48,7 @@ class ApplicationListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin,
         return context
 
 
-class LoanListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
+class LoanListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, CustomPermissionRequiredMixin, FilterView):
     permission_required = 'loan.view_loan'
     model = Loan
     template_name = 'list.html'
@@ -62,7 +67,8 @@ class LoanListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, Filter
         return context
 
 
-class LoanApplicationView(CreateView):
+class LoanApplicationView(LoginRequiredMixin, CustomPermissionRequiredMixin, CreateView):
+    permission_required = 'loan.add_loanapplication'
     model = LoanApplication
     form_class = LoanApplicationForm
     template_name = 'loan_add.html'
@@ -77,7 +83,8 @@ class LoanApplicationView(CreateView):
         return kwargs
 
 
-class LoanKYCView(DetailView):
+class LoanKYCView(LoginRequiredMixin, CustomPermissionRequiredMixin, DetailView):
+    permission_required = 'loan.view_loanapplication'
     model = LoanApplication
     template_name = 'kyc.html'
 
@@ -91,7 +98,8 @@ class LoanKYCView(DetailView):
         return context
 
 
-class LoanApplicationDetailsView(DetailView):
+class LoanApplicationDetailsView(LoginRequiredMixin, CustomPermissionRequiredMixin, DetailView):
+    permission_required = 'loan.view_loanapplication'
     model = LoanApplication
     template_name = 'application.html'
 
@@ -112,7 +120,9 @@ class LoanApplicationDetailsView(DetailView):
 from django.utils import timezone
 
 
-class LoanStatusChangeView(View):
+class LoanStatusChangeView(LoginRequiredMixin, CustomPermissionRequiredMixin, View):
+    permission_required = 'loan.change_loanapplication'
+
     def post(self, request, pk):
         loan = get_object_or_404(LoanApplication, pk=pk)
         new_status = request.POST.get('status')
@@ -155,8 +165,9 @@ class LoanStatusChangeView(View):
         return JsonResponse({'status': 'error', 'message': 'Invalid status'}, status=400)
 
 
-class LoanDisbursementTransactiontListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
-    permission_required = 'loan.view_loan_disbursement_transaction'
+class LoanDisbursementTransactiontListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin,
+                                           CustomPermissionRequiredMixin, FilterView):
+    permission_required = 'loan.view_loandisbursementtransaction'
     model = LoanDisbursementTransaction
     template_name = 'list.html'
     paginate_by = 50
@@ -188,9 +199,8 @@ class LoanDisbursementTransactiontListView(PageHeaderMixin, LoginRequiredMixin, 
         return context
 
 
-
-
-class LoanDetailsView(DetailView):
+class LoanDetailsView(LoginRequiredMixin, CustomPermissionRequiredMixin, DetailView):
+    permission_required = 'loan.view_loan'
     model = Loan
     template_name = 'loans.html'
 
@@ -200,7 +210,6 @@ class LoanDetailsView(DetailView):
         context['installments'] = Installment.objects.filter(loan=self.object).order_by('due_date')
         context['disbursement_transaction'] = LoanDisbursementTransaction.objects.filter(loan=self.object)
         return context
-
 
 def installment_details(request, installment_id):
     installment = get_object_or_404(Installment, id=installment_id)
@@ -232,7 +241,8 @@ def installment_details(request, installment_id):
     return JsonResponse(data)
 
 
-class RepaymentListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
+class RepaymentListView(PageHeaderMixin, LoginRequiredMixin, CustomPermissionRequiredMixin, SingleTableMixin,
+                        FilterView):
     permission_required = 'loan.view_installment'
     model = Installment
     template_name = 'repayments.html'
@@ -267,7 +277,8 @@ class RepaymentListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, F
         return context
 
 
-class AllTransectionListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
+class AllTransectionListView(PageHeaderMixin, LoginRequiredMixin, CustomPermissionRequiredMixin, SingleTableMixin,
+                             FilterView):
     permission_required = 'loan.view_transaction'
     model = Transaction
     template_name = 'transections.html'
@@ -303,7 +314,8 @@ class AllTransectionListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMix
 
 
 # Add new view for handling transaction edits
-class TransactionUpdateView(LoginRequiredMixin, UpdateView):
+class TransactionUpdateView(LoginRequiredMixin, CustomPermissionRequiredMixin, UpdateView):
+    permission_required = 'loan.change_transaction'
     model = Transaction
     fields = ['amount', 'remarks']
 
@@ -358,6 +370,7 @@ def get_transaction_history(request, installment_id):
 
 @require_POST
 @login_required
+@permission_required('loan.add_transaction')
 def create_transaction(request):
     try:
         installment_id = request.POST.get('installment_id')
