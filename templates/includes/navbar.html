@@ -20,42 +20,54 @@
             <ul class="menu-nav">
 
                 {% if request.user.is_staff or request.user.is_superuser %}
+
+
                     <li class="menu-item {% if url_name == 'home' %}active_link{% endif %}" aria-haspopup="true">
                         <a href="{% url 'home' %}" class="menu-link">
                             <span class="menu-text"> - Dashboard</span>
                         </a>
                     </li>
-
+                    {% if perms.user.view_staff %}
                     <li class="menu-item {% if url_name == 'staff_list' %}active_link{% endif %}" aria-haspopup="true">
                         <a href="{% url 'staff_list' %}" class="menu-link">
                             <span class="menu-text"> - Staff </span>
                         </a>
                     </li>
-
+                    {% endif %}
+                    {% if perms.user.view_customer %}
                     <li class="menu-item {% if url_name == 'user_list' %}active_link{% endif %}" aria-haspopup="true">
                         <a href="{% url 'user_list' %}" class="menu-link">
                             <span class="menu-text"> - Customers </span>
                         </a>
                     </li>
+                    {% endif %}
 
+                    {% if perms.loan.view_loanapplication %}
                     <li class="menu-item {% if url_name == 'applications' %}active_link{% endif %}" aria-haspopup="true">
                         <a href="{% url 'applications' %}" class="menu-link">
                             <span class="menu-text"> - Application </span>
                         </a>
                     </li>
+                    {% endif %}
 
-
+                    {% if perms.loan.view_loan %}
                     <li class="menu-item {% if url_name == 'all_loans' %}active_link{% endif %}" aria-haspopup="true">
                         <a href="{% url 'all_loans' %}" class="menu-link">
                             <span class="menu-text"> - Loans </span>
                         </a>
                     </li>
 
+                    {% endif %}
+
+                    {% if perms.loan.view_installment %}
                     <li class="menu-item {% if url_name == 'repayments' %}active_link{% endif %}" aria-haspopup="true">
                         <a href="{% url 'repayments' %}" class="menu-link">
                             <span class="menu-text"> - Repayments </span>
                         </a>
                     </li>
+                    {% endif %}
+
+                    {% if perms.investment.view_investment %}
                     <li class="menu-item {% if url_name == 'all_investments' %}active_link{% endif %}"
                         aria-haspopup="true">
                         <a href="{% url 'all_investments' %}" class="menu-link">
@@ -63,6 +75,9 @@
                         </a>
                     </li>
 
+                    {% endif %}
+
+                    {% if perms.investment.view_dailysaving %}
                     <li class="menu-item {% if url_name == 'daily-saving-list' %}active_link{% endif %}"
                         aria-haspopup="true">
                         <a href="{% url 'daily-saving-list' %}" class="menu-link">
@@ -70,7 +85,7 @@
                         </a>
                     </li>
 
-
+                    {% endif %}
 
 
                     <li class="menu-item menu-item-submenu {% if url_name == 'all_transactions' or url_name == 'daily-saving-transaction' or url_name == 'loan_disbursement_transaction' %}menu-item-open{% endif %}"
@@ -82,24 +97,35 @@
                         <div class="menu-submenu">
                             <i class="menu-arrow"></i>
                             <ul class="menu-subnav">
+
+
+                                {% if perms.loan.view_loandisbursementtransaction %}
                                 <li class="menu-item {% if url_name == 'loan_disbursement_transaction' %}active_link{% endif %}"
                                     aria-haspopup="true">
                                     <a href="{% url 'loan_disbursement_transaction' %}" class="menu-link">
                                         <span class="menu-text"> - Disbursement </span>
                                     </a>
                                 </li>
+                                {% endif %}
+
+                                {% if perms.loan.view_transaction %}
                                 <li class="menu-item {% if url_name == 'all_transactions' %}active_link{% endif %}"
                                     aria-haspopup="true">
                                     <a href="{% url 'all_transactions' %}" class="menu-link">
                                         <span class="menu-text"> - Installments </span>
                                     </a>
                                 </li>
+                                {% endif %}
+
+                                {% if perms.investment.view_dailysaving %}
                                 <li class="menu-item {% if url_name == 'daily-saving-transaction' %}active_link{% endif %}"
                                     aria-haspopup="true">
                                     <a href="{% url 'daily-saving-transaction' %}" class="menu-link">
                                         <span class="menu-text"> - Daily Savings </span>
                                     </a>
                                 </li>
+                                {% endif %}
+
                             </ul>
                         </div>
                     </li>
