@@ -37,9 +37,7 @@ class ApplicationListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin,
     filterset_class = LoanApplicationFilterSet
 
     def get_queryset(self):
-        if self.request.user.is_superuser or getattr(self.request, 'perm', None) and getattr(self.request.perm,
-                                                                                             'all_customer_view',
-                                                                                             False):
+        if self.request.user.is_superuser or getattr(self.request, 'perm', None) and getattr(self.request.perm, 'all_customer_view', False):
             return super().get_queryset()
         return super().get_queryset().filter(customer__assign_to=self.request.user)
 
@@ -62,6 +60,11 @@ class LoanListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin, Custom
     ordering = '-created_at'
     table_class = LoanTable
     filterset_class = LoanFilterSet
+
+    def get_queryset(self):
+        if self.request.user.is_superuser or getattr(self.request, 'perm', None) and getattr(self.request.perm, 'all_loan_view', False):
+            return super().get_queryset()
+        return super().get_queryset().filter(assign_by=self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
