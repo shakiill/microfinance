@@ -260,21 +260,38 @@ class RepaymentListView(PageHeaderMixin, LoginRequiredMixin, CustomPermissionReq
     table_class = RepaymentTable
     filterset_class = RepaymentFilterSet
 
+
     def get_queryset(self):
         # Optimize the main queryset with select_related and prefetch_related
-        return (
-            super()
-            .get_queryset()
-            .select_related(
-                'loan',
-                'loan__customer',
+        if self.request.user.is_superuser or getattr(self.request, 'perm', None) and getattr(self.request.perm, 'all_loan_view', False):
+            return (
+                super()
+                .get_queryset()
+                .select_related(
+                    'loan',
+                    'loan__customer',
+                )
+                .prefetch_related(
+                    'transactions',
+                    'transactions__collected_by',
+                    'transactions__verified_by'
+                )
             )
-            .prefetch_related(
-                'transactions',
-                'transactions__collected_by',
-                'transactions__verified_by'
+        else:
+            return (
+                super()
+                .get_queryset()
+                .select_related(
+                    'loan',
+                    'loan__customer',
+                )
+                .prefetch_related(
+                    'transactions',
+                    'transactions__collected_by',
+                    'transactions__verified_by'
+                )
+                .filter(loan__assign_by=self.request.user)
             )
-        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
