@@ -34,6 +34,13 @@
                         </a>
                     </li>
                     {% endif %}
+                    {% if perms.auth.view_group %}
+                    <li class="menu-item {% if url_name == 'group_list' %}active_link{% endif %}" aria-haspopup="true">
+                        <a href="{% url 'group_list' %}" class="menu-link">
+                            <span class="menu-text"> - Groups </span>
+                        </a>
+                    </li>
+                    {% endif %}
                     {% if perms.user.view_customer %}
                     <li class="menu-item {% if url_name == 'user_list' %}active_link{% endif %}" aria-haspopup="true">
                         <a href="{% url 'user_list' %}" class="menu-link">
