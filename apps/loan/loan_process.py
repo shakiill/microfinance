@@ -1,5 +1,6 @@
 # forms.py
 from django import forms
+from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import ValidationError
 
 from .models import Loan
@@ -55,6 +56,7 @@ from django.http import JsonResponse
 from .models import LoanApplication, Installment
 
 
+@permission_required('loan.add_loan')
 @transaction.atomic
 def generate_loan(request, application_id):
     if request.method == 'POST':
