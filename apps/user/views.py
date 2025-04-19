@@ -1,8 +1,7 @@
 from django.contrib.auth import get_user_model, login
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.files.storage import DefaultStorage
-from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView, DetailView, FormView, DeleteView
 from django_filters.views import FilterView
@@ -184,3 +183,49 @@ class StaffEditView(LoginRequiredMixin, PageHeaderMixin, CustomPermissionRequire
     form_class = StaffEditForm
     template_name = 'add.html'
     success_url = reverse_lazy('staff_list')
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.models import Group, Permission
+from django.contrib import messages
+from .forms import GroupForm
+
+
+def group_list(request):
+    groups = Group.objects.all()
+    return render(request, 'group/list.html', {'groups': groups})
+
+
+def group_create_edit(request, pk=None):
+    group = get_object_or_404(Group, pk=pk) if pk else None
+    form = GroupForm(instance=group)
+    all_permissions = Permission.objects.all()
+    selected_permissions = group.permissions.all().values_list('id', flat=True) if group else []
+
+    if request.method == 'POST':
+        form = GroupForm(request.POST, instance=group)
+        if form.is_valid():
+            group = form.save()
+            # Update permissions
+            permission_ids = request.POST.getlist('permissions')
+            group.permissions.set(Permission.objects.filter(id__in=permission_ids))
+            messages.success(request, f"Group '{group.name}' {'updated' if pk else 'created'} successfully.")
+            return redirect('group_list')
+        else:
+            messages.error(request, "Please correct the errors below.")
+
+    return render(request, 'group/form.html', {
+        'form': form,
+        'all_permissions': all_permissions,
+        'selected_permissions': selected_permissions,
+    })
+
+
+def group_delete(request, pk):
+    group = get_object_or_404(Group, pk=pk)
+    if request.method == 'POST':
+        group_name = group.name
+        group.delete()
+        messages.success(request, f"Group '{group_name}' deleted successfully.")
+        return redirect('group_list')
+    return redirect('group_list')

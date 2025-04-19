@@ -233,6 +233,11 @@ class Loan(TimeStamp):
     class Meta:
         verbose_name = 'Loan'
         verbose_name_plural = 'Loans'
+        permissions = [
+            ("all_loan_view", "All loans view report"),
+            ("assign_loan_view", "assign only loans view"),
+        ]
+
 
     def __str__(self):
         return f"Loan #{self.loan_application.id} - {self.loan_application.customer.name}"

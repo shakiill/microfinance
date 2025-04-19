@@ -40,4 +40,9 @@ urlpatterns = [
     path('staff/add/', views.StaffCreateView.as_view(), name='staff_add'),
     path('staff/edit/<int:pk>/', views.StaffEditView.as_view(), name='staff_edit'),
     path('manage_permissions/<int:user_id>/', manage_permissions, name='manage_permissions'),
+
+    path('groups/', views.group_list, name='group_list'),
+    path('group/add/', views.group_create_edit, name='group_create'),
+    path('group/edit/<int:pk>/', views.group_create_edit, name='group_edit'),
+    path('group/delete/<int:pk>/', views.group_delete, name='group_delete'),
 ]

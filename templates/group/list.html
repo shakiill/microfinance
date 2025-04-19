@@ -1,0 +1,54 @@
+{% extends 'includes/main.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="card card-custom gutter-b">
+                    <div class="card-header">
+                        <h3 class="card-title">Group List</h3>
+                        <div class="card-toolbar">
+                            <a href="{% url 'group_create' %}" class="btn btn-primary">Add New Group</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% if groups %}
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Permissions Count</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for group in groups %}
+                                    <tr>
+                                        <td>{{ group.name }}</td>
+                                        <td>{{ group.permissions.count }}</td>
+                                        <td>
+                                            <a href="{% url 'group_edit' group.pk %}"
+                                               class="btn btn-sm btn-info">Edit</a>
+                                            <form method="post" action="{% url 'group_delete' group.pk %}"
+                                                  style="display:inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                        onclick="return confirm('Are you sure you want to delete {{ group.name }}?');">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No groups found.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'includes/main.html' %}
+{% load crispy_forms_filters %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="card card-custom gutter-b">
+                    <div class="card-header">
+                        <h3 class="card-title">{% if form.instance.pk %}Edit Group: {{ form.instance.name }}{% else %}
+                            Create New Group{% endif %}</h3>
+                        <div class="card-toolbar">
+                            <a href="{% url 'group_list' %}" class="btn btn-info">Group List</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+
+                            <!-- Permissions Checkboxes -->
+                            <div class="form-group">
+                                <label for="permissions">Permissions</label>
+                                <div class="custom-control custom-checkbox mb-3">
+                                    <input type="checkbox" id="select-all-permissions" class="custom-control-input">
+                                    <label class="custom-control-label" for="select-all-permissions">Select All</label>
+                                </div>
+                                <div class="row">
+                                    {% for permission in all_permissions %}
+                                        <div class="col-md-4">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       name="permissions"
+                                                       value="{{ permission.id }}"
+                                                       id="perm-{{ permission.id }}"
+                                                       class="custom-control-input permission-checkbox"
+                                                       {% if permission.id in selected_permissions %}checked{% endif %}>
+                                                <label class="custom-control-label" for="perm-{{ permission.id }}">
+                                                    {{ permission.content_type.app_label }}
+                                                    | {{ permission.content_type.model }} | {{ permission.name }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <a href="{% url 'group_list' %}" class="btn btn-secondary">Cancel</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+{% block js %}
+    <!-- JavaScript for Select All functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectAllCheckbox = document.getElementById('select-all-permissions');
+            const permissionCheckboxes = document.querySelectorAll('.permission-checkbox');
+
+            selectAllCheckbox.addEventListener('change', function () {
+                permissionCheckboxes.forEach(checkbox => {
+                    checkbox.checked = selectAllCheckbox.checked;
+                });
+            });
+
+            // Update Select All checkbox based on individual checkboxes
+            permissionCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    const allChecked = Array.from(permissionCheckboxes).every(cb => cb.checked);
+                    selectAllCheckbox.checked = allChecked;
+                });
+            });
+
+            // Initial check for Select All
+            const allCheckedInitially = Array.from(permissionCheckboxes).every(cb => cb.checked);
+            selectAllCheckbox.checked = allCheckedInitially;
+        });
+    </script>
+{% endblock %}

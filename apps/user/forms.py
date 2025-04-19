@@ -508,3 +508,12 @@ class CustomUserEditForm(forms.ModelForm):
                 Submit('submit', 'Save Changes', css_class='btn btn-primary btn-block'),
             )
         )
+
+
+class GroupForm(forms.ModelForm):
+    class Meta:
+        model = Group
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+        }
