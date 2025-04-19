@@ -1,9 +1,10 @@
+from datetime import datetime
+from decimal import Decimal
+
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.decorators import login_required
-from decimal import Decimal
-from datetime import datetime
 
 from apps.loan.models import LoanDisbursementTransaction, Loan, Installment, Transaction
 
@@ -11,6 +12,9 @@ from apps.loan.models import LoanDisbursementTransaction, Loan, Installment, Tra
 @login_required
 @require_POST
 def create_disbursement(request, loan_id):
+    if not request.user.has_perm('loan.add_loandisbursementtransaction'):
+        raise PermissionDenied("You do not have permission to create a disbursement.")
+
     try:
         loan = get_object_or_404(Loan, id=loan_id)
 
@@ -42,6 +46,8 @@ def create_disbursement(request, loan_id):
 @login_required
 @require_POST
 def update_disbursement(request, disbursement_id):
+    if not request.user.has_perm('loan.change_loandisbursementtransaction'):
+        raise PermissionDenied("You do not have permission to change a disbursement.")
     try:
         disbursement = get_object_or_404(LoanDisbursementTransaction, id=disbursement_id)
 
