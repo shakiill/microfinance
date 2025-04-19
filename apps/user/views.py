@@ -204,7 +204,9 @@ def group_create_edit(request, pk=None):
 
     group = get_object_or_404(Group, pk=pk) if pk else None
     form = GroupForm(instance=group)
-    all_permissions = Permission.objects.all()
+    all_permissions = Permission.objects.all().exclude(
+        id__in=[1, 2, 3, 4, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+                36, 37, 38, 39, 40, 41, 42, 43, 44])  # Exclude default permissions
     selected_permissions = group.permissions.all().values_list('id', flat=True) if group else []
 
     if request.method == 'POST':
