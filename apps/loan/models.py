@@ -38,6 +38,9 @@ class LoanApplication(TimeStamp):
         ordering = ['-applied_date']
         verbose_name = 'Loan Application'
         verbose_name_plural = 'Loan Applications'
+        permissions = [
+            ("change_loan_status", "Can change loan status"),
+        ]
 
     def __str__(self):
         return f"Loan #{self.id} - {self.customer.name} - {self.amount}"
