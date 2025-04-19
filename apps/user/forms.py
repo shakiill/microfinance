@@ -9,13 +9,12 @@ from apps.user.models import Customer, Staff
 
 User = get_user_model()
 
-
 class StaffEditForm(forms.ModelForm):
-    # role = forms.ModelMultipleChoiceField(queryset=Group.objects.all())
+    groups = forms.ModelChoiceField(queryset=Group.objects.all().exclude(name='customer'), required=False)
 
     class Meta:
         model = Staff
-        fields = ('name', 'email', 'username')
+        fields = ('name', 'email', 'username', 'is_active', 'groups')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -25,16 +24,16 @@ class StaffEditForm(forms.ModelForm):
             self.fields[fieldname].help_text = None
 
         self.helper = FormHelper()
-        # self.helper.form_show_labels = False
         self.helper.layout = Layout(
             Row(
                 Column('name', css_class='form-group col-md-6 mb-0'),
+                Column('groups', css_class='form-group col-md-3 mb-0'),
+                Column('is_active', css_class='form-group col-md-3 mb-0'),
             ),
             Row(
                 Column('username', css_class='form-group col-md-6 mb-0'),
                 Column('email', css_class='form-group col-md-6 mb-0'),
             ),
-
             Row(
                 Column(
                     Submit('submit', 'Save')
@@ -42,9 +41,22 @@ class StaffEditForm(forms.ModelForm):
             )
         )
 
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if commit:
+            instance.save()
+        # Handle the groups field
+        group = self.cleaned_data.get('groups')
+        if group:
+            instance.groups.set([group])  # Wrap single Group in a list
+        else:
+            instance.groups.clear()  # Clear groups if none selected
+        return instance
+
 
 class CustomStaffForm(SignupForm):
     name = forms.CharField(max_length=100, label='Name')
+    groups = forms.ModelChoiceField(queryset=Group.objects.all().exclude(name='customer'), required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -63,6 +75,7 @@ class CustomStaffForm(SignupForm):
                 Column('email', css_class='form-group col-md-4 mb-0'),
             ),
             Row(
+                Column('groups', css_class='form-group col-md-4 mb-0'),
                 Column('password1', css_class='form-group col-md-4 mb-0'),
                 Column('password2', css_class='form-group col-md-4 mb-0'),
             ),
@@ -75,10 +88,13 @@ class CustomStaffForm(SignupForm):
 
     def custom_signup(self, request, user):
         user.name = self.cleaned_data['name']
-        group, created = Group.objects.get_or_create(name='staff')
-        user.groups.add(group)
         user.is_staff = True
         user.save()
+
+        # Assign selected group to the user
+        group = self.cleaned_data.get('groups')
+        if group:
+            user.groups.set([group])  # Wrap the single Group object in a list
 
     def clean_email(self):
         email = self.cleaned_data.get('email', '')

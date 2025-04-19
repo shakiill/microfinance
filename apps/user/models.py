@@ -61,6 +61,8 @@ class CustomUser(AbstractUser):
     created_by = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
     updated_by = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
 
+    assign_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_to')
+
     def save(self, *args, **kwargs):
         if not self.username:
             self.username = self.mobile
@@ -76,6 +78,11 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.name if self.name else self.email
 
+    class Meta:
+        permissions = [
+            ("all_customer_view", "Can view all customer"),
+            ("assign_customer_view", "Can view only assigned customer"),
+        ]
 
 class Staff(CustomUser):
     class Meta:

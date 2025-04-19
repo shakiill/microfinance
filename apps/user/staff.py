@@ -15,10 +15,14 @@ class StaffTable(tables.Table):
         verbose_name='Name',
         attrs={'th': {'class': 'text-left'}}
     )
+    status = tables.Column(
+        verbose_name='Status',
+        attrs={'th': {'class': 'text-left'}}
+    )
     actions = tables.TemplateColumn(
         template_code='''
             <a href="{% url 'staff_edit' record.id %}" class="btn btn-sm btn-light-warning"><i class="fa fa-edit"></i></a>
-            <a href="{% url 'manage_permissions' record.id %}" class="btn btn-sm btn-light-info"><i class="fa fa-lock" aria-hidden="true"></i></a>
+            
         ''',
         orderable=False,
         verbose_name='Actions'
@@ -26,7 +30,7 @@ class StaffTable(tables.Table):
 
     class Meta:
         model = Staff
-        fields = ('name', 'email', 'mobile', 'created_at')
+        fields = ('name', 'groups', 'status', 'email', 'mobile', 'created_at')
         attrs = {
             'class': 'table table-hover table-separate table-head-custom table-checkable',
             'id': 'kt_datatable'
@@ -34,7 +38,6 @@ class StaffTable(tables.Table):
         row_attrs = {
             'class': 'text-dark-75'
         }
-
 
 class StaffFilterForm(forms.Form):
 
