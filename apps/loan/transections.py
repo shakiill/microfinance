@@ -83,6 +83,9 @@ from django.contrib import messages
 
 
 def make_payment(request, installment_id):
+    if not request.user.has_perm('loan.add_transaction'):
+        raise PermissionDenied("You do not have permission to change a disbursement.")
+
     if request.method == 'POST':
         installment = get_object_or_404(Installment, id=installment_id)
         amount = Decimal(request.POST.get('amount'))
