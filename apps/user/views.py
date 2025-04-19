@@ -192,11 +192,16 @@ from .forms import GroupForm
 
 
 def group_list(request):
+    if not request.user.has_perm('auth.view_group'):
+        return render(request, '403.html')
     groups = Group.objects.all()
     return render(request, 'group/list.html', {'groups': groups})
 
 
 def group_create_edit(request, pk=None):
+    if not request.user.has_perm('auth.change_group'):
+        return render(request, '403.html')
+
     group = get_object_or_404(Group, pk=pk) if pk else None
     form = GroupForm(instance=group)
     all_permissions = Permission.objects.all()
@@ -222,6 +227,9 @@ def group_create_edit(request, pk=None):
 
 
 def group_delete(request, pk):
+    if not request.user.has_perm('auth.delete_group'):
+        return render(request, '403.html')
+
     group = get_object_or_404(Group, pk=pk)
     if request.method == 'POST':
         group_name = group.name
