@@ -1,8 +1,8 @@
 from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-
+from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Sum
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -13,8 +13,6 @@ from django.views.generic import CreateView, DetailView, UpdateView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
-from django.contrib.auth.decorators import permission_required
-from django.contrib.auth.mixins import LoginRequiredMixin
 from apps.helpers.error_handling import CustomPermissionRequiredMixin
 from apps.helpers.views import PageHeaderMixin
 from apps.loan.filters import LoanApplicationFilterSet, LoanFilterSet, RepaymentFilterSet, TransactiontFilterSet, \
@@ -37,6 +35,14 @@ class ApplicationListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin,
     ordering = '-id'
     table_class = LoanApplicationTable
     filterset_class = LoanApplicationFilterSet
+
+    def get_queryset(self):
+        if self.request.user.is_superuser or getattr(self.request, 'perm', None) and getattr(self.request.perm,
+                                                                                             'all_customer_view',
+                                                                                             False):
+            return super().get_queryset()
+        return super().get_queryset().filter(customer__assign_to=self.request.user)
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

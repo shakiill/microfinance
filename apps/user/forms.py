@@ -379,10 +379,11 @@ class CustomSignupForm(UserCreationForm):
             'name', 'mobile', 'email', 'dob', 'father', 'mother', 'spouse', 'gender', 'alt_mobile', 'education',
             'village', 'word_no', 'post_office', 'union', 'upazila', 'district',
             'is_address', 'p_village', 'p_word_no', 'p_post_office', 'p_union', 'p_upazila', 'p_district',
-            'password1', 'password2',)
+            'password1', 'password2', 'assign_to')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['assign_to'].queryset = Staff.objects.all()
 
         for fieldname in self.fields:
             self.fields[fieldname].help_text = None
@@ -433,6 +434,10 @@ class CustomSignupForm(UserCreationForm):
                 Column('password1', css_class='form-group col-md-6'),
                 Column('password2', css_class='form-group col-md-6'),
             ),
+            # assign  Fields
+            Row(
+                Column('assign_to', css_class='form-group col-md-6'),
+            ),
             # Submit Button
             Row(
                 Submit('submit', 'Register', css_class='btn btn-primary btn-block'),
@@ -473,10 +478,11 @@ class CustomUserEditForm(forms.ModelForm):
         fields = (
             'name', 'mobile', 'email', 'dob', 'father', 'mother', 'spouse', 'gender', 'alt_mobile', 'education',
             'village', 'word_no', 'post_office', 'union', 'upazila', 'district',
-            'is_address', 'p_village', 'p_word_no', 'p_post_office', 'p_union', 'p_upazila', 'p_district',)
+            'is_address', 'p_village', 'p_word_no', 'p_post_office', 'p_union', 'p_upazila', 'p_district', 'assign_to')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['assign_to'].queryset = Staff.objects.all()
 
         for fieldname in self.fields:
             self.fields[fieldname].help_text = None
@@ -519,6 +525,9 @@ class CustomUserEditForm(forms.ModelForm):
                 Column('p_union', css_class='form-group col-md-4 permanent-address'),
                 Column('p_upazila', css_class='form-group col-md-4 permanent-address'),
                 Column('p_district', css_class='form-group col-md-4 permanent-address'),
+            ),
+            Row(
+                Column('assign_to', css_class='form-group col-md-4')
             ),
             Row(
                 Submit('submit', 'Save Changes', css_class='btn btn-primary btn-block'),
