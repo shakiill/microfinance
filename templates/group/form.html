@@ -4,84 +4,166 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <div class="card card-custom gutter-b">
-                    <div class="card-header">
-                        <h3 class="card-title">{% if form.instance.pk %}Edit Group: {{ form.instance.name }}{% else %}
-                            Create New Group{% endif %}</h3>
-                        <div class="card-toolbar">
-                            <a href="{% url 'group_list' %}" class="btn btn-info">Group List</a>
-                        </div>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="card card-custom gutter-b">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        {% if form.instance.pk %}Edit Group: {{ form.instance.name }}{% else %}Create New Group{% endif %}
+                    </h3>
+                    <div class="card-toolbar">
+                        <a href="{% url 'group_list' %}" class="btn btn-info">Group List</a>
                     </div>
-                    <div class="card-body">
-                        <form method="post" action="">
-                            {% csrf_token %}
-                            {{ form|crispy }}
+                </div>
+                <div class="card-body">
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        {{ form|crispy }}
 
-                            <!-- Permissions Checkboxes -->
-                            <div class="form-group">
-                                <label for="permissions">Permissions</label>
-                                <div class="custom-control custom-checkbox mb-3">
-                                    <input type="checkbox" id="select-all-permissions" class="custom-control-input">
-                                    <label class="custom-control-label" for="select-all-permissions">Select All</label>
-                                </div>
-                                <div class="row">
-                                    {% for permission in all_permissions %}
-                                        <div class="col-md-4">
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox"
-                                                       name="permissions"
-                                                       value="{{ permission.id }}"
-                                                       id="perm-{{ permission.id }}"
-                                                       class="custom-control-input permission-checkbox"
-                                                       {% if permission.id in selected_permissions %}checked{% endif %}>
-                                                <label class="custom-control-label" for="perm-{{ permission.id }}">
-                                                    {{ permission.content_type.app_label }}
-                                                    | {{ permission.content_type.model }} | {{ permission.name }}
-                                                </label>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
+                        <!-- Permissions Table -->
+                        <div class="form-group">
+                            <label for="permissions">Permissions</label>
+                            <div class="custom-control custom-checkbox mb-3">
+                                <input type="checkbox" id="select-all-permissions" class="custom-control-input">
+                                <label class="custom-control-label" for="select-all-permissions">Select All</label>
                             </div>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Model Name</th>
+                                        <th>Add</th>
+                                        <th>Change</th>
+                                        <th>Delete</th>
+                                        <th>Extra</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for model_name, data in permissions_by_model.items %}
+                                        <tr>
+                                            <td>
+                                                {{ data.app_label|title }}.{{ data.model|title }}
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input model-select-all" id="model-{{ data.model }}">
+                                                    <label class="custom-control-label" for="model-{{ data.model }}">Select All</label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% for perm in data.permissions %}
+                                                    {% if perm.action == 'add' %}
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" name="permissions" value="{{ perm.id }}"
+                                                                   id="perm-{{ perm.id }}" class="custom-control-input permission-checkbox model-{{ data.model }}"
+                                                                   {% if perm.id in selected_permissions %}checked{% endif %}>
+                                                            <label class="custom-control-label" for="perm-{{ perm.id }}">{{ perm.name }}</label>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for perm in data.permissions %}
+                                                    {% if perm.action == 'change' %}
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" name="permissions" value="{{ perm.id }}"
+                                                                   id="perm-{{ perm.id }}" class="custom-control-input permission-checkbox model-{{ data.model }}"
+                                                                   {% if perm.id in selected_permissions %}checked{% endif %}>
+                                                            <label class="custom-control-label" for="perm-{{ perm.id }}">{{ perm.name }}</label>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for perm in data.permissions %}
+                                                    {% if perm.action == 'delete' %}
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" name="permissions" value="{{ perm.id }}"
+                                                                   id="perm-{{ perm.id }}" class="custom-control-input permission-checkbox model-{{ data.model }}"
+                                                                   {% if perm.id in selected_permissions %}checked{% endif %}>
+                                                            <label class="custom-control-label" for="perm-{{ perm.id }}">{{ perm.name }}</label>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for perm in data.permissions %}
+                                                    {% if perm.action == 'extra' %}
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" name="permissions" value="{{ perm.id }}"
+                                                                   id="perm-{{ perm.id }}" class="custom-control-input permission-checkbox model-{{ data.model }}"
+                                                                   {% if perm.id in selected_permissions %}checked{% endif %}>
+                                                            <label class="custom-control-label" for="perm-{{ perm.id }}">{{ perm.name }}</label>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
 
-                            <button type="submit" class="btn btn-primary">Save</button>
-                            <a href="{% url 'group_list' %}" class="btn btn-secondary">Cancel</a>
-                        </form>
-                    </div>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <a href="{% url 'group_list' %}" class="btn btn-secondary">Cancel</a>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-
-
+</div>
 {% endblock %}
+
 {% block js %}
-    <!-- JavaScript for Select All functionality -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const selectAllCheckbox = document.getElementById('select-all-permissions');
-            const permissionCheckboxes = document.querySelectorAll('.permission-checkbox');
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const selectAllCheckbox = document.getElementById('select-all-permissions');
+    const permissionCheckboxes = document.querySelectorAll('.permission-checkbox');
+    const modelSelectAllCheckboxes = document.querySelectorAll('.model-select-all');
 
-            selectAllCheckbox.addEventListener('change', function () {
-                permissionCheckboxes.forEach(checkbox => {
-                    checkbox.checked = selectAllCheckbox.checked;
-                });
-            });
-
-            // Update Select All checkbox based on individual checkboxes
-            permissionCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function () {
-                    const allChecked = Array.from(permissionCheckboxes).every(cb => cb.checked);
-                    selectAllCheckbox.checked = allChecked;
-                });
-            });
-
-            // Initial check for Select All
-            const allCheckedInitially = Array.from(permissionCheckboxes).every(cb => cb.checked);
-            selectAllCheckbox.checked = allCheckedInitially;
+    // Global Select All
+    selectAllCheckbox.addEventListener('change', function () {
+        permissionCheckboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
         });
-    </script>
+        modelSelectAllCheckboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
+    });
+
+    // Model-level Select All
+    modelSelectAllCheckboxes.forEach(modelCheckbox => {
+        modelCheckbox.addEventListener('change', function () {
+            const modelClass = modelCheckbox.id.replace('model-', '');
+            const modelCheckboxes = document.querySelectorAll(`.model-${modelClass}`);
+            modelCheckboxes.forEach(checkbox => {
+                checkbox.checked = modelCheckbox.checked;
+            });
+            updateGlobalSelectAll();
+        });
+    });
+
+    // Individual permission checkbox changes
+    permissionCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            const modelClass = Array.from(checkbox.classList).find(cls => cls.startsWith('model-')).replace('model-', '');
+            const modelCheckboxes = document.querySelectorAll(`.model-${modelClass}`);
+            const modelSelectAll = document.getElementById(`model-${modelClass}`);
+            modelSelectAll.checked = Array.from(modelCheckboxes).every(cb => cb.checked);
+            updateGlobalSelectAll();
+        });
+    });
+
+    // Update global Select All checkbox
+    function updateGlobalSelectAll() {
+        selectAllCheckbox.checked = Array.from(permissionCheckboxes).every(cb => cb.checked);
+    }
+
+    // Initial check for Select All
+    updateGlobalSelectAll();
+    modelSelectAllCheckboxes.forEach(modelCheckbox => {
+        const modelClass = modelCheckbox.id.replace('model-', '');
+        const modelCheckboxes = document.querySelectorAll(`.model-${modelClass}`);
+        modelCheckbox.checked = Array.from(modelCheckboxes).every(cb => cb.checked);
+    });
+});
+</script>
 {% endblock %}

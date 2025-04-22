@@ -185,9 +185,6 @@ class StaffEditView(LoginRequiredMixin, PageHeaderMixin, CustomPermissionRequire
     success_url = reverse_lazy('staff_list')
 
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.models import Group, Permission
-from django.contrib import messages
 from .forms import GroupForm
 
 
@@ -198,15 +195,52 @@ def group_list(request):
     return render(request, 'group/list.html', {'groups': groups})
 
 
+from django.contrib.auth.models import Group, Permission
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+
 def group_create_edit(request, pk=None):
     if not request.user.has_perm('auth.change_group'):
         return render(request, '403.html')
 
     group = get_object_or_404(Group, pk=pk) if pk else None
     form = GroupForm(instance=group)
-    all_permissions = Permission.objects.all().exclude(
-        id__in=[1, 2, 3, 4, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
-                36, 37, 38, 39, 40, 41, 42, 43, 44])  # Exclude default permissions
+
+    # Get all relevant permissions, excluding unwanted ones
+    excluded_permission_ids = [
+        1, 2, 3, 4, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+        36, 37, 38, 39, 40, 41, 42, 43, 44
+    ]
+    all_permissions = Permission.objects.exclude(id__in=excluded_permission_ids).select_related('content_type')
+
+    # Group permissions by model
+    permissions_by_model = {}
+    for perm in all_permissions:
+        model_name = perm.content_type.model
+        if model_name not in permissions_by_model:
+            permissions_by_model[model_name] = {
+                'app_label': perm.content_type.app_label,
+                'model': model_name,
+                'permissions': []
+            }
+        # Categorize permissions by action (add, change, delete, or extra)
+        action = perm.codename.split('_')[0]
+        if action in ['add', 'change', 'delete']:
+            permissions_by_model[model_name]['permissions'].append({
+                'id': perm.id,
+                'name': perm.name,
+                'codename': perm.codename,
+                'action': action
+            })
+        else:
+            permissions_by_model[model_name]['permissions'].append({
+                'id': perm.id,
+                'name': perm.name,
+                'codename': perm.codename,
+                'action': 'extra'
+            })
+
+    # Get selected permissions for the group
     selected_permissions = group.permissions.all().values_list('id', flat=True) if group else []
 
     if request.method == 'POST':
@@ -223,10 +257,9 @@ def group_create_edit(request, pk=None):
 
     return render(request, 'group/form.html', {
         'form': form,
-        'all_permissions': all_permissions,
+        'permissions_by_model': permissions_by_model,
         'selected_permissions': selected_permissions,
     })
-
 
 def group_delete(request, pk):
     if not request.user.has_perm('auth.delete_group'):
