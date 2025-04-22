@@ -86,6 +86,14 @@ class DailySaving(models.Model):
     )
     history = models.JSONField(null=True, blank=True, help_text="History of the saving")
 
+    class Meta:
+        verbose_name = 'Daily Saving'
+        verbose_name_plural = 'Daily Savings'
+        ordering = ['-created_at']
+        permissions = [
+            ("can_update_transaction_status", "Can update daily saving status"),
+        ]
+
     def clean(self):
         if self.amount <= 0:
             raise ValidationError("Saving amount must be greater than zero.")

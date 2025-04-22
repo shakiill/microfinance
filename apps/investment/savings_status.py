@@ -16,6 +16,12 @@ class ChangeSavingStatus(APIView):
     permission_classes = [IsStaffAndAuthenticated]  # Ensure user is authenticated
 
     def post(self, request):
+        if not request.user.has_perm('apps.investment.can_update_transaction_status'):
+            return Response({
+                'success': False,
+                'error': 'You do not have permission to update transaction status'
+            }, status=status.HTTP_403_FORBIDDEN)
+
         saving_id = request.data.get('id')
         new_status = request.data.get('status')
         remarks = request.data.get('remarks', '')  # Get remarks if provided
@@ -74,6 +80,12 @@ class ChangeSavingStatus(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request):
+        if not request.user.has_perm('apps.investment.delete_dailysaving'):
+            return Response({
+                'success': False,
+                'error': 'You do not have permission to update transaction status'
+            }, status=status.HTTP_403_FORBIDDEN)
+
         transaction_id = request.data.get('id')
 
         try:

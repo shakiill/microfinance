@@ -135,6 +135,22 @@ class DailySavingListView(PageHeaderMixin, LoginRequiredMixin, SingleTableMixin,
     table_class = DailySavingTable
     filterset_class = DailySavingFilterSet
 
+    def get_queryset(self):
+        # Optimize the main queryset with select_related and prefetch_related
+        if self.request.user.is_superuser or getattr(self.request, 'perm', None) and getattr(self.request.perm,
+                                                                                             'all_loan_view', False):
+            return super().get_queryset().select_related('customer')
+        else:
+            return (
+                super()
+                .get_queryset()
+                .select_related(
+                    'customer',
+                )
+                .filter(customer__assign_to=self.request.user)
+            )
+
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
@@ -154,6 +170,22 @@ class DailySavingTransactionView(PageHeaderMixin, LoginRequiredMixin, SingleTabl
     ordering = '-id'
     table_class = DailySavingTransectionTable
     filterset_class = DailySavingFilterSet
+
+    def get_queryset(self):
+        # Optimize the main queryset with select_related and prefetch_related
+        if self.request.user.is_superuser or getattr(self.request, 'perm', None) and getattr(self.request.perm,
+                                                                                             'all_loan_view', False):
+            return super().get_queryset().select_related('customer', 'collected_by')
+        else:
+            return (
+                super()
+                .get_queryset()
+                .select_related(
+                    'customer',
+                    'collected_by',
+                )
+                .filter(customer__assign_to=self.request.user)
+            )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
