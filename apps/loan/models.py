@@ -407,6 +407,9 @@ class Transaction(TimeStamp):
         verbose_name = 'Transaction'
         verbose_name_plural = 'Transactions'
         ordering = ['-transaction_date']
+        permissions = [
+            ("can_update_transaction_status", "Can update transaction status"),
+        ]
 
     def __str__(self):
         return f"Transaction for Installment #{self.installment.id} - {self.amount}"

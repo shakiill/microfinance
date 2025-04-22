@@ -184,11 +184,17 @@ class LoanDisbursementTransactiontListView(PageHeaderMixin, LoginRequiredMixin, 
     table_class = LoanDisbursementTransactionTable
     filterset_class = LoanDisbursementTransactionFilterSet
 
+
     def get_queryset(self):
         # Optimize the main queryset with select_related and prefetch_related
+        if self.request.user.is_superuser or getattr(self.request, 'perm', None) and getattr(self.request.perm,
+                                                                                             'all_customer_view',
+                                                                                             False):
+            return (super().get_queryset().select_related('loan', 'loan__loan_application').prefetch_related(
+                'disbursed_to'))
         return (
             super()
-            .get_queryset()
+            .get_queryset().filter(loan__assign_by=self.request.user)
             .select_related(
                 'loan',
                 'loan__loan_application',
